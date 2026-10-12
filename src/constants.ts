@@ -25,5 +25,20 @@ export const ALLOWED_IMAGE_EXTENSIONS = [
   ".avif",
 ] as const;
 
+// Video upload limit is 8MB
+export const VIDEO_SIZE_LIMIT = 8 * 1024 * 1024;
+
+export const ALLOWED_VIDEO_CONTENT_TYPES = [
+  "video/mp4",
+  "video/webm",
+] as const;
+
+export const ALLOWED_VIDEO_EXTENSIONS = [".mp4", ".webm"] as const;
+
+export const ALL_ALLOWED_CONTENT_TYPES = [
+  ...ALLOWED_CONTENT_TYPES,
+  ...ALLOWED_VIDEO_CONTENT_TYPES,
+] as const;
+
 // Upload default folder
 export const DEFAULT_PHOTOS_UPLOAD_FOLDER = "photos";

@@ -1,12 +1,14 @@
 "use client";
 
+import { useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Project } from "@/db/schema";
-import { getProjectCoverUrl } from "../../lib/utils";
+import { getProjectCoverUrl, getProjectVideoUrl } from "../../lib/utils";
 import { navigateWithViewTransition } from "@/lib/view-transition";
+import { cn } from "@/lib/utils";
 
 interface FeaturedProjectCoverProps {
   data?: Project;
@@ -14,6 +16,9 @@ interface FeaturedProjectCoverProps {
 
 export const FeaturedProjectCover = ({ data }: FeaturedProjectCoverProps) => {
   const router = useRouter();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
 
   if (!data) {
     return (
@@ -26,11 +31,29 @@ export const FeaturedProjectCover = ({ data }: FeaturedProjectCoverProps) => {
   }
 
   const coverUrl = getProjectCoverUrl(data.coverKey);
+  const videoUrl = getProjectVideoUrl(data.previewVideoKey);
   const transitionName = `project-${data.slug}`;
+
+  const handleMouseEnter = () => {
+    if (!videoUrl) return;
+    setShouldLoadVideo(true);
+    videoRef.current
+      ?.play()
+      .then(() => setIsPlaying(true))
+      .catch(() => {});
+  };
+
+  const handleMouseLeave = () => {
+    if (!videoUrl) return;
+    setIsPlaying(false);
+    videoRef.current?.pause();
+  };
 
   return (
     <Link
       href={`/projects/${data.slug}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       onClick={(e) => {
         e.preventDefault();
         navigateWithViewTransition(() => router.push(`/projects/${data.slug}`));
@@ -44,8 +67,26 @@ export const FeaturedProjectCover = ({ data }: FeaturedProjectCoverProps) => {
         fill
         unoptimized
         priority
-        className="object-cover group-hover:blur-xs transition-[filter] duration-300 ease-out"
+        className={cn(
+          "object-cover transition-[filter] duration-300 ease-out",
+          isPlaying ? "" : "group-hover:blur-xs"
+        )}
       />
+
+      {videoUrl && (
+        <video
+          ref={videoRef}
+          src={shouldLoadVideo ? videoUrl : undefined}
+          muted
+          loop
+          playsInline
+          preload="none"
+          className={cn(
+            "absolute inset-0 w-full h-full object-cover transition-opacity duration-200 pointer-events-none z-10",
+            isPlaying ? "opacity-100" : "opacity-0"
+          )}
+        />
+      )}
 
       <div className="absolute w-full bottom-0 p-3">
         <div className="bg-background backdrop-blur-xs p-3 rounded-lg flex items-center justify-between">

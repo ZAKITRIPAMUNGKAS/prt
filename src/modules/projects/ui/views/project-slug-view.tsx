@@ -5,7 +5,7 @@ import Footer from "@/components/footer";
 import VectorCombined from "@/components/vector-combined";
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { getProjectCoverUrl } from "../../lib/utils";
+import { getProjectCoverUrl, getProjectVideoUrl } from "../../lib/utils";
 import { MarkdownContent } from "../components/markdown-content";
 import { useRouter } from "next/navigation";
 import { PiGithubLogo, PiGlobe, PiArrowLeft } from "react-icons/pi";
@@ -25,6 +25,7 @@ export const ProjectSlugView = ({ slug }: Props) => {
   );
 
   const coverUrl = getProjectCoverUrl(project.coverKey);
+  const videoUrl = getProjectVideoUrl(project.previewVideoKey);
   const transitionName = `project-${project.slug}`;
 
   return (
@@ -33,19 +34,30 @@ export const ProjectSlugView = ({ slug }: Props) => {
         {/* LEFT CONTENT - Fixed on desktop */}
         <div className="w-full h-[50vh] md:h-[70vh] lg:w-1/2 lg:fixed lg:top-0 lg:left-0 lg:h-screen p-0 lg:p-3">
           <div
-            className="w-full h-full relative rounded-xl overflow-hidden"
+            className="w-full h-full relative rounded-xl overflow-hidden bg-muted"
             style={{ viewTransitionName: transitionName }}
           >
-            <BlurImage
-              src={coverUrl}
-              alt={project.title}
-              fill
-              quality={80}
-              blurhash=""
-              sizes="75vw"
-              className="object-cover rounded-xl overflow-hidden"
-            />
-            <div className="absolute right-0 bottom-0">
+            {videoUrl ? (
+              <video
+                src={videoUrl}
+                poster={coverUrl}
+                controls
+                playsInline
+                preload="metadata"
+                className="w-full h-full object-cover rounded-xl overflow-hidden bg-black"
+              />
+            ) : (
+              <BlurImage
+                src={coverUrl}
+                alt={project.title}
+                fill
+                quality={80}
+                blurhash=""
+                sizes="75vw"
+                className="object-cover rounded-xl overflow-hidden"
+              />
+            )}
+            <div className="absolute right-0 bottom-0 pointer-events-none z-10">
               <VectorCombined
                 title={project.year || "Project"}
                 position="bottom-right"

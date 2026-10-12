@@ -25,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useTRPC } from "@/trpc/client";
 import FileUploader from "@/modules/s3/ui/components/file-uploader";
+import { VideoUploader } from "./video-uploader";
 import { TagsInput } from "@/modules/posts/ui/components/tags-input";
 import { projectFormSchema, ProjectFormData } from "../../schemas";
 import { generateProjectSlug } from "../../lib/utils";
@@ -50,6 +51,7 @@ export const ProjectForm = ({ project }: ProjectFormProps) => {
   const queryClient = useQueryClient();
   const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
+  const [isVideoUploading, setIsVideoUploading] = useState(false);
 
   const isEditing = !!project;
 
@@ -64,6 +66,7 @@ export const ProjectForm = ({ project }: ProjectFormProps) => {
       year: project?.year || new Date().getFullYear().toString(),
       duration: project?.duration || "",
       coverKey: project?.coverKey || "",
+      previewVideoKey: project?.previewVideoKey || "",
       repoUrl: project?.repoUrl || "",
       liveUrl: project?.liveUrl || "",
       body: project?.body || TEMPLATE_BODY,
@@ -169,7 +172,7 @@ export const ProjectForm = ({ project }: ProjectFormProps) => {
             >
               Reset
             </Button>
-            <Button type="submit" size="sm" disabled={isPending || isUploading}>
+            <Button type="submit" size="sm" disabled={isPending || isUploading || isVideoUploading}>
               {isPending ? (
                 <>
                   <Loader2 className="size-4 mr-2 animate-spin" />
@@ -208,6 +211,36 @@ export const ProjectForm = ({ project }: ProjectFormProps) => {
                 <FormDescription>
                   Format yang didukung: JPG, PNG, WebP. Gambar akan ditampilkan di halaman portofolio.
                 </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/* SECTION 1.5: PREVIEW VIDEO */}
+        <div className="bg-muted/40 p-6 rounded-xl border space-y-4">
+          <div className="space-y-1">
+            <h2 className="text-base font-semibold">Video Teaser / Preview (Opsional)</h2>
+            <p className="text-xs text-muted-foreground">
+              Video teaser (MP4/WebM, maks. 8 MB) yang diputar saat hover kartu proyek di desktop dan terlihat di mobile.
+            </p>
+          </div>
+          <FormField
+            control={form.control}
+            name="previewVideoKey"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <VideoUploader
+                    value={field.value}
+                    folder="projects"
+                    onUploadSuccess={(key) => {
+                      field.onChange(key);
+                    }}
+                    onRemove={() => field.onChange("")}
+                    onUploadStateChange={setIsVideoUploading}
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

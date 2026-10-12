@@ -5,8 +5,9 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import {
-  ALLOWED_CONTENT_TYPES,
+  ALL_ALLOWED_CONTENT_TYPES,
   IMAGE_SIZE_LIMIT,
+  VIDEO_SIZE_LIMIT,
 } from "@/constants";
 
 /**
@@ -20,12 +21,24 @@ import {
 export const s3Router = createTRPCRouter({
   createPresignedUrl: protectedProcedure
     .input(
-      z.object({
-        filename: z.string(),
-        contentType: z.enum(ALLOWED_CONTENT_TYPES),
-        size: z.number().positive().max(IMAGE_SIZE_LIMIT),
-        folder: z.string().optional(),
-      }),
+      z
+        .object({
+          filename: z.string(),
+          contentType: z.enum(ALL_ALLOWED_CONTENT_TYPES),
+          size: z.number().positive().max(IMAGE_SIZE_LIMIT),
+          folder: z.string().optional(),
+        })
+        .refine(
+          (data) => {
+            if (data.contentType.startsWith("video/")) {
+              return data.size <= VIDEO_SIZE_LIMIT;
+            }
+            return true;
+          },
+          {
+            message: `Video size exceeds ${VIDEO_SIZE_LIMIT / 1024 / 1024}MB limit`,
+          }
+        )
     )
     .mutation(async ({ input }) => {
       try {

@@ -265,6 +265,7 @@ export const projects = pgTable(
     year: text("year").notNull(),
     duration: text("duration").notNull(),
     coverKey: text("cover_key").notNull(),
+    previewVideoKey: varchar("preview_video_key", { length: 255 }),
     repoUrl: text("repo_url"),
     liveUrl: text("live_url"),
     body: text("body").notNull(),

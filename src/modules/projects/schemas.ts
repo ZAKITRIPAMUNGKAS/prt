@@ -15,6 +15,7 @@ export const projectFormSchema = z.object({
   year: z.string().trim().min(1, { message: "Tahun wajib diisi" }),
   duration: z.string().trim().min(1, { message: "Durasi wajib diisi" }),
   coverKey: z.string().trim().min(1, { message: "Cover proyek wajib diisi" }),
+  previewVideoKey: z.string().trim().optional().nullable(),
   repoUrl: z.string().optional(),
   liveUrl: z.string().optional(),
   body: z.string().min(1, { message: "Isi studi kasus wajib diisi" }),

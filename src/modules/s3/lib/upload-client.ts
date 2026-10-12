@@ -1,9 +1,12 @@
 import {
+  ALL_ALLOWED_CONTENT_TYPES,
   ALLOWED_CONTENT_TYPES,
+  ALLOWED_VIDEO_CONTENT_TYPES,
   IMAGE_SIZE_LIMIT,
+  VIDEO_SIZE_LIMIT,
 } from "@/constants";
 
-export type AllowedContentType = (typeof ALLOWED_CONTENT_TYPES)[number];
+export type AllowedContentType = (typeof ALL_ALLOWED_CONTENT_TYPES)[number];
 
 /**
  * Client-side S3 upload helper.
@@ -54,17 +57,22 @@ export class S3Client {
    * @throws {UploadError} if file validation fails
    */
   private validateFile(file: File) {
-    const MAX_FILE_SIZE = IMAGE_SIZE_LIMIT;
-    if (file.size > MAX_FILE_SIZE) {
+    const isVideo = file.type.startsWith("video/");
+    const maxFileSize = isVideo ? VIDEO_SIZE_LIMIT : IMAGE_SIZE_LIMIT;
+    const allowedTypes = isVideo
+      ? (ALLOWED_VIDEO_CONTENT_TYPES as readonly string[])
+      : (ALLOWED_CONTENT_TYPES as readonly string[]);
+
+    if (file.size > maxFileSize) {
       throw new UploadError(
-        `File size exceeds ${MAX_FILE_SIZE / 1024 / 1024}MB limit`,
+        `File size exceeds ${maxFileSize / 1024 / 1024}MB limit`,
       );
     }
 
     // validate file type
-    if (!ALLOWED_CONTENT_TYPES.includes(file.type as AllowedContentType)) {
+    if (!allowedTypes.includes(file.type)) {
       throw new UploadError(
-        `Unsupported file type: ${file.type}. Allowed: ${ALLOWED_CONTENT_TYPES.join(", ")}`,
+        `Unsupported file type: ${file.type}. Allowed: ${allowedTypes.join(", ")}`,
       );
     }
   }
