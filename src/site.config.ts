@@ -24,8 +24,8 @@ export const siteConfig = {
   /** Short bio shown on the home page profile card */
   bio: "Saya Zaki — developer web lulusan Teknik Informatika UMS, juga fotografer, pilot FPV, dan pembuat motion. Saya membangun sistem yang jelas dan merekam cerita lewat gambar.",
 
-  /** Avatar image path (place your avatar in /public/avatar.jpg) */
-  avatar: "/avatar.jpg",
+  /** Avatar image path (place your avatar in /public/profil.jpg) */
+  avatar: "/profil.jpg",
 
   /** Initials used as avatar fallback */
   initials: "ZT",
