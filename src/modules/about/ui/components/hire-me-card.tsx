@@ -6,7 +6,7 @@ export const HireMeCard = () => {
     <CardContainer>
       <div className="flex flex-col p-8 md:p-12 gap-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <h2 className="text-2xl font-normal">Rekrut saya</h2>
+          <h2 className="text-2xl font-normal">Hubungi Saya</h2>
           <a
             href="/CV_Zaki_Tri_Pamungkas_General.pdf"
             download="CV_Zaki_Tri_Pamungkas_General.pdf"
@@ -16,12 +16,9 @@ export const HireMeCard = () => {
             <span>Unduh CV</span>
           </a>
         </div>
-        <div className="flex flex-col gap-3 font-light text-text-muted text-[15px] leading-relaxed">
+        <div className="font-light text-text-muted text-[15px] leading-relaxed">
           <p>
-            Saya Zaki Tri Pamungkas, lulusan S1 Teknik Informatika Universitas Muhammadiyah Surakarta (IPK 3,48) dan awardee Beasiswa Unggulan. Berpengalaman mengerjakan lebih dari 50 proyek web (Next.js, React, TypeScript, Laravel) serta mengembangkan sistem internal BCS & GIS di BNI Kantor Pusat.
-          </p>
-          <p>
-            Terbuka untuk posisi Full-stack Developer, Software Engineer, atau Frontend Developer.
+            Saya Zaki Tri Pamungkas, lulusan S1 Teknik Informatika Universitas Muhammadiyah Surakarta (IPK 3,48) dan awardee Beasiswa Unggulan. Berpengalaman mengerjakan lebih dari 50 proyek web (Next.js, React, TypeScript, Laravel) serta mengembangkan sistem internal BCS & GIS di BNI Kantor Pusat, dan saat ini terbuka untuk kolaborasi maupun posisi Full-stack Developer, Software Engineer, atau Frontend Developer.
           </p>
         </div>
       </div>

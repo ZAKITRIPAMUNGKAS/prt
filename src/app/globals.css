@@ -231,7 +231,7 @@
 /* THEME SWITCH TRANSITION */
 @layer utilities {
   ::view-transition-group(root) {
-    animation-duration: 2s;
+    animation-duration: 350ms;
   }
 
   ::view-transition-new(root),

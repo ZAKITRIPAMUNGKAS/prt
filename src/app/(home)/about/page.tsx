@@ -1,7 +1,7 @@
 // External dependencies
 import { type Metadata } from "next";
 
-// Internal dependencies - UI Components
+import Image from "next/image";
 import Footer from "@/components/footer";
 import AboutCard from "../../../modules/home/ui/components/about-card";
 import { HireMeCard } from "@/modules/about/ui/components/hire-me-card";
@@ -23,8 +23,17 @@ const AboutPage = () => {
     <div className="flex flex-col gap-3 lg:gap-0 lg:flex-row w-full">
       {/* LEFT CONTENT - Fixed */}
       <div className="w-full h-[70vh] lg:w-1/2 lg:fixed lg:top-0 lg:left-0 lg:h-screen p-0 lg:p-3">
-        <div className="w-full h-full relative bg-[url(/bg.jpg)] bg-top bg-cover rounded-xl">
-          <div className="absolute right-0 bottom-0">
+        <div className="w-full h-full relative rounded-xl overflow-hidden bg-muted">
+          <Image
+            src="/fotoku.png"
+            alt="Zaki Tri Pamungkas"
+            fill
+            priority
+            quality={85}
+            sizes="(max-width: 1023px) 100vw, 50vw"
+            className="object-cover object-top rounded-xl"
+          />
+          <div className="absolute right-0 bottom-0 z-10">
             <VectorCombined title="About" position="bottom-right" />
           </div>
         </div>

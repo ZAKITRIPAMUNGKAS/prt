@@ -47,7 +47,6 @@ const Carousel = ({
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
-  const [progress, setProgress] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [isTouching, setIsTouching] = useState(false);
   const [isTabHidden, setIsTabHidden] = useState(false);
@@ -62,35 +61,38 @@ const Carousel = ({
   const isPaused =
     isHovered || isTouching || isTabHidden || isManuallyPaused || isReducedMotion;
 
-  const displayedProgress =
-    isReducedMotion || scrollSnaps.length <= 1 ? 0 : progress;
-
+  const progressFillRef = useRef<HTMLDivElement>(null);
   const elapsedRef = useRef(0);
   const lastTimeRef = useRef<number | null>(null);
   const rafIdRef = useRef<number | null>(null);
 
+  const resetProgress = useCallback(() => {
+    elapsedRef.current = 0;
+    if (progressFillRef.current) {
+      progressFillRef.current.style.width = "0%";
+    }
+  }, []);
+
   const scrollTo = useCallback(
     (index: number) => {
-      elapsedRef.current = 0;
-      setProgress(0);
+      resetProgress();
       emblaApi?.scrollTo(index);
     },
-    [emblaApi]
+    [emblaApi, resetProgress]
   );
+
   useEffect(() => {
     if (!emblaApi) return;
 
     const onSelect = () => {
       setSelectedIndex(emblaApi.selectedScrollSnap());
-      elapsedRef.current = 0;
-      setProgress(0);
+      resetProgress();
     };
 
     const onInit = () => {
       setScrollSnaps(emblaApi.scrollSnapList());
       setSelectedIndex(emblaApi.selectedScrollSnap());
-      elapsedRef.current = 0;
-      setProgress(0);
+      resetProgress();
     };
 
     emblaApi.on("select", onSelect);
@@ -103,7 +105,7 @@ const Carousel = ({
       emblaApi.off("select", onSelect);
       emblaApi.off("reInit", onInit);
     };
-  }, [emblaApi]);
+  }, [emblaApi, resetProgress]);
 
   // Tab visibility listener
   useEffect(() => {
@@ -117,9 +119,12 @@ const Carousel = ({
     };
   }, []);
 
-  // Synchronized Autoplay & Progress RAF Loop
+  // Synchronized Autoplay & Progress RAF Loop (direct DOM manipulation to avoid re-renders)
   useEffect(() => {
     if (isReducedMotion || scrollSnaps.length <= 1) {
+      if (progressFillRef.current) {
+        progressFillRef.current.style.width = "0%";
+      }
       return;
     }
 
@@ -139,11 +144,16 @@ const Carousel = ({
           100,
           (elapsedRef.current / autoplayDelay) * 100
         );
-        setProgress(currentPct);
+
+        if (progressFillRef.current) {
+          progressFillRef.current.style.width = `${currentPct}%`;
+        }
 
         if (elapsedRef.current >= autoplayDelay) {
           elapsedRef.current = 0;
-          setProgress(0);
+          if (progressFillRef.current) {
+            progressFillRef.current.style.width = "0%";
+          }
           emblaApi?.scrollNext();
         }
       }
@@ -188,8 +198,7 @@ const Carousel = ({
           className="w-10 h-10 bg-black/15 backdrop-blur-sm flex items-center justify-center pointer-events-auto text-white rounded-md transition-opacity hover:bg-black/30"
           aria-label="Previous slide"
           onClick={() => {
-            elapsedRef.current = 0;
-            setProgress(0);
+            resetProgress();
             emblaApi?.scrollPrev();
           }}
         >
@@ -211,8 +220,7 @@ const Carousel = ({
           className="w-10 h-10 bg-black/15 backdrop-blur-sm flex items-center justify-center pointer-events-auto text-white rounded-md transition-opacity hover:bg-black/30"
           aria-label="Next slide"
           onClick={() => {
-            elapsedRef.current = 0;
-            setProgress(0);
+            resetProgress();
             emblaApi?.scrollNext();
           }}
         >
@@ -251,17 +259,14 @@ const Carousel = ({
         <div
           className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-white/20 z-20 pointer-events-none overflow-hidden"
           role="progressbar"
-          aria-valuenow={Math.round(displayedProgress)}
           aria-valuemin={0}
           aria-valuemax={100}
           aria-label="Carousel autoplay progress"
         >
           <div
-            className="h-full bg-white transition-[width] ease-linear"
-            style={{
-              width: `${displayedProgress}%`,
-              transitionDuration: isPaused ? "0ms" : "40ms",
-            }}
+            ref={progressFillRef}
+            className="h-full bg-white transition-[width] ease-linear duration-75"
+            style={{ width: "0%" }}
           />
         </div>
       )}

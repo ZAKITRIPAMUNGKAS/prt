@@ -17,18 +17,20 @@ interface Props {
 }
 
 function subscribeTouch(callback: () => void) {
-  const mq = window.matchMedia("(pointer: coarse)");
+  const mq = window.matchMedia("(max-width: 1023px)");
+  const pointerMq = window.matchMedia("(pointer: coarse)");
   mq.addEventListener("change", callback);
-  window.addEventListener("resize", callback);
+  pointerMq.addEventListener("change", callback);
   return () => {
     mq.removeEventListener("change", callback);
-    window.removeEventListener("resize", callback);
+    pointerMq.removeEventListener("change", callback);
   };
 }
 
 function getTouchSnapshot() {
   return (
-    window.matchMedia("(pointer: coarse)").matches || window.innerWidth < 1024
+    window.matchMedia("(pointer: coarse)").matches ||
+    window.matchMedia("(max-width: 1023px)").matches
   );
 }
 
