@@ -14,12 +14,12 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { label: "Home", href: "/" },
-  { label: "Travel", href: "/travel" },
-  { label: "Projects", href: "/projects" },
-  { label: "Discover", href: "/discover" },
+  { label: "Beranda", href: "/" },
+  { label: "Perjalanan", href: "/travel" },
+  { label: "Proyek", href: "/projects" },
+  { label: "Jelajah", href: "/discover" },
   { label: "Blog", href: "/blog" },
-  { label: "About", href: "/about" },
+  { label: "Tentang", href: "/about" },
 ];
 
 interface Props {
@@ -64,7 +64,7 @@ export default function MobileMenu({ isOpen, onClose }: Props) {
                 className="fixed top-3 right-3 z-50 bg-background rounded-bl-[18px] cursor-pointer select-none"
               >
                 <div className="relative pb-3 px-4">
-                  <h1 className="text-sm font-light">Close</h1>
+                  <h1 className="text-sm font-light">Tutup</h1>
                   <Graphic className="absolute -bottom-4 right-0 rotate-90" />
                   <Graphic className="absolute -left-4 top-0 rotate-90" />
                 </div>

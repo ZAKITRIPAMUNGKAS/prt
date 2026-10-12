@@ -3,22 +3,15 @@ import CardContainer from "@/components/card-container";
 const AboutCard = () => {
   return (
     <CardContainer>
-      <div className="flex flex-col p-12 gap-[128px]">
-        <h1 className="text-3xl">About</h1>
-        <div className="flex flex-col gap-4 font-light">
+      <div className="flex flex-col p-8 md:p-12 gap-8 md:gap-16">
+        <h1 className="text-3xl">Tentang Saya</h1>
+        <div className="flex flex-col gap-4 font-light text-text-muted leading-relaxed text-[15px]">
           <p>
-            With a focus on both candid moments and stunning landscapes, I
-            strive to evoke emotion and tell stories through my work. My
-            photography blends the rawness of everyday life with the artistry of
-            fine art, allowing viewers to connect with each image on a deeper
-            level.
+            Sebagai developer web lulusan Teknik Informatika Universitas Muhammadiyah Surakarta (UMS) sekaligus kreator visual, saya memadukan pola pikir rekayasa perangkat lunak yang sistematis dengan estetika visual. Di ranah engineering, fokus saya adalah membangun aplikasi web modern, performan, dan berorientasi pada kemudahan pengguna.
           </p>
 
           <p>
-            Whether I&apos;m exploring urban environments or venturing into
-            nature, my goal is to highlight the extraordinary in the ordinary.
-            Through my lens, I invite you to join me on this visual journey of
-            discovery and inspiration.
+            Di balik kamera dan drone FPV, saya mengeksplorasi sudut pandang unik — mulai dari lanskap, street photography, hingga video motion dinamis menggunakan Remotion. Baik melalui baris kode maupun frame visual, tujuan saya adalah menciptakan karya yang bernilai, fungsional, dan bercerita.
           </p>
         </div>
       </div>

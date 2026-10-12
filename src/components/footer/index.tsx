@@ -20,14 +20,14 @@ const Footer = () => {
       </div>
       <div className="grid lg:w-full grid-cols-1 lg:grid-cols-3 gap-7 lg:gap-14">
         <FooterNav
-          title="Pages"
+          title="Halaman"
           links={[
-            { title: "Home", href: "/" },
-            { title: "Travel", href: "/travel" },
-            { title: "Projects", href: "/projects" },
-            { title: "Discover", href: "/discover" },
+            { title: "Beranda", href: "/" },
+            { title: "Perjalanan", href: "/travel" },
+            { title: "Proyek", href: "/projects" },
+            { title: "Jelajah", href: "/discover" },
             { title: "Blog", href: "/blog" },
-            { title: "About", href: "/about" },
+            { title: "Tentang", href: "/about" },
           ]}
         />
         <FooterNav

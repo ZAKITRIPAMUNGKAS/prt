@@ -16,7 +16,7 @@ export const LatestPostSection = ({ data }: LatestPostSectionProps) => {
   if (!data) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-muted rounded-xl">
-        <p className="text-muted-foreground">No blog available</p>
+        <p className="text-muted-foreground">Belum ada artikel</p>
       </div>
     );
   }
@@ -45,7 +45,7 @@ export const LatestPostSection = ({ data }: LatestPostSectionProps) => {
           </div>
 
           <div className="relative mr-2">
-            <span className="text-sm font-light">Read</span>
+            <span className="text-sm font-light">Baca</span>
             <div className="absolute bottom-[2px] left-0 w-full h-px bg-black dark:bg-white transition-all duration-300 transform ease-in-out group-hover:w-1/3"></div>
           </div>
         </div>

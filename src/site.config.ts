@@ -43,7 +43,7 @@ export const siteConfig = {
   socialLinks: [
     {
       title: "Instagram",
-      href: "https://instagram.com/[USERNAME_INSTAGRAM]",
+      href: "https://instagram.com/zakitripamungkas",
     },
     {
       title: "GitHub",
@@ -51,11 +51,11 @@ export const siteConfig = {
     },
     {
       title: "LinkedIn",
-      href: "https://www.linkedin.com/in/[USERNAME_LINKEDIN]",
+      href: "https://www.linkedin.com/in/zakitripamungkas",
     },
     {
       title: "Contact me",
-      href: "mailto:[EMAIL_KAMU]",
+      href: "mailto:zakitripamungkas@gmail.com",
       /** If true, this link gets the primary button style */
       primary: true,
     },
@@ -79,8 +79,8 @@ export const siteConfig = {
    * Create your own at https://studio.mapbox.com/
    */
   mapbox: {
-    lightStyle: "mapbox://styles/ecarry/cldmhu6tr000001n33ujbxf7j",
-    darkStyle: "mapbox://styles/ecarry/clp8hcmd300km01qx78rt0xaw",
+    lightStyle: "",
+    darkStyle: "",
   },
 
   /**

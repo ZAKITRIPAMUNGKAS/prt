@@ -27,15 +27,11 @@ export const BlogView = () => {
       <div className="w-full lg:w-1/2 space-y-3 pb-3">
         {/* DESCRIPTION CARD  */}
         <CardContainer>
-          <div className="flex flex-col p-12 gap-[128px]">
+          <div className="flex flex-col p-8 md:p-12 gap-8 md:gap-16">
             <h1 className="text-3xl">Blog</h1>
-            <div className="flex flex-col gap-4 font-light">
+            <div className="flex flex-col gap-4 font-light text-text-muted leading-relaxed text-[15px]">
               <p>
-                Welcome to my blog, where I share my thoughts, experiences, and
-                insights on a wide range of topics. Whether you&apos;re a
-                photographer, a traveler, or simply someone who appreciates the
-                beauty of life, my blog is a place to connect with others who
-                share my passion for capturing moments and telling stories.
+                Selamat datang di blog saya. Di sini saya menuliskan pemikiran, catatan teknis seputar web development, studi kasus rekayasa sistem, serta cerita di balik foto dan proyek visual.
               </p>
             </div>
           </div>

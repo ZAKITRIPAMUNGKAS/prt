@@ -4,6 +4,8 @@ import { type Metadata } from "next";
 // Internal dependencies - UI Components
 import Footer from "@/components/footer";
 import AboutCard from "../../../modules/home/ui/components/about-card";
+import { HireMeCard } from "@/modules/about/ui/components/hire-me-card";
+import { CollaborationCard } from "@/modules/about/ui/components/collaboration-card";
 import TechMarquee from "@/components/tech-marquee";
 import CameraCard from "../../../modules/home/ui/components/camera-card";
 import ProfileCard from "../../../modules/home/ui/components/profile-card";
@@ -35,6 +37,12 @@ const AboutPage = () => {
       <div className="w-full lg:w-1/2 space-y-3 pb-3">
         {/* PROFILE CARD  */}
         <ProfileCard />
+
+        {/* HIRE ME CARD */}
+        <HireMeCard />
+
+        {/* COLLABORATION CARD */}
+        <CollaborationCard />
 
         {/* ABOUT CARD  */}
         <AboutCard />
