@@ -5,6 +5,7 @@ import BlurImage from "@/components/blur-image";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import VectorTopLeftAnimation from "@/modules/home/ui/components/vector-top-left-animation";
 import { getProjectCoverUrl } from "../../lib/utils";
+import { navigateWithViewTransition } from "@/lib/view-transition";
 import type { Project } from "@/db/schema";
 
 interface Props {
@@ -14,15 +15,21 @@ interface Props {
 export const ProjectCard = ({ project }: Props) => {
   const router = useRouter();
   const coverUrl = getProjectCoverUrl(project.coverKey);
+  const transitionName = `project-${project.slug}`;
 
   return (
     <div
       className="w-full relative group cursor-pointer"
-      onClick={() => router.push(`/projects/${project.slug}`)}
+      onClick={() =>
+        navigateWithViewTransition(() =>
+          router.push(`/projects/${project.slug}`)
+        )
+      }
     >
       <AspectRatio
         ratio={0.75 / 1}
         className="overflow-hidden rounded-lg relative bg-muted"
+        style={{ viewTransitionName: transitionName }}
       >
         <BlurImage
           src={coverUrl}

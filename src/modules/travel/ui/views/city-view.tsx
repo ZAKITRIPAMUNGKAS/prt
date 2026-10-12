@@ -38,6 +38,9 @@ export const CityView = ({ city }: Props) => {
             className="w-full h-full relative cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
             role="button"
             tabIndex={0}
+            style={{
+              viewTransitionName: `city-${encodeURIComponent(data.city.toLowerCase())}`,
+            }}
             onClick={() => coverPhoto && openPhoto(coverPhoto.id)}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {

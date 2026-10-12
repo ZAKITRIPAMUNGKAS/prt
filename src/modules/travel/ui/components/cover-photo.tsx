@@ -16,6 +16,9 @@ export const CoverPhoto = ({ citySet, citySets, onPhotoClick }: CoverPhotoProps)
         className="w-full h-full relative rounded-xl overflow-hidden cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         role="button"
         tabIndex={0}
+        style={{
+          viewTransitionName: `city-${encodeURIComponent(citySet.city.toLowerCase())}`,
+        }}
         onClick={() => onPhotoClick?.(citySet.coverPhoto.id)}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {

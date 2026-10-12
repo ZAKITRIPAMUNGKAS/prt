@@ -6,6 +6,8 @@ import { useTheme } from "next-themes";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 
+import { toggleThemeWithCircularTransition } from "@/lib/view-transition";
+
 // Hydration-safe hook to detect if component is mounted on client
 const emptySubscribe = () => () => {};
 const useIsMounted = () =>
@@ -15,17 +17,7 @@ const useIsMounted = () =>
     () => false
   );
 
-// Utility function to handle view transitions
-const addViewTransition = (callback: () => void) => {
-  if (!document.startViewTransition) {
-    callback();
-    return;
-  }
-
-  document.startViewTransition(callback);
-};
-
-// Dashboard page Theme Toggle
+// Dashboard page Theme Toggle - instant without transition as per rule
 export function ThemeToggle() {
   const { setTheme, theme } = useTheme();
 
@@ -33,9 +25,7 @@ export function ThemeToggle() {
     <Button
       variant="ghost"
       size="icon"
-      onClick={() =>
-        addViewTransition(() => setTheme(theme === "light" ? "dark" : "light"))
-      }
+      onClick={() => setTheme(theme === "light" ? "dark" : "light")}
     >
       <Sun className="h-6 w-[1.3rem] dark:hidden" color="#000" />
       <Moon className="hidden h-5 w-5 dark:block" />
@@ -44,26 +34,24 @@ export function ThemeToggle() {
   );
 }
 
-// Home page Theme Switch
+// Home page Theme Switch with circular clip-path transition
 export function ThemeSwitch() {
   const mounted = useIsMounted();
   const { setTheme, resolvedTheme: theme } = useTheme();
 
-  const switchTheme = () => {
-    addViewTransition(() => {
-      setTheme(theme === "light" ? "dark" : "light");
-    });
-  };
-
-  // Return a non-interactive switch component as a placeholder
   if (!mounted) {
     return <Switch checked={false} disabled aria-label="Toggle theme" />;
   }
 
+  const isDark = theme === "dark";
+
   return (
     <Switch
-      checked={theme === "dark"}
-      onCheckedChange={() => switchTheme()}
+      checked={isDark}
+      onClick={(e) => {
+        const nextTheme = isDark ? "light" : "dark";
+        toggleThemeWithCircularTransition(e, nextTheme, setTheme);
+      }}
       aria-label="Toggle theme"
     />
   );

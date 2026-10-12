@@ -2,15 +2,19 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Project } from "@/db/schema";
 import { getProjectCoverUrl } from "../../lib/utils";
+import { navigateWithViewTransition } from "@/lib/view-transition";
 
 interface FeaturedProjectCoverProps {
   data?: Project;
 }
 
 export const FeaturedProjectCover = ({ data }: FeaturedProjectCoverProps) => {
+  const router = useRouter();
+
   if (!data) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-muted rounded-xl">
@@ -22,10 +26,16 @@ export const FeaturedProjectCover = ({ data }: FeaturedProjectCoverProps) => {
   }
 
   const coverUrl = getProjectCoverUrl(data.coverKey);
+  const transitionName = `project-${data.slug}`;
 
   return (
     <Link
       href={`/projects/${data.slug}`}
+      onClick={(e) => {
+        e.preventDefault();
+        navigateWithViewTransition(() => router.push(`/projects/${data.slug}`));
+      }}
+      style={{ viewTransitionName: transitionName }}
       className="block w-full h-full relative rounded-xl overflow-hidden group cursor-pointer"
     >
       <Image

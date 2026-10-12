@@ -5,6 +5,7 @@ import BlurImage from "@/components/blur-image";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import VectorTopLeftAnimation from "./vector-top-left-animation";
 import { keyToUrl } from "@/modules/s3/lib/key-to-url";
+import { navigateWithViewTransition } from "@/lib/view-transition";
 
 type CoverPhoto = {
   url: string;
@@ -19,15 +20,21 @@ interface Props {
 
 const CityCard = ({ title, coverPhoto }: Props) => {
   const router = useRouter();
+  const transitionName = `city-${encodeURIComponent(title.toLowerCase())}`;
 
   return (
     <div
       className="w-full relative group cursor-pointer"
-      onClick={() => router.push(`/travel/${title}`)}
+      onClick={() =>
+        navigateWithViewTransition(() =>
+          router.push(`/travel/${encodeURIComponent(title)}`)
+        )
+      }
     >
       <AspectRatio
         ratio={0.75 / 1}
         className="overflow-hidden rounded-lg relative"
+        style={{ viewTransitionName: transitionName }}
       >
         <BlurImage
           src={keyToUrl(coverPhoto.url)}

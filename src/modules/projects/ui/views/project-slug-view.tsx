@@ -7,7 +7,9 @@ import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getProjectCoverUrl } from "../../lib/utils";
 import { MarkdownContent } from "../components/markdown-content";
+import { useRouter } from "next/navigation";
 import { PiGithubLogo, PiGlobe, PiArrowLeft } from "react-icons/pi";
+import { navigateWithViewTransition } from "@/lib/view-transition";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 
@@ -16,19 +18,24 @@ interface Props {
 }
 
 export const ProjectSlugView = ({ slug }: Props) => {
+  const router = useRouter();
   const trpc = useTRPC();
   const { data: project } = useSuspenseQuery(
     trpc.projects.getBySlug.queryOptions({ slug })
   );
 
   const coverUrl = getProjectCoverUrl(project.coverKey);
+  const transitionName = `project-${project.slug}`;
 
   return (
     <div className="size-full">
       <div className="flex flex-col gap-3 lg:gap-0 lg:flex-row w-full">
         {/* LEFT CONTENT - Fixed on desktop */}
         <div className="w-full h-[50vh] md:h-[70vh] lg:w-1/2 lg:fixed lg:top-0 lg:left-0 lg:h-screen p-0 lg:p-3">
-          <div className="w-full h-full relative">
+          <div
+            className="w-full h-full relative rounded-xl overflow-hidden"
+            style={{ viewTransitionName: transitionName }}
+          >
             <BlurImage
               src={coverUrl}
               alt={project.title}
@@ -56,7 +63,11 @@ export const ProjectSlugView = ({ slug }: Props) => {
           <div className="px-2 pt-1">
             <Link
               href="/projects"
-              className="inline-flex items-center gap-2 text-sm text-text-muted hover:text-foreground transition-colors"
+              onClick={(e) => {
+                e.preventDefault();
+                navigateWithViewTransition(() => router.push("/projects"));
+              }}
+              className="inline-flex items-center gap-2 text-sm text-text-muted hover:text-foreground transition-colors cursor-pointer"
             >
               <PiArrowLeft size={16} />
               <span>Semua Proyek</span>
