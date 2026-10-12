@@ -28,7 +28,7 @@ export const siteConfig = {
   role: "Developer & Visual Maker",
 
   /** Short bio shown on the home page profile card */
-  bio: "Web developer dan kreator visual. Terbiasa membangun aplikasi web modern yang rapi, fotografi lanskap/jalanan, serta visual dari drone FPV.",
+  bio: "Saya Zaki Tri Pamungkas — web developer dan kreator visual berbasis di Surakarta. Sehari-hari berfokus membangun aplikasi web yang cepat, rapi, dan terstruktur menggunakan Next.js, TypeScript, dan Laravel.\n\nDi luar urusan kode, saya aktif mendokumentasikan kota dan lanskap lewat kamera, serta menerbangkan drone FPV untuk menangkap perspektif visual dari udara.",
 
   /** Avatar image path (place your avatar in /public/profil.jpg) */
   avatar: "/profil.jpg",

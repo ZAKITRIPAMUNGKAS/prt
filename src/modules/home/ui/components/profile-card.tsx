@@ -30,7 +30,9 @@ const ProfileCard = () => {
           </div>
 
           <div className="lg:mt-4 xl:mt-0">
-            <p className="text-text-muted text-[15px]">{siteConfig.bio}</p>
+            <p className="text-text-muted text-[14px] leading-relaxed whitespace-pre-line">
+              {siteConfig.bio}
+            </p>
           </div>
 
           <div className="absolute top-8 right-8 opacity-0 group-hover:top-6 group-hover:right-6 group-hover:opacity-100 transition-all duration-300 ease-in-out">

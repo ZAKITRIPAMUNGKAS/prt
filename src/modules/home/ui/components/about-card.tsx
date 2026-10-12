@@ -7,11 +7,11 @@ const AboutCard = () => {
         <h1 className="text-3xl">Tentang Saya</h1>
         <div className="flex flex-col gap-4 font-light text-text-muted leading-relaxed text-[15px]">
           <p>
-            Lulusan Teknik Informatika UMS yang menekuni pengembangan web dan dunia visual. Dalam rekayasa web, fokus saya ada pada performa, struktur kode yang bersih, dan kenyamanan pengguna.
+            Halo, saya Zaki Tri Pamungkas. Lulusan Teknik Informatika Universitas Muhammadiyah Surakarta (UMS) yang berfokus pada rekayasa web dan eksplorasi visual digital. Dalam pengembangan perangkat lunak, saya terbiasa menangani arsitektur frontend maupun backend — menjaga performa, struktur data yang rapi, dan kemudahan bagi pengguna akhir.
           </p>
 
           <p>
-            Di luar baris kode, saya aktif motret dan menerbangkan drone FPV untuk menangkap perspektif baru — mulai dari lanskap alam hingga dinamika jalanan.
+            Di ranah visual, kamera mirrorless dan drone FPV menjadi instrumen utama saya untuk mendokumentasikan kota, arsitektur, dan lanskap alam. Ketelitian teknis dalam menulis kode membantu saya memahami komposisi dan ritme visual, sementara kepekaan estetika memastikan aplikasi yang saya bangun terasa nyaman dan intuitif.
           </p>
         </div>
       </div>
