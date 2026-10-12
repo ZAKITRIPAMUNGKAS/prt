@@ -7,11 +7,11 @@ const AboutCard = () => {
         <h1 className="text-3xl">Tentang Saya</h1>
         <div className="flex flex-col gap-4 font-light text-text-muted leading-relaxed text-[15px]">
           <p>
-            Sebagai developer web lulusan Teknik Informatika Universitas Muhammadiyah Surakarta (UMS) sekaligus kreator visual, saya memadukan pola pikir rekayasa perangkat lunak yang sistematis dengan estetika visual. Di ranah engineering, fokus saya adalah membangun aplikasi web modern, performan, dan berorientasi pada kemudahan pengguna.
+            Lulusan Teknik Informatika UMS yang menekuni pengembangan web dan dunia visual. Dalam rekayasa web, fokus saya ada pada performa, struktur kode yang bersih, dan kenyamanan pengguna.
           </p>
 
           <p>
-            Di balik kamera dan drone FPV, saya mengeksplorasi sudut pandang unik — mulai dari lanskap, street photography, hingga video motion dinamis menggunakan Remotion. Baik melalui baris kode maupun frame visual, tujuan saya adalah menciptakan karya yang bernilai, fungsional, dan bercerita.
+            Di luar baris kode, saya aktif motret dan menerbangkan drone FPV untuk menangkap perspektif baru — mulai dari lanskap alam hingga dinamika jalanan.
           </p>
         </div>
       </div>

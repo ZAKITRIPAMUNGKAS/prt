@@ -28,7 +28,7 @@ export const siteConfig = {
   role: "Developer & Visual Maker",
 
   /** Short bio shown on the home page profile card */
-  bio: "Saya Zaki — developer web lulusan Teknik Informatika UMS, juga fotografer, pilot FPV, dan pembuat motion. Saya membangun sistem yang jelas dan merekam cerita lewat gambar.",
+  bio: "Web developer dan kreator visual. Terbiasa membangun aplikasi web modern yang rapi, fotografi lanskap/jalanan, serta visual dari drone FPV.",
 
   /** Avatar image path (place your avatar in /public/profil.jpg) */
   avatar: "/profil.jpg",
