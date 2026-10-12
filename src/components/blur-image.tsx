@@ -6,11 +6,13 @@ import { Blurhash } from "react-blurhash";
 
 interface BlurImageProps
   extends Omit<ImageProps, "onLoad" | "onLoadingComplete" | "priority"> {
-  blurhash: string;
+  blurhash?: string | null;
+  placeholderColor?: string;
 }
 
 /**
- * BlurImage component displays an image with a blurhash placeholder.
+ * BlurImage component displays an image with a blurhash placeholder,
+ * or a smooth skeleton placeholder if blurhash is not available.
  *
  * @param {string} src - The source of the image.
  * @param {string} alt - The alt text of the image.
@@ -18,7 +20,8 @@ interface BlurImageProps
  * @param {number} height - The height of the image.
  * @param {string} fill - The fill of the image.
  * @param {string} className - Optional className for the component.
- * @param {string} blurhash - The blurhash of the image.
+ * @param {string} blurhash - Optional blurhash string.
+ * @param {string} placeholderColor - Optional background color fallback.
  * @returns {JSX.Element} - The BlurImage component.
  */
 const BlurImageInner = function BlurImageInner({
@@ -29,6 +32,7 @@ const BlurImageInner = function BlurImageInner({
   fill,
   className,
   blurhash,
+  placeholderColor,
   ...props
 }: BlurImageProps) {
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -46,7 +50,8 @@ const BlurImageInner = function BlurImageInner({
     return () => window.clearTimeout(timeout);
   }, [imageLoaded]);
 
-  const showBlurhash = showPlaceholder && blurhash && blurhash.length >= 6;
+  const showBlurhash =
+    showPlaceholder && typeof blurhash === "string" && blurhash.length >= 6;
 
   return (
     <div className={containerStyle}>
@@ -68,6 +73,19 @@ const BlurImageInner = function BlurImageInner({
             punch={1}
           />
         </div>
+      )}
+      {!showBlurhash && showPlaceholder && (
+        <div
+          className={`absolute inset-0 bg-muted/60 animate-pulse ${
+            className ?? ""
+          } transition-opacity duration-500 ease-in-out ${
+            imageLoaded ? "opacity-0" : "opacity-100"
+          }`}
+          style={{
+            pointerEvents: "none",
+            backgroundColor: placeholderColor,
+          }}
+        />
       )}
       <Image
         src={src}

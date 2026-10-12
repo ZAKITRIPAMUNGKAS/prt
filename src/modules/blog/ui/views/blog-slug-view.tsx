@@ -4,7 +4,8 @@ import VectorCombined from "@/components/vector-combined";
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowDownIcon } from "lucide-react";
-import Image from "next/image";
+import BlurImage from "@/components/blur-image";
+import { Skeleton } from "@/components/ui/skeleton";
 import ContactCard from "@/components/contact-card";
 import Footer from "@/components/footer";
 import { keyToUrl } from "@/modules/s3/lib/key-to-url";
@@ -63,12 +64,13 @@ export const BlogSlugView = ({ slug }: { slug: string }) => {
     <div className="flex flex-col gap-3 lg:gap-0 lg:flex-row w-full">
       {/* LEFT CONTENT - Fixed */}
       <div className="w-full h-[50vh] lg:w-1/2 lg:fixed lg:top-0 lg:left-0 md:h-[80vh] lg:h-screen p-0 lg:p-3 group">
-        <div className="block w-full h-full relative rounded-xl overflow-hidden">
-          <Image
+        <div className="block w-full h-full relative rounded-xl overflow-hidden bg-muted">
+          <BlurImage
             src={keyToUrl(data.coverImage) || "/placeholder.svg"}
             alt={data.title}
             fill
             quality={75}
+            sizes="(max-width: 1023px) 100vw, 50vw"
             className="object-cover"
           />
 
@@ -141,6 +143,53 @@ export const BlogSlugView = ({ slug }: { slug: string }) => {
         />
 
         {/* FOOTER  */}
+        <Footer />
+      </div>
+    </div>
+  );
+};
+
+export const BlogSlugLoadingStatus = () => {
+  return (
+    <div className="flex flex-col gap-3 lg:gap-0 lg:flex-row w-full">
+      {/* LEFT SKELETON */}
+      <div className="w-full h-[50vh] lg:w-1/2 lg:fixed lg:top-0 lg:left-0 md:h-[80vh] lg:h-screen p-0 lg:p-3">
+        <Skeleton className="w-full h-full rounded-xl" />
+      </div>
+
+      {/* Spacer */}
+      <div className="hidden lg:block lg:w-1/2" />
+
+      {/* RIGHT SKELETON */}
+      <div className="w-full lg:w-1/2 space-y-3 pb-3">
+        <div className="bg-muted rounded-xl p-10 md:p-12 md:h-[calc(100vh-24px)] flex flex-col">
+          <Skeleton className="w-24 h-5 rounded-sm" />
+          <div className="mt-auto space-y-3">
+            <Skeleton className="w-3/4 h-10 rounded-lg" />
+            <Skeleton className="w-1/2 h-6 rounded-lg" />
+            <div className="mt-8">
+              <Skeleton className="w-32 h-10 rounded-lg" />
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-muted rounded-xl p-5 w-full flex justify-between">
+            <Skeleton className="w-20 h-4" />
+            <Skeleton className="w-12 h-4" />
+          </div>
+          <div className="bg-muted rounded-xl p-5 w-full flex justify-between">
+            <Skeleton className="w-20 h-4" />
+            <Skeleton className="w-24 h-4" />
+          </div>
+        </div>
+
+        <div className="bg-muted rounded-xl p-8 md:p-12 space-y-3">
+          <Skeleton className="w-full h-4" />
+          <Skeleton className="w-full h-4" />
+          <Skeleton className="w-4/5 h-4" />
+        </div>
+
         <Footer />
       </div>
     </div>

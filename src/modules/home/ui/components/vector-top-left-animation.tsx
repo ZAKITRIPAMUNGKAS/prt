@@ -1,8 +1,9 @@
 import Graphic from "@/components/graphic";
 import { PiArrowRight } from "react-icons/pi";
+import React from "react";
 
 interface Props {
-  title: string;
+  title?: React.ReactNode;
 }
 
 const VectorTopLeftAnimation = ({ title }: Props) => {
@@ -10,7 +11,7 @@ const VectorTopLeftAnimation = ({ title }: Props) => {
     <div className="relative bg-background rounded-br-[18px]">
       <div className="pt-2 px-4 pb-3 overflow-hidden">
         <div className="text-sm font-light flex items-center">
-          <p>{title}</p>
+          {typeof title === "string" ? <p>{title}</p> : title}
           <div className="w-0 group-hover:w-[24px] transition-[width] duration-300 ease-out overflow-hidden">
             <PiArrowRight size={14} className="ml-2 shrink-0" />
           </div>

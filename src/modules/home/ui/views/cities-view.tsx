@@ -39,7 +39,11 @@ export const CitiesViewLoadingStatus = () => {
           </AspectRatio>
 
           <div className="absolute top-0 left-0 z-20">
-            <VectorTopLeftAnimation title="Loading..." />
+            <VectorTopLeftAnimation
+              title={
+                <span className="inline-block w-16 h-3.5 bg-muted-foreground/20 rounded-sm animate-pulse my-0.5" />
+              }
+            />
           </div>
         </div>
       ))}

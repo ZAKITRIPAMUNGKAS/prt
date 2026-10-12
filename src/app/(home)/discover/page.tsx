@@ -4,6 +4,7 @@ import { getQueryClient } from "@/trpc/server";
 import { ErrorBoundary } from "react-error-boundary";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { DiscoverWidget } from "@/modules/discover/ui/components/discover-widget";
+import { DiscoverLoading } from "@/modules/discover/ui/views/discover-view";
 
 export const metadata = {
   title: "Discover",
@@ -17,7 +18,7 @@ const page = () => {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<p>Loading...</p>}>
+      <Suspense fallback={<DiscoverLoading />}>
         <ErrorBoundary fallback={<p>Error</p>}>
           <DiscoverWidget />
         </ErrorBoundary>

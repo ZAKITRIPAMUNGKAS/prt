@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { BlogSlugView } from "@/modules/blog/ui/views/blog-slug-view";
+import { BlogSlugView, BlogSlugLoadingStatus } from "@/modules/blog/ui/views/blog-slug-view";
 import { getQueryClient } from "@/trpc/server";
 import { trpc } from "@/trpc/server";
 import { HydrationBoundary } from "@tanstack/react-query";
@@ -37,7 +37,7 @@ export default async function page({ params }: Props) {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<p>Loading...</p>}>
+      <Suspense fallback={<BlogSlugLoadingStatus />}>
         <ErrorBoundary fallback={<p>Error</p>}>
           <BlogSlugView slug={decodedSlug} />
         </ErrorBoundary>

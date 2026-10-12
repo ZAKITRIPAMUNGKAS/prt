@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Image from "next/image";
+import BlurImage from "@/components/blur-image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
@@ -61,12 +61,11 @@ export const FeaturedProjectCover = ({ data }: FeaturedProjectCoverProps) => {
       style={{ viewTransitionName: transitionName }}
       className="block w-full h-full relative rounded-xl overflow-hidden group cursor-pointer"
     >
-      <Image
+      <BlurImage
         src={coverUrl}
         alt={data.title}
         fill
-        unoptimized
-        priority
+        sizes="(max-width: 1023px) 100vw, 50vw"
         className={cn(
           "object-cover transition-[filter] duration-300 ease-out",
           isPlaying ? "" : "group-hover:blur-xs"

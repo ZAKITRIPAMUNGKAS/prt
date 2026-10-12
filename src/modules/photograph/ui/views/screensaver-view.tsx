@@ -288,3 +288,18 @@ export const ScreensaverView = () => {
     </div>
   );
 };
+
+export const ScreensaverLoadingStatus = () => {
+  return (
+    <div className="fixed inset-0 bg-background overflow-hidden flex items-center justify-center">
+      <div className="w-full h-full grid grid-cols-2 md:grid-cols-4 grid-rows-4 gap-1 p-1">
+        {Array.from({ length: 16 }).map((_, i) => (
+          <div
+            key={i}
+            className="w-full h-full bg-muted/40 animate-pulse rounded-sm"
+          />
+        ))}
+      </div>
+    </div>
+  );
+};

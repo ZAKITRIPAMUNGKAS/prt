@@ -9,6 +9,8 @@ import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { PhotoLightbox, usePhotoLightbox } from "@/components/photo-lightbox";
+import { Skeleton } from "@/components/ui/skeleton";
+import CardContainer from "@/components/card-container";
 
 interface Props {
   city: string;
@@ -165,6 +167,51 @@ export const CityView = ({ city }: Props) => {
         onClose={closePhoto}
         onNavigate={setActivePhotoId}
       />
+    </div>
+  );
+};
+
+export const CityViewLoadingStatus = () => {
+  return (
+    <div className="size-full">
+      <div className="flex flex-col gap-3 lg:gap-0 lg:flex-row w-full">
+        {/* LEFT SKELETON */}
+        <div className="w-full h-[70vh] lg:w-1/2 lg:fixed lg:top-0 lg:left-0 lg:h-screen p-0 lg:p-3">
+          <Skeleton className="w-full h-full rounded-xl" />
+        </div>
+
+        {/* Spacer */}
+        <div className="hidden lg:block lg:w-1/2" />
+
+        {/* RIGHT SKELETON */}
+        <div className="w-full lg:w-1/2 space-y-3 pb-3">
+          <CardContainer>
+            <div className="flex flex-col p-8 md:p-12 gap-6">
+              <Skeleton className="w-48 h-8 rounded-lg" />
+              <div className="space-y-2">
+                <Skeleton className="w-full h-4" />
+                <Skeleton className="w-3/4 h-4" />
+              </div>
+            </div>
+          </CardContainer>
+
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-3">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="space-y-2 rounded-xl">
+                <div className="bg-muted p-4 rounded-xl flex items-center justify-center">
+                  <Skeleton className="w-full aspect-4/3 rounded-lg" />
+                </div>
+                <div className="flex flex-col items-center gap-1.5 pt-1">
+                  <Skeleton className="w-24 h-4" />
+                  <Skeleton className="w-16 h-3" />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <Footer />
+        </div>
+      </div>
     </div>
   );
 };

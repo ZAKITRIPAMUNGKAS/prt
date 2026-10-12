@@ -3,7 +3,10 @@ import { trpc } from "@/trpc/server";
 import { getQueryClient } from "@/trpc/server";
 import { ErrorBoundary } from "react-error-boundary";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { ScreensaverView } from "@/modules/photograph/ui/views/screensaver-view";
+import {
+  ScreensaverView,
+  ScreensaverLoadingStatus,
+} from "@/modules/photograph/ui/views/screensaver-view";
 
 export const metadata = {
   title: "Screensaver",
@@ -16,7 +19,7 @@ const page = () => {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<p>Loading...</p>}>
+      <Suspense fallback={<ScreensaverLoadingStatus />}>
         <ErrorBoundary fallback={<p>Error</p>}>
           <ScreensaverView />
         </ErrorBoundary>
