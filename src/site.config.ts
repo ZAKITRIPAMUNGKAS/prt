@@ -97,14 +97,14 @@ export const siteConfig = {
   imageLoader: "default" as "cloudflare" | "default",
 
   /**
-   * Gear / equipment shown on the About page.
+   * Workstation & equipment shown on the About page.
    * Each item has a brand and model name.
    */
   gear: [
-    { brand: "SONY", model: "Alpha 6400", type: "Kamera Mirrorless" },
-    { brand: "DJI", model: "Mini 4 Pro", type: "Aerial Photo Drone" },
-    { brand: "BETAFPV", model: "Pavo 20 Pro (DJI O4)", type: "Indoor Cinewhoop FPV" },
-    { brand: "iFlight", model: "Nazgul Evoque F5X", type: "5-inch High-Power FPV" },
+    { brand: "ASUS", model: "ROG Strix G15 (Ryzen 7 6800H, RTX 3060)", type: "Main Laptop Workstation" },
+    { brand: "Microsoft", model: "Windows 11 & WSL2 Linux", type: "Operating System & Dev Environment" },
+    { brand: "VS Code", model: "TypeScript, Turbopack & AI Workflows", type: "Primary Development IDE" },
+    { brand: "Peripherals", model: "High-Refresh Display & Precision Setup", type: "Daily Productivity Gear" },
   ],
 } as const;
 
