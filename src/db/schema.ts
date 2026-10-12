@@ -246,3 +246,45 @@ export type Post = InferSelectModel<typeof posts>;
 export const postsInsertSchema = createInsertSchema(posts);
 export const postsSelectSchema = createSelectSchema(posts);
 export const postsUpdateSchema = createUpdateSchema(posts);
+
+/***************
+ ***************
+ * Project Table *
+ ***************
+ ***************/
+
+export const projects = pgTable(
+  "projects",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    slug: text("slug").notNull().unique(),
+    title: text("title").notNull(),
+    summary: text("summary").notNull(),
+    role: text("role").notNull(),
+    stack: text("stack").array().notNull().default(sql`'{}'::text[]`),
+    year: text("year").notNull(),
+    duration: text("duration").notNull(),
+    coverKey: text("cover_key").notNull(),
+    repoUrl: text("repo_url"),
+    liveUrl: text("live_url"),
+    body: text("body").notNull(),
+    featured: boolean("featured").default(false).notNull(),
+    order: integer("order").default(0).notNull(),
+
+    ...timestamps,
+  },
+  (t) => [
+    uniqueIndex("projects_slug_idx").on(t.slug),
+    index("projects_featured_idx").on(t.featured),
+    index("projects_order_idx").on(t.order),
+  ]
+);
+
+// Types
+export type Project = InferSelectModel<typeof projects>;
+
+// Schemas
+export const projectsInsertSchema = createInsertSchema(projects);
+export const projectsSelectSchema = createSelectSchema(projects);
+export const projectsUpdateSchema = createUpdateSchema(projects);
+

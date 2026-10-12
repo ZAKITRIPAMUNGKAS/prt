@@ -4,6 +4,7 @@ import {
   IconUser,
   IconBuildingPavilion,
   IconNotebook,
+  IconBriefcase,
 } from "@tabler/icons-react";
 
 interface IconMapProps {
@@ -22,6 +23,8 @@ const IconMap = ({ icon }: IconMapProps) => {
       return <IconBuildingPavilion />;
     case "post":
       return <IconNotebook />;
+    case "project":
+      return <IconBriefcase />;
     default:
       return <IconLayoutDashboard />;
   }

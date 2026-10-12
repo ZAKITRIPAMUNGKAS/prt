@@ -24,6 +24,7 @@ const Footer = () => {
           links={[
             { title: "Home", href: "/" },
             { title: "Travel", href: "/travel" },
+            { title: "Projects", href: "/projects" },
             { title: "Discover", href: "/discover" },
             { title: "Blog", href: "/blog" },
             { title: "About", href: "/about" },

@@ -6,6 +6,11 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import ProfileCard from "@/modules/home/ui/components/profile-card";
 import LatestTravelCard from "@/modules/home/ui/components/latest-travel-card";
+import { LatestProjectsCard } from "@/modules/projects/ui/components/latest-projects-card";
+import {
+  ProjectsHomeView,
+  ProjectsHomeLoadingStatus,
+} from "@/modules/projects/ui/views/projects-home-view";
 import Footer from "@/components/footer";
 
 import {
@@ -24,6 +29,9 @@ const page = async () => {
   );
   void queryClient.prefetchQuery(
     trpc.home.getCitySets.queryOptions({ limit: 12 })
+  );
+  void queryClient.prefetchQuery(
+    trpc.projects.getMany.queryOptions({ limit: 3 })
   );
 
   return (
@@ -51,6 +59,16 @@ const page = async () => {
           <Suspense fallback={<CitiesViewLoadingStatus />}>
             <ErrorBoundary fallback={<p>Something went wrong</p>}>
               <CitiesView />
+            </ErrorBoundary>
+          </Suspense>
+
+          {/* LATEST PROJECTS CARD */}
+          <LatestProjectsCard />
+
+          {/* PROJECTS VIEW */}
+          <Suspense fallback={<ProjectsHomeLoadingStatus />}>
+            <ErrorBoundary fallback={<p>Something went wrong</p>}>
+              <ProjectsHomeView />
             </ErrorBoundary>
           </Suspense>
 

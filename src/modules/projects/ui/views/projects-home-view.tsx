@@ -1,0 +1,47 @@
+"use client";
+
+import { useTRPC } from "@/trpc/client";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Skeleton } from "@/components/ui/skeleton";
+import VectorTopLeftAnimation from "@/modules/home/ui/components/vector-top-left-animation";
+import { ProjectCard } from "../components/project-card";
+
+export const ProjectsHomeView = () => {
+  const trpc = useTRPC();
+  const { data } = useSuspenseQuery(
+    trpc.projects.getMany.queryOptions({ limit: 3 })
+  );
+
+  if (!data || data.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="w-full grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-3">
+      {data.map((project) => (
+        <ProjectCard key={project.id} project={project} />
+      ))}
+    </div>
+  );
+};
+
+export const ProjectsHomeLoadingStatus = () => {
+  return (
+    <div className="w-full grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-3">
+      {Array.from({ length: 3 }).map((_, index) => (
+        <div key={index} className="w-full relative group cursor-pointer">
+          <AspectRatio
+            ratio={0.75 / 1}
+            className="overflow-hidden rounded-lg relative"
+          >
+            <Skeleton className="w-full h-full" />
+          </AspectRatio>
+          <div className="absolute top-0 left-0 z-20">
+            <VectorTopLeftAnimation title="Loading..." />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};

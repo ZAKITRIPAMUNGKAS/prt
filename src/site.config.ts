@@ -13,49 +13,49 @@ import type { ContactCardTitle } from "@/components/contact-card";
 
 export const siteConfig = {
   /** Site name used in metadata, logo, and branding */
-  name: "Sera",
+  name: "Tepe",
 
   /** Tagline shown alongside name (e.g. "Photo", "Photography") */
-  tagline: "Photo",
+  tagline: "Studio",
 
   /** Your role/title shown in profile cards and footer */
-  role: "Photographer",
+  role: "Developer & Visual Maker",
 
   /** Short bio shown on the home page profile card */
-  bio: "I'm Sera, a photographer dedicated to capturing authentic moments and telling stories through creative and emotional imagery, wherever my journey takes me.",
+  bio: "Saya Zaki — developer web lulusan Teknik Informatika UMS, juga fotografer, pilot FPV, dan pembuat motion. Saya membangun sistem yang jelas dan merekam cerita lewat gambar.",
 
   /** Avatar image path (place your avatar in /public/avatar.jpg) */
   avatar: "/avatar.jpg",
 
   /** Initials used as avatar fallback */
-  initials: "EC",
+  initials: "ZT",
 
   /** Site metadata for SEO */
   metadata: {
     title: {
-      template: "%s - Sera Photography",
-      default: "Sera Photography",
+      template: "%s - Tepe",
+      default: "Tepe — Zaki Tri Pamungkas",
     },
-    description: "Sera Photography",
+    description: "Portofolio Zaki Tri Pamungkas: web development, fotografi, FPV, dan motion.",
   },
 
   /** Social links shown in profile card and footer */
   socialLinks: [
     {
       title: "Instagram",
-      href: "https://instagram.com/ekkooooooooooo0o0",
+      href: "https://instagram.com/[USERNAME_INSTAGRAM]",
     },
     {
       title: "GitHub",
-      href: "https://github.com/ecarry",
+      href: "https://github.com/ZAKITRIPAMUNGKAS",
     },
     {
-      title: "Xiaohongshu",
-      href: "https://www.xiaohongshu.com/user/profile/66c84ba2000000001b01b3f1",
+      title: "LinkedIn",
+      href: "https://www.linkedin.com/in/[USERNAME_LINKEDIN]",
     },
     {
       title: "Contact me",
-      href: "mailto:lianshiliang93@gmail.com",
+      href: "mailto:[EMAIL_KAMU]",
       /** If true, this link gets the primary button style */
       primary: true,
     },
@@ -88,18 +88,17 @@ export const siteConfig = {
    * Set to "cloudflare" to use the Cloudflare custom image loader,
    * or "default" to use Next.js built-in image optimization.
    */
-  imageLoader: "cloudflare" as "cloudflare" | "default",
+  imageLoader: "default" as "cloudflare" | "default",
 
   /**
    * Gear / equipment shown on the About page.
    * Each item has a brand and model name.
    */
   gear: [
-    { brand: "SONY", model: "Alpha 7RⅡ" },
-    { brand: "DJI", model: "Air 2S" },
-    { brand: "Tamron", model: "50-400mm F/4.5-6.3 Di III VC VXD" },
-    { brand: "Sigma", model: "35mm F/1.4 DG HSM" },
-    { brand: "Viltrox", model: "AF 40mm F/2.5 FE" },
+    { brand: "SONY", model: "Alpha 6400" },
+    { brand: "DJI", model: "Mini 4 Pro" },
+    { brand: "BETAFPV", model: "Pavo 20 Pro (DJI O4)" },
+    { brand: "iFlight", model: "Nazgul Evoque F5X" },
   ],
 } as const;
 
