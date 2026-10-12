@@ -8,6 +8,7 @@ import ContactCard from "@/components/contact-card";
 import { PostsSection } from "../components/blog-items";
 import { LatestPostSection } from "../components/latest-blog-section";
 import { Skeleton } from "@/components/ui/skeleton";
+import { siteConfig } from "@/site.config";
 
 export const BlogView = () => {
   const trpc = useTRPC();
@@ -42,14 +43,18 @@ export const BlogView = () => {
         <PostsSection data={data} />
 
         {/* CONTACT CARDS  */}
-        <div className="w-full grid grid-cols-2 gap-3 mt-3">
-          <ContactCard title="Instagram" />
-          <ContactCard title="GitHub" />
-          <ContactCard title="X" />
-          <ContactCard
-            title="Contact me"
-            className="bg-primary hover:bg-primary-hover text-white dark:text-black"
-          />
+        <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+          {siteConfig.socialLinks.map((link) => (
+            <ContactCard
+              key={link.title}
+              title={link.title}
+              href={link.href}
+              {...(link.primary && {
+                className:
+                  "bg-primary text-white dark:text-black hover:bg-primary",
+              })}
+            />
+          ))}
         </div>
 
         {/* FOOTER  */}
@@ -74,9 +79,9 @@ export const BlogViewLoadingStatus = () => {
       <div className="w-full lg:w-1/2 space-y-3 pb-3">
         {/* DESCRIPTION CARD SKELETON */}
         <CardContainer>
-          <div className="flex flex-col p-12 gap-[128px]">
+          <div className="flex flex-col p-8 md:p-12 gap-8 md:gap-16">
             <h1 className="text-3xl">Blog</h1>
-            <div className="flex flex-col gap-4 font-light">
+            <div className="flex flex-col gap-4 font-light text-text-muted leading-relaxed text-[15px]">
               <p>
                 Selamat datang di blog saya. Di sini saya menuliskan pemikiran, catatan teknis seputar web development, studi kasus rekayasa sistem, serta cerita di balik foto dan proyek visual.
               </p>
@@ -85,8 +90,7 @@ export const BlogViewLoadingStatus = () => {
         </CardContainer>
 
         {/* POST LIST SKELETON */}
-
-        <div className="w-full grid grid-cols-1 xl:grid-cols-2 gap-3">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-3">
           {Array.from({ length: 4 }).map((_, index) => (
             <div key={index} className="aspect-3/4 rounded-xl overflow-hidden">
               <Skeleton className="w-full h-full" />
@@ -95,14 +99,18 @@ export const BlogViewLoadingStatus = () => {
         </div>
 
         {/* CONTACT CARDS  */}
-        <div className="w-full grid grid-cols-2 gap-3 mt-3">
-          <ContactCard title="Instagram" />
-          <ContactCard title="GitHub" />
-          <ContactCard title="X" />
-          <ContactCard
-            title="Contact me"
-            className="bg-primary hover:bg-primary-hover text-white dark:text-black"
-          />
+        <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+          {siteConfig.socialLinks.map((link) => (
+            <ContactCard
+              key={link.title}
+              title={link.title}
+              href={link.href}
+              {...(link.primary && {
+                className:
+                  "bg-primary text-white dark:text-black hover:bg-primary",
+              })}
+            />
+          ))}
         </div>
 
         {/* FOOTER  */}
