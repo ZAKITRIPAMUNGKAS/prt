@@ -18,12 +18,6 @@ export const siteConfig = {
   /** Tagline shown alongside name (e.g. "Photo", "Photography") */
   tagline: "Studio",
 
-  /** Logo rotating brand labels in header navbar */
-  logoBrands: {
-    primary: "gemala.dev",
-    secondary: "gemala.creative",
-  },
-
   /** Your role/title shown in profile cards and footer */
   role: "Developer & Visual Maker",
 

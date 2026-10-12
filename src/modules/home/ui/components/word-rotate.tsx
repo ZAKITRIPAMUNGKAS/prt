@@ -18,31 +18,21 @@ interface Props {
  */
 
 const WordRotate = ({ label, label2, style }: Props) => {
-  const longest = label.length >= (label2?.length ?? 0) ? label : (label2 ?? label);
-
   return (
     <div
-      className="relative inline-flex items-center overflow-hidden"
-      style={{ lineHeight: 1 }}
+      className="relative inline-block overflow-hidden min-w-14"
+      style={{ lineHeight: 0.75 }}
     >
       <div
-        className={cn("relative inline-grid text-sm font-light", style)}
+        className={cn("relative inline-block group text-sm font-light", style)}
       >
-        {/* Invisible sizer to ensure the container always fits the longer text */}
-        <span
-          aria-hidden="true"
-          className="invisible select-none opacity-0 pointer-events-none whitespace-nowrap col-start-1 row-start-1"
-        >
-          {longest}
-        </span>
-
-        {/* Default Text (moves down on hover) */}
-        <span className="col-start-1 row-start-1 transform transition-transform duration-300 ease-in-out group-hover:translate-y-full whitespace-nowrap">
+        {/* Default Text (visible initially, moves down on hover) */}
+        <span className="block transform transition-transform duration-300 ease-in-out group-hover:translate-y-full">
           {label}
         </span>
 
-        {/* Hover Text (moves in from above on hover) */}
-        <span className="col-start-1 row-start-1 transform -translate-y-full transition-transform duration-300 ease-in-out group-hover:translate-y-0 whitespace-nowrap">
+        {/* Hover Text (hidden initially, moves up on hover) */}
+        <span className="absolute inset-0 transform -translate-y-full transition-transform duration-300 ease-in-out group-hover:translate-y-0">
           {label2 || label}
         </span>
       </div>
