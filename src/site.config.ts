@@ -13,7 +13,7 @@ import type { ContactCardTitle } from "@/components/contact-card";
 
 export const siteConfig = {
   /** Site name used in metadata, logo, and branding */
-  name: "Tepe",
+  name: "Zaki Tri Pamungkas",
 
   /** Tagline shown alongside name (e.g. "Photo", "Photography") */
   tagline: "Studio",
@@ -28,7 +28,7 @@ export const siteConfig = {
   role: "Developer & Visual Maker",
 
   /** Short bio shown on the home page profile card */
-  bio: "Saya Zaki Tri Pamungkas — web developer dan kreator visual berbasis di Surakarta. Sehari-hari berfokus membangun aplikasi web yang cepat, rapi, dan terstruktur menggunakan Next.js, TypeScript, dan Laravel. Di luar urusan kode, saya aktif mendokumentasikan kota dan lanskap lewat kamera, serta menerbangkan drone FPV untuk menangkap perspektif visual dari udara.",
+  bio: "Web developer dan kreator visual berbasis di Surakarta. Berfokus membangun aplikasi web yang cepat, rapi, dan terstruktur menggunakan Next.js, TypeScript, dan Laravel — serta mendokumentasikan lanskap kota lewat kamera dan drone FPV.",
 
   /** Avatar image path (place your avatar in /public/profil.jpg) */
   avatar: "/profil.jpg",

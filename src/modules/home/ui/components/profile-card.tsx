@@ -13,24 +13,24 @@ const ProfileCard = () => {
       <div className="col-span-1 md:col-span-2 lg:col-span-1 xl:col-span-2">
         <Link
           href="/about"
-          className="flex flex-col justify-between gap-6 p-6 lg:p-10 xl:gap-0 bg-muted hover:bg-muted-foreground/10 transition-all duration-150 ease-[cubic-bezier(0.22, 1, 0.36, 1)] rounded-xl font-light relative group h-full"
+          className="flex flex-col justify-between gap-6 p-6 lg:p-8 bg-muted hover:bg-muted-foreground/10 transition-all duration-150 ease-[cubic-bezier(0.22, 1, 0.36, 1)] rounded-xl font-light relative group h-full"
         >
           <div className="flex gap-4 items-center">
             {/* AVATAR  */}
-            <Avatar className="size-[60px]">
+            <Avatar className="size-[60px] shrink-0">
               <AvatarImage src={siteConfig.avatar} alt="Avatar" />
               <AvatarFallback>{siteConfig.initials}</AvatarFallback>
             </Avatar>
 
             {/* NAME  */}
-            <div className="flex flex-col gap-[2px]">
-              <h1 className="text-lg">{siteConfig.name}</h1>
+            <div className="flex flex-col gap-0.5">
+              <h1 className="text-lg font-medium">{siteConfig.name}</h1>
               <p className="text-sm text-text-muted">{siteConfig.role}</p>
             </div>
           </div>
 
-          <div className="lg:mt-4 xl:mt-0">
-            <p className="text-text-muted text-[14px] leading-relaxed whitespace-pre-line">
+          <div className="mt-2">
+            <p className="text-text-muted text-[14px] leading-relaxed">
               {siteConfig.bio}
             </p>
           </div>

@@ -43,7 +43,7 @@ const Footer = () => {
       {/* Copyright */}
       <div className="text-xs md:text-sm text-center md:text-left">
         <p className="opacity-60">
-          © {new Date().getFullYear()} {siteConfig.name} — Zaki Tri Pamungkas. All rights reserved.
+          © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
         </p>
       </div>
     </div>
