@@ -25,15 +25,21 @@ const nextConfig: NextConfig = {
       loader: "custom",
       loaderFile: "./src/lib/cloudflare-image-loader.ts",
     }),
-    remotePatterns: s3Hostname
-      ? [
-          {
-            protocol: s3Protocol as "http" | "https",
-            hostname: s3Hostname,
-            port: s3Url?.port || "",
-          },
-        ]
-      : [],
+    remotePatterns: [
+      ...(s3Hostname
+        ? [
+            {
+              protocol: s3Protocol as "http" | "https",
+              hostname: s3Hostname,
+              port: s3Url?.port || "",
+            },
+          ]
+        : []),
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+    ],
   },
 };
 
