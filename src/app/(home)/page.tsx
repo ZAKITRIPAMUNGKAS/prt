@@ -4,19 +4,7 @@ import { getQueryClient } from "@/trpc/server";
 import { ErrorBoundary } from "react-error-boundary";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-import ProfileCard from "@/modules/home/ui/components/profile-card";
-import LatestTravelCard from "@/modules/home/ui/components/latest-travel-card";
-import { LatestProjectsCard } from "@/modules/projects/ui/components/latest-projects-card";
-import {
-  ProjectsHomeView,
-  ProjectsHomeLoadingStatus,
-} from "@/modules/projects/ui/views/projects-home-view";
-import Footer from "@/components/footer";
-
-import {
-  CitiesView,
-  CitiesViewLoadingStatus,
-} from "@/modules/home/ui/views/cities-view";
+import HomeSections from "@/modules/home/ui/components/home-sections";
 import {
   SliderViewLoadingStatus,
   SliderView,
@@ -47,33 +35,8 @@ const page = async () => {
         </div>
         {/* Spacer for fixed left content */}
         <div className="hidden lg:block lg:w-1/2" />
-        {/* RIGHT CONTENT - Scrollable */}
-        <div className="w-full mt-3 lg:mt-0 lg:w-1/2 space-y-3 pb-3">
-          {/* PROFILE CARD  */}
-          <ProfileCard />
-
-          {/* LAST TRAVEL CARD  */}
-          <LatestTravelCard />
-
-          {/* CITY SETS CARD  */}
-          <Suspense fallback={<CitiesViewLoadingStatus />}>
-            <ErrorBoundary fallback={<p>Something went wrong</p>}>
-              <CitiesView />
-            </ErrorBoundary>
-          </Suspense>
-
-          {/* LATEST PROJECTS CARD */}
-          <LatestProjectsCard />
-
-          {/* PROJECTS VIEW */}
-          <Suspense fallback={<ProjectsHomeLoadingStatus />}>
-            <ErrorBoundary fallback={<p>Something went wrong</p>}>
-              <ProjectsHomeView />
-            </ErrorBoundary>
-          </Suspense>
-
-          <Footer />
-        </div>
+        {/* RIGHT CONTENT - Filterable Bento Sections */}
+        <HomeSections />
       </div>
     </HydrationBoundary>
   );

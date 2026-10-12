@@ -95,10 +95,10 @@ export const siteConfig = {
    * Each item has a brand and model name.
    */
   gear: [
-    { brand: "SONY", model: "Alpha 6400" },
-    { brand: "DJI", model: "Mini 4 Pro" },
-    { brand: "BETAFPV", model: "Pavo 20 Pro (DJI O4)" },
-    { brand: "iFlight", model: "Nazgul Evoque F5X" },
+    { brand: "SONY", model: "Alpha 6400", type: "Kamera Mirrorless" },
+    { brand: "DJI", model: "Mini 4 Pro", type: "Aerial Photo Drone" },
+    { brand: "BETAFPV", model: "Pavo 20 Pro (DJI O4)", type: "Indoor Cinewhoop FPV" },
+    { brand: "iFlight", model: "Nazgul Evoque F5X", type: "5-inch High-Power FPV" },
   ],
 } as const;
 
