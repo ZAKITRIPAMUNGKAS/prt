@@ -56,15 +56,8 @@ const AboutPage = () => {
         {siteConfig.gear.map((item) => (
           <CardContainer key={`${item.brand}-${item.model}`}>
             <div className="flex items-center justify-between p-6">
-              <div className="flex flex-col">
-                <h1 className="text-lg font-medium">{item.brand}</h1>
-                {"type" in item && (
-                  <span className="text-xs text-text-muted font-light">
-                    {item.type}
-                  </span>
-                )}
-              </div>
-              <p className="text-sm font-light text-foreground">{item.model}</p>
+              <h1 className="text-lg">{item.brand}</h1>
+              <p className="text-sm">{item.model}</p>
             </div>
           </CardContainer>
         ))}

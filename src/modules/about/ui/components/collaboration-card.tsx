@@ -1,6 +1,5 @@
 import CardContainer from "@/components/card-container";
 import { PiArrowUpRight } from "react-icons/pi";
-import { ProjectInquiryDialog } from "@/components/project-inquiry-dialog";
 
 export const CollaborationCard = () => {
   return (
@@ -47,18 +46,6 @@ export const CollaborationCard = () => {
               Fotografi visual, pilot drone FPV, dan video motion dinamis (Remotion).
             </p>
           </a>
-        </div>
-
-        <div className="pt-2">
-          <ProjectInquiryDialog>
-            <button
-              type="button"
-              className="w-full py-3.5 px-4 bg-primary text-white dark:text-black hover:bg-primary-hover font-light text-sm rounded-xl transition-colors flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <span>Konsultasi & Mulai Diskusi Proyek</span>
-              <span className="text-xs">&rarr;</span>
-            </button>
-          </ProjectInquiryDialog>
         </div>
       </div>
     </CardContainer>
