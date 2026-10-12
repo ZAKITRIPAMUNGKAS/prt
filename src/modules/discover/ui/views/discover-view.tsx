@@ -21,7 +21,7 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
-
+import { PhotoLightbox, usePhotoLightbox } from "@/components/photo-lightbox";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const DiscoverLoading = () => {
@@ -45,6 +45,8 @@ export const DiscoverView = () => {
   const { data } = useSuspenseQuery(
     trpc.discover.getManyPhotos.queryOptions({})
   );
+
+  const { activePhotoId, openPhoto, closePhoto, setActivePhotoId } = usePhotoLightbox();
 
   const isMobile = useIsMobile();
   const [selectedPhotos, setSelectedPhotos] = useState<PhotoPoint[]>([]);
@@ -169,7 +171,12 @@ export const DiscoverView = () => {
         id: photo.id,
         longitude: photo.longitude!,
         latitude: photo.latitude!,
-        popupContent: <PhotoPopup photo={photo} />,
+        popupContent: (
+          <PhotoPopup
+            photo={photo}
+            onClick={() => openPhoto(photo.id)}
+          />
+        ),
         element: (
           <PhotoMarker
             photo={photo}
@@ -182,7 +189,7 @@ export const DiscoverView = () => {
     });
 
     return result;
-  }, [clusters, singlePhotos, handleSelectPhotos]);
+  }, [clusters, singlePhotos, handleSelectPhotos, openPhoto]);
 
   const hasSelection = selectedPhotos.length > 0;
 
@@ -226,8 +233,21 @@ export const DiscoverView = () => {
                   )}
                 >
                   {selectedPhotos.map((photo) => (
-                    <div key={photo.id} className="space-y-2">
-                      <div className="flex items-center justify-center bg-gray-50 dark:bg-muted h-[80vh] p-10">
+                    <div
+                      key={photo.id}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => openPhoto(photo.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          openPhoto(photo.id);
+                        }
+                      }}
+                      className="space-y-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl transition-transform active:scale-[0.99]"
+                      aria-label={`View photo: ${photo.title}`}
+                    >
+                      <div className="flex items-center justify-center bg-gray-50 dark:bg-muted h-[80vh] p-10 rounded-xl">
                         <FramedPhoto
                           src={photo.url}
                           alt={photo.title}
@@ -271,7 +291,20 @@ export const DiscoverView = () => {
               </DrawerHeader>
               <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-6 hide-scrollbar">
                 {selectedPhotos.map((photo) => (
-                  <div key={photo.id} className="space-y-2">
+                  <div
+                    key={photo.id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => openPhoto(photo.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        openPhoto(photo.id);
+                      }
+                    }}
+                    className="space-y-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
+                    aria-label={`View photo: ${photo.title}`}
+                  >
                     <div className="flex items-center justify-center bg-gray-50 dark:bg-muted p-4 rounded-xl">
                       <FramedPhoto
                         src={photo.url}
@@ -298,6 +331,14 @@ export const DiscoverView = () => {
           </DrawerContent>
         </Drawer>
       )}
+
+      {/* Full-screen Photo Lightbox with EXIF panel */}
+      <PhotoLightbox
+        photos={data}
+        activePhotoId={activePhotoId}
+        onClose={closePhoto}
+        onNavigate={setActivePhotoId}
+      />
     </div>
   );
 };

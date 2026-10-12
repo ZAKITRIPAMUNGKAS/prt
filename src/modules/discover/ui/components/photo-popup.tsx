@@ -4,10 +4,23 @@ import type { PhotoPoint } from "@/modules/discover/lib/clustering";
 
 interface PhotoPopupProps {
   photo: PhotoPoint;
+  onClick?: () => void;
 }
 
-export const PhotoPopup = ({ photo }: PhotoPopupProps) => (
-  <div className="w-64 h-64">
+export const PhotoPopup = ({ photo, onClick }: PhotoPopupProps) => (
+  <div
+    className="w-64 h-64 cursor-pointer focus-visible:outline-none"
+    role="button"
+    tabIndex={0}
+    onClick={onClick}
+    onKeyDown={(e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        onClick?.();
+      }
+    }}
+    aria-label={`View photo: ${photo.title}`}
+  >
     <BlurImage
       src={keyToUrl(photo.url)}
       alt={photo.title}

@@ -14,9 +14,22 @@ export const travelRouter = createTRPCRouter({
         city: citySets.city,
         coverPhotoId: citySets.coverPhotoId,
         coverPhoto: {
+          id: photos.id,
           url: photos.url,
           title: photos.title,
           blurData: photos.blurData,
+          width: photos.width,
+          height: photos.height,
+          make: photos.make,
+          model: photos.model,
+          lensModel: photos.lensModel,
+          focalLength: photos.focalLength,
+          focalLength35mm: photos.focalLength35mm,
+          fNumber: photos.fNumber,
+          iso: photos.iso,
+          exposureTime: photos.exposureTime,
+          dateTimeOriginal: photos.dateTimeOriginal,
+          placeFormatted: photos.placeFormatted,
         },
       })
       .from(citySets)

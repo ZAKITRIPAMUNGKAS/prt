@@ -11,12 +11,14 @@ import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { ImageOff } from "lucide-react";
+import { PhotoLightbox, usePhotoLightbox } from "@/components/photo-lightbox";
 
 export const SliderView = () => {
   const trpc = useTRPC();
   const { data: photos } = useSuspenseQuery(
     trpc.home.getManyLikePhotos.queryOptions({ limit: 10 })
   );
+  const { activePhotoId, openPhoto, closePhoto, setActivePhotoId } = usePhotoLightbox();
 
   if (photos.length === 0) {
     return (
@@ -35,29 +37,51 @@ export const SliderView = () => {
   }
 
   return (
-    <Carousel
-      className="absolute top-0 left-0 w-full h-full rounded-xl"
-      containerClassName="h-full"
-    >
-      {photos.map((photo, index) => {
-        const isFirstSlide = index === 0;
+    <>
+      <Carousel
+        className="absolute top-0 left-0 w-full h-full rounded-xl"
+        containerClassName="h-full"
+      >
+        {photos.map((photo, index) => {
+          const isFirstSlide = index === 0;
 
-        return (
-          <div key={photo.id} className="flex-[0_0_100%] h-full relative">
-            <BlurImage
-              src={keyToUrl(photo.url)}
-              alt={photo.title}
-              fill
-              sizes="(max-width: 1023px) 100vw, 50vw"
-              loading={isFirstSlide ? "eager" : "lazy"}
-              fetchPriority={isFirstSlide ? "high" : undefined}
-              blurhash={photo.blurData}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        );
-      })}
-    </Carousel>
+          return (
+            <div
+              key={photo.id}
+              role="button"
+              tabIndex={0}
+              onClick={() => openPhoto(photo.id)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  openPhoto(photo.id);
+                }
+              }}
+              className="flex-[0_0_100%] h-full relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              aria-label={`View photo: ${photo.title}`}
+            >
+              <BlurImage
+                src={keyToUrl(photo.url)}
+                alt={photo.title}
+                fill
+                sizes="(max-width: 1023px) 100vw, 50vw"
+                loading={isFirstSlide ? "eager" : "lazy"}
+                fetchPriority={isFirstSlide ? "high" : undefined}
+                blurhash={photo.blurData}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          );
+        })}
+      </Carousel>
+
+      <PhotoLightbox
+        photos={photos}
+        activePhotoId={activePhotoId}
+        onClose={closePhoto}
+        onNavigate={setActivePhotoId}
+      />
+    </>
   );
 };
 

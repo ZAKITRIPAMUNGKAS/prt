@@ -8,7 +8,7 @@ import { keyToUrl } from "@/modules/s3/lib/key-to-url";
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import Link from "next/link";
+import { PhotoLightbox, usePhotoLightbox } from "@/components/photo-lightbox";
 
 interface Props {
   city: string;
@@ -17,6 +17,8 @@ interface Props {
 export const CityView = ({ city }: Props) => {
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(trpc.travel.getOne.queryOptions({ city }));
+
+  const { activePhotoId, openPhoto, closePhoto, setActivePhotoId } = usePhotoLightbox();
 
   const coverPhoto = data.photos.find((item) => data.coverPhotoId === item.id);
   const coverPhotoDate = coverPhoto?.dateTimeOriginal
@@ -32,7 +34,19 @@ export const CityView = ({ city }: Props) => {
       <div className="flex flex-col gap-3 lg:gap-0 lg:flex-row w-full">
         {/* LEFT CONTENT - Fixed */}
         <div className="w-full h-[70vh] lg:w-1/2 lg:fixed lg:top-0 lg:left-0 lg:h-screen p-0 lg:p-3">
-          <div className="w-full h-full relative">
+          <div
+            className="w-full h-full relative cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
+            role="button"
+            tabIndex={0}
+            onClick={() => coverPhoto && openPhoto(coverPhoto.id)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                if (coverPhoto) openPhoto(coverPhoto.id);
+              }
+            }}
+            aria-label={`View cover photo: ${data.city}`}
+          >
             <BlurImage
               src={keyToUrl(coverPhoto?.url) || "/placeholder.svg"}
               alt={data.city}
@@ -40,7 +54,7 @@ export const CityView = ({ city }: Props) => {
               quality={75}
               blurhash={coverPhoto?.blurData || ""}
               sizes="75vw"
-              className="object-cover rounded-xl overflow-hidden"
+              className="object-cover rounded-xl overflow-hidden transition-all duration-300 group-hover:brightness-95"
             />
             <div className="absolute right-0 bottom-0">
               <VectorCombined title={data.city} position="bottom-right" />
@@ -100,10 +114,19 @@ export const CityView = ({ city }: Props) => {
           {/* IMAGES  */}
           <div className="w-full space-y-2">
             {data.photos?.map((photo) => (
-              <Link
-                href={`/p/${photo.id}`}
+              <div
                 key={photo.id}
-                className="space-y-2"
+                role="button"
+                tabIndex={0}
+                onClick={() => openPhoto(photo.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    openPhoto(photo.id);
+                  }
+                }}
+                className="space-y-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl transition-transform active:scale-[0.99]"
+                aria-label={`View photo: ${photo.title}`}
               >
                 <div className="flex items-center justify-center bg-gray-50 dark:bg-muted p-4 rounded-xl">
                   <FramedPhoto
@@ -124,13 +147,21 @@ export const CityView = ({ city }: Props) => {
                       : ""}
                   </p>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
           {/* FOOTER  */}
           <Footer />
         </div>
       </div>
+
+      {/* Full-screen Photo Lightbox with EXIF panel */}
+      <PhotoLightbox
+        photos={data.photos}
+        activePhotoId={activePhotoId}
+        onClose={closePhoto}
+        onNavigate={setActivePhotoId}
+      />
     </div>
   );
 };

@@ -6,12 +6,25 @@ import VectorCombined from "@/components/vector-combined";
 interface CoverPhotoProps {
   citySet: PublicCitySet;
   citySets: PublicCitySet[];
+  onPhotoClick?: (photoId: string) => void;
 }
 
-export const CoverPhoto = ({ citySet, citySets }: CoverPhotoProps) => {
+export const CoverPhoto = ({ citySet, citySets, onPhotoClick }: CoverPhotoProps) => {
   return (
     <div className="w-full h-[70vh] lg:w-1/2 lg:fixed lg:top-0 lg:left-0 lg:h-screen p-0 lg:p-3">
-      <div className="w-full h-full relative rounded-xl overflow-hidden">
+      <div
+        className="w-full h-full relative rounded-xl overflow-hidden cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        role="button"
+        tabIndex={0}
+        onClick={() => onPhotoClick?.(citySet.coverPhoto.id)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onPhotoClick?.(citySet.coverPhoto.id);
+          }
+        }}
+        aria-label={`View photo: ${citySet.city}`}
+      >
         {/* Cover photo */}
         <div className="relative w-full h-full">
           {citySets?.map((city) => (
