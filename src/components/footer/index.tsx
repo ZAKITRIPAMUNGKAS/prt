@@ -40,27 +40,10 @@ const Footer = () => {
         />
       </div>
 
-      {/* Attribution */}
+      {/* Copyright */}
       <div className="text-xs md:text-sm text-center md:text-left">
-        <p>
-          <span className="opacity-60">© Design by </span>
-          <a
-            href={siteConfig.footer.designCredit.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline underline-offset-2"
-          >
-            {siteConfig.footer.designCredit.name}
-          </a>
-          <span className="opacity-60">. Powered by </span>
-          <a
-            href={siteConfig.footer.poweredBy.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline underline-offset-2"
-          >
-            {siteConfig.footer.poweredBy.name}
-          </a>
+        <p className="opacity-60">
+          © {new Date().getFullYear()} {siteConfig.name} — Zaki Tri Pamungkas. All rights reserved.
         </p>
       </div>
     </div>
