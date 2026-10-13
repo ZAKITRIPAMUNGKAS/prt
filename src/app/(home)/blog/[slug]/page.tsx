@@ -7,6 +7,7 @@ import { dehydrate } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { siteConfig } from "@/site.config";
+import { keyToUrl } from "@/modules/s3/lib/key-to-url";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -31,9 +32,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://me.tepegrafi.id";
     const postUrl = `${baseUrl}/blog/${data.slug}`;
-    const ogImage = data.coverImage
-      ? `${baseUrl}/api/og-image?key=${encodeURIComponent(data.coverImage)}`
-      : `${baseUrl}/fotoku.png`;
+
+    // Use CDN URL directly so social crawlers (WA, Twitter, FB) can access it
+    const rawCover = data.coverImage ? keyToUrl(data.coverImage) : "";
+    const ogImage = rawCover || `${baseUrl}/fotoku.png`;
+
     const cleanDescription =
       data.description || siteConfig.metadata.description;
 
@@ -98,9 +101,8 @@ export default async function page({ params }: Props) {
     );
 
     if (post) {
-      const ogImage = post.coverImage
-        ? `${baseUrl}/api/og-image?key=${encodeURIComponent(post.coverImage)}`
-        : `${baseUrl}/fotoku.png`;
+      const rawCover = post.coverImage ? keyToUrl(post.coverImage) : "";
+      const ogImage = rawCover || `${baseUrl}/fotoku.png`;
 
       jsonLd = {
         "@context": "https://schema.org",
