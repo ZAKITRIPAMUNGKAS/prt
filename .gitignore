@@ -45,3 +45,6 @@ next-env.d.ts
 /profil.jpg
 /fotoku.png
 /CV_Zaki_Tri_Pamungkas_General.pdf
+.neon
+.env.backup
+
