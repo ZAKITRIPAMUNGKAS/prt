@@ -4,21 +4,24 @@ import { siteConfig } from "@/site.config";
 
 const Footer = () => {
   return (
-    <div className="flex flex-col items-center lg:items-start p-8 sm:p-12 lg:p-16 pb-10 sm:pb-12 gap-8 lg:gap-16 rounded-xl font-light relative flex-1 bg-primary text-white dark:text-black">
-      <div className="flex flex-col lg:flex-row gap-4 items-center">
-        {/* AVATAR  */}
-        <Avatar className="size-[60px]">
-          <AvatarImage src={siteConfig.avatar} alt="avatar" sizes="60px" />
+    <footer className="flex flex-col items-start p-6 sm:p-10 lg:p-14 gap-8 lg:gap-12 rounded-xl font-light relative flex-1 bg-primary text-primary-foreground">
+      {/* Brand & Author */}
+      <div className="flex items-center gap-4 w-full">
+        <Avatar className="size-12 sm:size-14 border border-primary-foreground/20 shrink-0">
+          <AvatarImage src={siteConfig.avatar} alt={siteConfig.name} />
           <AvatarFallback>{siteConfig.initials}</AvatarFallback>
         </Avatar>
 
-        {/* NAME  */}
-        <div className="flex flex-col items-center lg:items-start gap-[2px]">
-          <h1 className="text-2xl">{siteConfig.name}</h1>
-          <p className="text-sm opacity-60">{siteConfig.role}</p>
+        <div className="flex flex-col gap-0.5">
+          <h2 className="text-xl sm:text-2xl font-medium tracking-tight">{siteConfig.name}</h2>
+          <p className="text-xs sm:text-sm opacity-70">{siteConfig.role}</p>
         </div>
       </div>
-      <div className="grid lg:w-full grid-cols-1 lg:grid-cols-3 gap-7 lg:gap-14">
+
+      <div className="w-full h-px bg-primary-foreground/10" />
+
+      {/* Nav Links Grid */}
+      <div className="w-full grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
         <FooterNav
           title="Halaman"
           links={[
@@ -40,13 +43,14 @@ const Footer = () => {
         />
       </div>
 
+      <div className="w-full h-px bg-primary-foreground/10" />
+
       {/* Copyright */}
-      <div className="text-xs md:text-sm text-center md:text-left">
-        <p className="opacity-60">
-          © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
-        </p>
+      <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs opacity-60">
+        <p>© {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</p>
+        <p>Surakarta, Indonesia</p>
       </div>
-    </div>
+    </footer>
   );
 };
 
