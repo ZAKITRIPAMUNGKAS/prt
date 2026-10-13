@@ -15,6 +15,8 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { IconNotebookOff } from "@tabler/icons-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -62,12 +64,18 @@ const EmptyStatus = () => {
         <EmptyMedia variant="icon">
           <IconNotebookOff />
         </EmptyMedia>
-        <EmptyTitle>No posts found</EmptyTitle>
+        <EmptyTitle>Belum ada artikel</EmptyTitle>
         <EmptyDescription>
-          You have no posts. Create some posts to get started.
+          Anda belum memiliki artikel blog. Buat artikel baru untuk mulai menulis.
         </EmptyDescription>
       </EmptyHeader>
-      <EmptyContent></EmptyContent>
+      <EmptyContent>
+        <Button asChild variant="outline" size="sm">
+          <Link href="/dashboard/posts/new">
+            Tambah Artikel
+          </Link>
+        </Button>
+      </EmptyContent>
     </Empty>
   );
 };

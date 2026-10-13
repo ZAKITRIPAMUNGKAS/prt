@@ -33,7 +33,7 @@ const data = {
       icon: "photo",
     },
     {
-      title: "Posts",
+      title: "Blog",
       url: "/dashboard/posts",
       icon: "post",
     },
