@@ -21,7 +21,7 @@ export function SectionCardsView() {
     trpc.dashboard.getDashboardStats.queryOptions()
   );
   return (
-    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
+    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-3">
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>Total Photos</CardDescription>
@@ -160,14 +160,56 @@ export function SectionCardsView() {
           </div>
         </CardFooter>
       </Card>
+      <Card className="@container/card">
+        <CardHeader>
+          <CardDescription>Total Dibaca (Klik Blog)</CardDescription>
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+            {stats.totalBlogViews.toLocaleString()}
+          </CardTitle>
+          <CardAction>
+            <Badge variant="outline">{stats.totalBlogPosts} artikel</Badge>
+          </CardAction>
+        </CardHeader>
+        <CardFooter className="flex-col items-start gap-1.5 text-sm">
+          <div className="line-clamp-1 flex gap-2 font-medium">
+            Total kunjungan artikel
+          </div>
+          <div className="text-muted-foreground">
+            {stats.totalReadingSessions} sesi membaca tercatat
+          </div>
+        </CardFooter>
+      </Card>
+      <Card className="@container/card">
+        <CardHeader>
+          <CardDescription>Rata-rata Waktu Baca</CardDescription>
+          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+            {stats.avgReadingTimeSeconds > 0
+              ? Math.floor(stats.avgReadingTimeSeconds / 60) > 0
+                ? `${Math.floor(stats.avgReadingTimeSeconds / 60)}m ${stats.avgReadingTimeSeconds % 60}s`
+                : `${stats.avgReadingTimeSeconds} dtk`
+              : "-"}
+          </CardTitle>
+          <CardAction>
+            <Badge variant="outline">Durasi Aktif</Badge>
+          </CardAction>
+        </CardHeader>
+        <CardFooter className="flex-col items-start gap-1.5 text-sm">
+          <div className="line-clamp-1 flex gap-2 font-medium">
+            Waktu aktif pembaca
+          </div>
+          <div className="text-muted-foreground">
+            Dihitung dari keterlibatan di halaman artikel
+          </div>
+        </CardFooter>
+      </Card>
     </div>
   );
 }
 
 export const SectionCardsLoading = () => {
   return (
-    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
-      {[1, 2, 3, 4].map((i) => (
+    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-3">
+      {[1, 2, 3, 4, 5, 6].map((i) => (
         <Card key={i} className="@container/card">
           <CardHeader>
             <CardDescription>

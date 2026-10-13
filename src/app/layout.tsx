@@ -17,9 +17,40 @@ const readexPro = Readex_Pro({
   subsets: ["latin"],
 });
 
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://me.tepegrafi.id";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(baseUrl),
   title: siteConfig.metadata.title,
   description: siteConfig.metadata.description,
+  authors: [{ name: siteConfig.name, url: baseUrl }],
+  creator: siteConfig.name,
+  openGraph: {
+    title: siteConfig.metadata.title.default,
+    description: siteConfig.metadata.description,
+    url: baseUrl,
+    siteName: siteConfig.name,
+    locale: "id_ID",
+    type: "website",
+    images: [
+      {
+        url: "/fotoku.png",
+        width: 1200,
+        height: 630,
+        alt: siteConfig.name,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.metadata.title.default,
+    description: siteConfig.metadata.description,
+    images: ["/fotoku.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export const viewport: Viewport = {

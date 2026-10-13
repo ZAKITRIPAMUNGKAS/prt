@@ -1,5 +1,5 @@
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
-import { photos, citySets } from "@/db/schema";
+import { photos, citySets, posts } from "@/db/schema";
 import { sql, and, gte } from "drizzle-orm";
 import { z } from "zod";
 import fs from "fs/promises";
@@ -172,6 +172,7 @@ export const dashboardRouter = createTRPCRouter({
       lastYearCountriesResult,
       citiesResult,
       lastYearCitiesResult,
+      blogStatsResult,
     ] = await Promise.all([
       // 1. Total photo count
       ctx.db
@@ -235,6 +236,16 @@ export const dashboardRouter = createTRPCRouter({
             sql`${citySets.createdAt} < ${lastYearEnd}`,
           ),
         ),
+
+      // 8. Total blog stats
+      ctx.db
+        .select({
+          totalPosts: sql<number>`COUNT(*)::int`,
+          totalViews: sql<number>`COALESCE(SUM(${posts.views}), 0)::int`,
+          totalReadingTime: sql<number>`COALESCE(SUM(${posts.totalReadingTimeSeconds}), 0)::int`,
+          totalReadingCount: sql<number>`COALESCE(SUM(${posts.readingCount}), 0)::int`,
+        })
+        .from(posts),
     ]);
 
     const totalPhotos = totalPhotosResult[0]?.count ?? 0;
@@ -272,6 +283,23 @@ export const dashboardRouter = createTRPCRouter({
           : 0
         : Math.round(((totalCities - lastYearCities) / lastYearCities) * 100);
 
+    const blogStats = (blogStatsResult as {
+      totalPosts: number;
+      totalViews: number;
+      totalReadingTime: number;
+      totalReadingCount: number;
+    }[])[0] ?? {
+      totalPosts: 0,
+      totalViews: 0,
+      totalReadingTime: 0,
+      totalReadingCount: 0,
+    };
+
+    const avgReadingTimeSeconds =
+      blogStats.totalReadingCount > 0
+        ? Math.round(blogStats.totalReadingTime / blogStats.totalReadingCount)
+        : 0;
+
     return {
       totalPhotos,
       thisYearPhotos,
@@ -280,6 +308,10 @@ export const dashboardRouter = createTRPCRouter({
       countriesPercentChange,
       totalCities,
       citiesPercentChange,
+      totalBlogPosts: blogStats.totalPosts,
+      totalBlogViews: blogStats.totalViews,
+      avgReadingTimeSeconds,
+      totalReadingSessions: blogStats.totalReadingCount,
     };
   }),
 });

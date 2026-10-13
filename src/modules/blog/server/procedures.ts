@@ -1,5 +1,5 @@
 import { createTRPCRouter, baseProcedure } from "@/trpc/init";
-import { desc, eq, and } from "drizzle-orm";
+import { desc, eq, and, sql } from "drizzle-orm";
 import { posts } from "@/db/schema";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
@@ -32,5 +32,35 @@ export const blogRouter = createTRPCRouter({
       }
 
       return data;
+    }),
+  recordView: baseProcedure
+    .input(z.object({ slug: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(posts)
+        .set({
+          views: sql`${posts.views} + 1`,
+        })
+        .where(and(eq(posts.slug, input.slug), eq(posts.visibility, "public")));
+
+      return { success: true };
+    }),
+  recordReadingTime: baseProcedure
+    .input(
+      z.object({
+        slug: z.string(),
+        seconds: z.number().min(3).max(3600),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(posts)
+        .set({
+          totalReadingTimeSeconds: sql`${posts.totalReadingTimeSeconds} + ${Math.round(input.seconds)}`,
+          readingCount: sql`${posts.readingCount} + 1`,
+        })
+        .where(and(eq(posts.slug, input.slug), eq(posts.visibility, "public")));
+
+      return { success: true };
     }),
 });

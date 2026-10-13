@@ -37,7 +37,7 @@ const AboutPage = () => {
             quality={75}
             sizes="(max-width: 1023px) 100vw, 50vw"
             className="object-cover rounded-xl"
-            style={{ objectPosition: "center 20%" }}
+            style={{ objectPosition: "center 45%" }}
           />
           <div className="absolute right-0 bottom-0 z-10">
             <VectorCombined title="About" position="bottom-right" />

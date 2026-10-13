@@ -566,6 +566,8 @@ export type GitHubActivityProps = React.ComponentProps<"div"> & {
   defaultOpen?: boolean;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  hideHeader?: boolean;
+  slim?: boolean;
 };
 
 const GitHubActivity = ({
@@ -590,6 +592,8 @@ const GitHubActivity = ({
   defaultOpen = false,
   open: openProp,
   onOpenChange,
+  hideHeader = false,
+  slim = false,
   style,
   ...props
 }: GitHubActivityProps) => {
@@ -642,20 +646,26 @@ const GitHubActivity = ({
   const displayYear = year ?? (Number.isFinite(parsedYear) ? parsedYear : null);
   const heading = `${total} contributions${displayYear ? ` in ${displayYear}` : ""}`;
 
+  const surfaceClasses = slim
+    ? "relative max-w-full p-2.5 sm:p-3 font-runde select-none"
+    : SURFACE;
+
   return (
     <div
       data-slot="github-activity"
       data-variant={variant}
-      className={cn(SURFACE, VARIANTS[variant].ink, className)}
+      className={cn(surfaceClasses, VARIANTS[variant].ink, className)}
       style={{ width: "100%", ...style }}
       {...props}
     >
       <Squircle className={VARIANTS[variant].paint} />
 
       <div className={cn(CONTENT, repos.length > 0 && "pb-[76px]")}>
-        <p className="mb-4 px-1.5 text-base font-bold tracking-tight">
-          {heading}
-        </p>
+        {!hideHeader && (
+          <p className="mb-4 px-1.5 text-base font-bold tracking-tight">
+            {heading}
+          </p>
+        )}
 
         <ContributionGrid
           contributions={contributions}

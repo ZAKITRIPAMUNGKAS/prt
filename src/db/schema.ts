@@ -249,6 +249,9 @@ export const posts = pgTable(
     description: text("description"),
     content: text("content"),
     readingTimeMinutes: integer("reading_time_minutes"),
+    views: integer("views").default(0).notNull(),
+    totalReadingTimeSeconds: integer("total_reading_time_seconds").default(0).notNull(),
+    readingCount: integer("reading_count").default(0).notNull(),
 
     ...timestamps,
   },

@@ -20,6 +20,7 @@ const RichTextViewer = dynamic(
   { ssr: false },
 );
 import { siteConfig } from "@/site.config";
+import { useBlogReaderTracking } from "../../hooks/use-blog-reader-tracking";
 
 const MONTHS = [
   "Januari",
@@ -51,6 +52,8 @@ export const BlogSlugView = ({ slug }: { slug: string }) => {
   const router = useRouter();
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(trpc.blog.getOne.queryOptions({ slug }));
+
+  useBlogReaderTracking({ slug: data.slug });
 
   const { monthYear: publishedLabel, date: publishedDate } = formatBlogDate(
     data.createdAt,

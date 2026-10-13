@@ -49,6 +49,8 @@ const ProfileCard = () => {
               username="ZAKITRIPAMUNGKAS"
               variant="white"
               showMonths
+              hideHeader
+              slim
             />
           </div>
         </div>

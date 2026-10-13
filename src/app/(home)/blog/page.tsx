@@ -8,9 +8,40 @@ import {
   BlogViewLoadingStatus,
 } from "@/modules/blog/ui/views/blog-view";
 
-export const metadata = {
+import { type Metadata } from "next";
+import { siteConfig } from "@/site.config";
+
+export const metadata: Metadata = {
   title: "Blog",
-  description: "Blog",
+  description:
+    "Kumpulan artikel, pemikiran, dan catatan teknis seputar web development, rekayasa sistem, dan visual maker oleh Zaki Tri Pamungkas.",
+  alternates: {
+    canonical: "/blog",
+  },
+  openGraph: {
+    title: `Blog — ${siteConfig.name}`,
+    description:
+      "Kumpulan artikel, pemikiran, dan catatan teknis seputar web development, rekayasa sistem, dan visual maker.",
+    url: "/blog",
+    siteName: siteConfig.name,
+    locale: "id_ID",
+    type: "website",
+    images: [
+      {
+        url: "/fotoku.png",
+        width: 1200,
+        height: 630,
+        alt: `Blog ${siteConfig.name}`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `Blog — ${siteConfig.name}`,
+    description:
+      "Kumpulan artikel, pemikiran, dan catatan teknis seputar web development, rekayasa sistem, dan visual maker.",
+    images: ["/fotoku.png"],
+  },
 };
 
 import { PageEntrance } from "@/components/page-entrance";
