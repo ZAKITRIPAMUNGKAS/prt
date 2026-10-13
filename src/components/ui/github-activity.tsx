@@ -116,10 +116,10 @@ const VARIANTS: Record<GitHubActivityVariant, { paint: string; ink: string }> =
  */
 const ACCENTS: Record<GitHubActivityVariant, string[]> = {
   white: [
-    "color-mix(in oklab, currentcolor 22%, transparent)",
-    "color-mix(in oklab, currentcolor 45%, transparent)",
-    "color-mix(in oklab, currentcolor 70%, transparent)",
-    "currentcolor",
+    "var(--gh-l1, #0e4429)",
+    "var(--gh-l2, #006d32)",
+    "var(--gh-l3, #26a641)",
+    "var(--gh-l4, #39d353)",
   ],
   calamansi: ["#d9f2a6", "#b4e84c", "#8fc22f", "#5f8a14"],
   slate: ["#cfc7e0", "#a79cb7", "#7a83a8", "#4a5a7f"],
@@ -580,10 +580,10 @@ const GitHubActivity = ({
   showRepos = false,
   variant = "white",
   accent = [
-    "color-mix(in oklab, currentcolor 15%, transparent)",
-    "color-mix(in oklab, currentcolor 38%, transparent)",
-    "color-mix(in oklab, currentcolor 68%, transparent)",
-    "currentcolor",
+    "var(--gh-l1, #0e4429)",
+    "var(--gh-l2, #006d32)",
+    "var(--gh-l3, #26a641)",
+    "var(--gh-l4, #39d353)",
   ],
   cellSize = DEFAULT_CELL_SIZE,
   months = DEFAULT_MONTHS,

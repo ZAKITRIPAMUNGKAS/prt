@@ -39,7 +39,7 @@ const ProfileCard = () => {
           </Link>
 
           <div>
-            <p className="text-text-muted text-[14px] leading-relaxed">
+            <p className="text-text-muted text-[14px] leading-relaxed text-justify">
               {siteConfig.bio}
             </p>
           </div>

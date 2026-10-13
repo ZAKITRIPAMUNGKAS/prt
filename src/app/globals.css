@@ -151,6 +151,12 @@
   --highlight-purple: #f3e8ff;
   --highlight-pink: #fce7f3;
   --highlight-red: #fee2e2;
+
+  /* GitHub Contribution Green Ramp */
+  --gh-l1: #9be9a8;
+  --gh-l2: #40c463;
+  --gh-l3: #30a14e;
+  --gh-l4: #216e39;
 }
 
 .dark {
@@ -217,6 +223,12 @@
   --highlight-purple: #6b21a8;
   --highlight-pink: #9d174d;
   --highlight-red: #991b1b;
+
+  /* GitHub Contribution Green Ramp */
+  --gh-l1: #0e4429;
+  --gh-l2: #006d32;
+  --gh-l3: #26a641;
+  --gh-l4: #39d353;
 }
 
 @layer base {

@@ -1,7 +1,6 @@
 "use client";
 
 // UI Components
-import { useRef } from "react";
 import Link from "next/link";
 import Carousel from "@/components/photo-carousel";
 import BlurImage from "@/components/blur-image";
@@ -20,7 +19,6 @@ export const SliderView = () => {
     trpc.home.getManyLikePhotos.queryOptions({ limit: 10 })
   );
   const { activePhotoId, openPhoto, closePhoto, setActivePhotoId } = usePhotoLightbox();
-  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
 
   if (photos.length === 0) {
     return (
@@ -43,23 +41,6 @@ export const SliderView = () => {
   const isDuplicated = photos.length === 2;
   const displayPhotos = isDuplicated ? [...photos, ...photos] : photos;
 
-  const handlePointerDown = (e: React.PointerEvent) => {
-    pointerStartRef.current = { x: e.clientX, y: e.clientY };
-  };
-
-  const handlePhotoClick = (e: React.MouseEvent, photoId: string) => {
-    if (pointerStartRef.current) {
-      const dx = Math.abs(e.clientX - pointerStartRef.current.x);
-      const dy = Math.abs(e.clientY - pointerStartRef.current.y);
-      pointerStartRef.current = null;
-      if (dx > 10 || dy > 10) {
-        // Drag occurred, ignore click
-        return;
-      }
-    }
-    openPhoto(photoId);
-  };
-
   return (
     <>
       <div className="w-full h-full relative rounded-xl overflow-hidden bg-muted">
@@ -76,8 +57,11 @@ export const SliderView = () => {
                 key={`${photo.id}-${index}`}
                 role="button"
                 tabIndex={0}
-                onPointerDown={handlePointerDown}
-                onClick={(e) => handlePhotoClick(e, photo.id)}
+                onClick={(event) => {
+                  // Embla prevents the click event following a drag. Respect it
+                  // so the lightbox opens only after an intentional click.
+                  if (!event.defaultPrevented) openPhoto(photo.id);
+                }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
@@ -86,7 +70,7 @@ export const SliderView = () => {
                 }}
                 draggable={false}
                 onDragStart={(e) => e.preventDefault()}
-                className="flex-[0_0_100%] min-w-0 h-full relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary select-none touch-pan-y"
+                className="flex-[0_0_100%] min-w-0 h-full relative cursor-grab active:cursor-grabbing focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary select-none touch-pan-y"
                 aria-label={`View photo: ${photo.title}`}
               >
                 <BlurImage
