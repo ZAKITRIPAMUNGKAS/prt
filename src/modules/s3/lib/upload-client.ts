@@ -104,26 +104,25 @@ export class S3Client {
         if (xhr.status >= 200 && xhr.status < 300) {
           resolve();
         } else {
+          console.error("S3 Upload Failed:", xhr.status, xhr.statusText, xhr.responseText);
           reject(
-            new UploadError(`Upload failed with status ${xhr.status}`, {
-              status: xhr.status,
-              response: xhr.response,
-            }),
+            new UploadError(`Upload failed (${xhr.status}): ${xhr.statusText || "Forbidden / Invalid presigned URL"}`),
           );
         }
       };
 
       // error
       xhr.onerror = () => {
-        reject(new UploadError("Network error during upload"));
+        console.error("S3 Upload XHR Error (Possible CORS or Network Issue):", xhr);
+        reject(new UploadError("Network/CORS error during upload. Please verify bucket CORS settings."));
       };
 
       xhr.ontimeout = () => {
-        reject(new UploadError("Upload timed out"));
+        reject(new UploadError("Upload timed out after 60s"));
       };
 
       // timeout
-      xhr.timeout = 60000;
+      xhr.timeout = 120000;
 
       // send request
       xhr.open("PUT", uploadUrl);
