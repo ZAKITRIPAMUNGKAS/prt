@@ -130,13 +130,15 @@ export const SignInView = () => {
               </div>
             </form>
           </Form>
-          <div className="col-span-2 bg-radial from-sidebar-accent to-sidebar relative hidden md:flex flex-col gap-y-4 items-center justify-center">
+          <div className="col-span-2 bg-radial from-sidebar-accent to-sidebar relative hidden md:flex flex-col gap-y-4 items-center justify-center overflow-hidden">
             <Image
-              src="/bg.jpg"
-              alt="Better nextjs"
+              src="/fotoku.png"
+              alt="Zaki Tri Pamungkas"
               width={1920}
               height={1080}
+              priority
               className="size-full object-cover"
+              style={{ objectPosition: "center 25%" }}
             />
           </div>
         </CardContent>

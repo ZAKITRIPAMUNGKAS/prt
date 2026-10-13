@@ -13,17 +13,21 @@ export const metadata = {
   description: "Blog",
 };
 
+import { PageEntrance } from "@/components/page-entrance";
+
 const page = () => {
   const queryClient = getQueryClient();
   void queryClient.prefetchQuery(trpc.blog.getMany.queryOptions());
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<BlogViewLoadingStatus />}>
-        <ErrorBoundary fallback={<p>Error</p>}>
-          <BlogView />
-        </ErrorBoundary>
-      </Suspense>
+      <PageEntrance>
+        <Suspense fallback={<BlogViewLoadingStatus />}>
+          <ErrorBoundary fallback={<p>Error</p>}>
+            <BlogView />
+          </ErrorBoundary>
+        </Suspense>
+      </PageEntrance>
     </HydrationBoundary>
   );
 };

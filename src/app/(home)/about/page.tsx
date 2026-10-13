@@ -18,11 +18,16 @@ export const metadata: Metadata = {
   description: "About page",
 };
 
+import { PageEntrance, StaggerContainer, StaggerItem } from "@/components/page-entrance";
+
 const AboutPage = () => {
   return (
     <div className="flex flex-col gap-3 lg:gap-0 lg:flex-row w-full">
       {/* LEFT CONTENT - Fixed */}
-      <div className="w-full h-[70vh] lg:w-1/2 lg:fixed lg:top-0 lg:left-0 lg:h-screen p-0 lg:p-3">
+      <PageEntrance
+        delay={0.1}
+        className="w-full h-[70vh] lg:w-1/2 lg:fixed lg:top-0 lg:left-0 lg:h-screen p-0 lg:p-3"
+      >
         <div className="w-full h-full relative rounded-xl overflow-hidden bg-muted">
           <Image
             src="/fotoku.png"
@@ -38,42 +43,61 @@ const AboutPage = () => {
             <VectorCombined title="About" position="bottom-right" />
           </div>
         </div>
-      </div>
+      </PageEntrance>
 
       {/* Spacer for fixed left content */}
       <div className="hidden lg:block lg:w-1/2" />
 
       {/* RIGHT CONTENT - Scrollable */}
-      <div className="w-full lg:w-1/2 space-y-3 pb-3">
+      <StaggerContainer
+        staggerDelay={0.06}
+        className="w-full lg:w-1/2 space-y-3 pb-3"
+      >
         {/* PROFILE CARD  */}
-        <ProfileCard />
+        <StaggerItem>
+          <ProfileCard />
+        </StaggerItem>
 
         {/* HIRE ME CARD */}
-        <HireMeCard />
+        <StaggerItem>
+          <HireMeCard />
+        </StaggerItem>
 
         {/* COLLABORATION CARD */}
-        <CollaborationCard />
+        <StaggerItem>
+          <CollaborationCard />
+        </StaggerItem>
 
         {/* ABOUT CARD  */}
-        <AboutCard />
+        <StaggerItem>
+          <AboutCard />
+        </StaggerItem>
 
         {/* TECH CARD  */}
-        <TechMarquee />
+        <StaggerItem>
+          <TechMarquee />
+        </StaggerItem>
 
         {/* CAMERA CARD  */}
-        <CameraCard />
+        <StaggerItem>
+          <CameraCard />
+        </StaggerItem>
 
         {siteConfig.gear.map((item) => (
-          <CardContainer key={`${item.brand}-${item.model}`}>
-            <div className="flex items-center justify-between p-6">
-              <h1 className="text-lg">{item.brand}</h1>
-              <p className="text-sm">{item.model}</p>
-            </div>
-          </CardContainer>
+          <StaggerItem key={`${item.brand}-${item.model}`}>
+            <CardContainer>
+              <div className="flex items-center justify-between p-6">
+                <h1 className="text-lg">{item.brand}</h1>
+                <p className="text-sm">{item.model}</p>
+              </div>
+            </CardContainer>
+          </StaggerItem>
         ))}
 
-        <Footer />
-      </div>
+        <StaggerItem>
+          <Footer />
+        </StaggerItem>
+      </StaggerContainer>
     </div>
   );
 };

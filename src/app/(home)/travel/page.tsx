@@ -14,17 +14,21 @@ export const metadata = {
     "Browse travel photography by city. Explore beautiful destinations and discover photos from around the world.",
 };
 
+import { PageEntrance } from "@/components/page-entrance";
+
 const page = () => {
   const queryClient = getQueryClient();
   void queryClient.prefetchQuery(trpc.travel.getCitySets.queryOptions());
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<LoadingStatus />}>
-        <ErrorBoundary fallback={<p>Error</p>}>
-          <TravelView />
-        </ErrorBoundary>
-      </Suspense>
+      <PageEntrance>
+        <Suspense fallback={<LoadingStatus />}>
+          <ErrorBoundary fallback={<p>Error</p>}>
+            <TravelView />
+          </ErrorBoundary>
+        </Suspense>
+      </PageEntrance>
     </HydrationBoundary>
   );
 };

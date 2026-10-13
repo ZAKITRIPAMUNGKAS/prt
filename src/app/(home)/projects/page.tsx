@@ -13,17 +13,21 @@ export const metadata = {
     "Portofolio studi kasus dan pengembangan sistem web oleh Zaki Tri Pamungkas.",
 };
 
+import { PageEntrance } from "@/components/page-entrance";
+
 const ProjectsPage = () => {
   const queryClient = getQueryClient();
   void queryClient.prefetchQuery(trpc.projects.getMany.queryOptions());
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<ProjectsViewLoadingStatus />}>
-        <ErrorBoundary fallback={<p>Terjadi kesalahan saat memuat proyek</p>}>
-          <ProjectsView />
-        </ErrorBoundary>
-      </Suspense>
+      <PageEntrance>
+        <Suspense fallback={<ProjectsViewLoadingStatus />}>
+          <ErrorBoundary fallback={<p>Terjadi kesalahan saat memuat proyek</p>}>
+            <ProjectsView />
+          </ErrorBoundary>
+        </Suspense>
+      </PageEntrance>
     </HydrationBoundary>
   );
 };

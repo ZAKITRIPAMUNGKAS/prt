@@ -22,6 +22,8 @@ import {
   SliderView,
 } from "@/modules/home/ui/views/slider-view";
 
+import { PageEntrance, StaggerContainer, StaggerItem } from "@/components/page-entrance";
+
 const page = async () => {
   const queryClient = getQueryClient();
   void queryClient.prefetchQuery(
@@ -38,42 +40,60 @@ const page = async () => {
     <HydrationBoundary state={dehydrate(queryClient)}>
       <div className="flex flex-col lg:flex-row min-h-screen w-full">
         {/* LEFT CONTENT - Fixed */}
-        <div className="w-full lg:w-1/2 h-[70vh] lg:fixed lg:top-0 lg:left-0 lg:h-screen p-0 lg:p-3 rounded-xl">
+        <PageEntrance
+          delay={0.1}
+          className="w-full lg:w-1/2 h-[70vh] lg:fixed lg:top-0 lg:left-0 lg:h-screen p-0 lg:p-3 rounded-xl"
+        >
           <Suspense fallback={<SliderViewLoadingStatus />}>
             <ErrorBoundary fallback={<p>Something went wrong</p>}>
               <SliderView />
             </ErrorBoundary>
           </Suspense>
-        </div>
+        </PageEntrance>
         {/* Spacer for fixed left content */}
         <div className="hidden lg:block lg:w-1/2" />
         {/* RIGHT CONTENT - Scrollable */}
-        <div className="w-full mt-3 lg:mt-0 lg:w-1/2 space-y-3 pb-3">
+        <StaggerContainer
+          staggerDelay={0.07}
+          className="w-full mt-3 lg:mt-0 lg:w-1/2 space-y-3 pb-3"
+        >
           {/* PROFILE CARD  */}
-          <ProfileCard />
+          <StaggerItem>
+            <ProfileCard />
+          </StaggerItem>
 
           {/* LAST TRAVEL CARD  */}
-          <LatestTravelCard />
+          <StaggerItem>
+            <LatestTravelCard />
+          </StaggerItem>
 
           {/* CITY SETS CARD  */}
-          <Suspense fallback={<CitiesViewLoadingStatus />}>
-            <ErrorBoundary fallback={<p>Something went wrong</p>}>
-              <CitiesView />
-            </ErrorBoundary>
-          </Suspense>
+          <StaggerItem>
+            <Suspense fallback={<CitiesViewLoadingStatus />}>
+              <ErrorBoundary fallback={<p>Something went wrong</p>}>
+                <CitiesView />
+              </ErrorBoundary>
+            </Suspense>
+          </StaggerItem>
 
           {/* LATEST PROJECTS CARD */}
-          <LatestProjectsCard />
+          <StaggerItem>
+            <LatestProjectsCard />
+          </StaggerItem>
 
           {/* PROJECTS VIEW */}
-          <Suspense fallback={<ProjectsHomeLoadingStatus />}>
-            <ErrorBoundary fallback={<p>Something went wrong</p>}>
-              <ProjectsHomeView />
-            </ErrorBoundary>
-          </Suspense>
+          <StaggerItem>
+            <Suspense fallback={<ProjectsHomeLoadingStatus />}>
+              <ErrorBoundary fallback={<p>Something went wrong</p>}>
+                <ProjectsHomeView />
+              </ErrorBoundary>
+            </Suspense>
+          </StaggerItem>
 
-          <Footer />
-        </div>
+          <StaggerItem>
+            <Footer />
+          </StaggerItem>
+        </StaggerContainer>
       </div>
     </HydrationBoundary>
   );

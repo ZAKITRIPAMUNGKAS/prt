@@ -26,6 +26,8 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+import { InitialPreloader } from "@/components/initial-preloader";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -38,6 +40,7 @@ export default function RootLayout({
           <TRPCReactProvider>
             <ThemeProvider attribute="class">
               <ThemeColorMeta />
+              <InitialPreloader />
               <Toaster />
               {children}
             </ThemeProvider>
