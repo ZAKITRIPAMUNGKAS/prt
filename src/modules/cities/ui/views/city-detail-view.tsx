@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useTRPC } from "@/trpc/client";
 import {
@@ -10,9 +11,13 @@ import {
   Star,
   Heart,
   StarOff,
+  Pencil,
+  Check,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { format } from "date-fns";
 import {
@@ -34,26 +39,38 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { FramedPhoto } from "@/components/framed-photo";
 
-const cityDescriptionSchema = z.object({
+const cityFormSchema = z.object({
+  city: z.string().trim().min(1, "City name is required"),
   description: z.string().optional(),
 });
 
-type CityDescriptionForm = z.infer<typeof cityDescriptionSchema>;
+type CityFormValues = z.infer<typeof cityFormSchema>;
 
 interface CityDetailViewProps {
   city: string;
 }
 
 export function CityDetailView({ city }: CityDetailViewProps) {
+  const router = useRouter();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
   const { data: cityData } = useSuspenseQuery(
     trpc.city.getOne.queryOptions({ city })
   );
 
-  const form = useForm<CityDescriptionForm>({
-    resolver: zodResolver(cityDescriptionSchema),
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [titleInput, setTitleInput] = useState("");
+
+  const form = useForm<CityFormValues>({
+    resolver: zodResolver(cityFormSchema),
+    values: cityData
+      ? {
+          city: cityData.city,
+          description: cityData.description || "",
+        }
+      : undefined,
     defaultValues: {
+      city: "",
       description: "",
     },
   });
@@ -62,12 +79,20 @@ export function CityDetailView({ city }: CityDetailViewProps) {
     trpc.city.updateCoverPhoto.mutationOptions()
   );
 
-  const updateDescription = useMutation(
-    trpc.city.updateDescription.mutationOptions({
-      onSuccess: async () => {
+  const updateCity = useMutation(
+    trpc.city.update.mutationOptions({
+      onSuccess: async (updated) => {
         await queryClient.invalidateQueries(
           trpc.city.getOne.queryOptions({ city })
         );
+        if (updated.city !== city) {
+          await queryClient.invalidateQueries(
+            trpc.city.getOne.queryOptions({ city: updated.city })
+          );
+          router.replace(
+            `/dashboard/cities/${encodeURIComponent(updated.city)}`
+          );
+        }
         await queryClient.invalidateQueries(trpc.city.getMany.queryOptions());
         await queryClient.invalidateQueries(
           trpc.home.getCitySets.queryOptions({ limit: 12 })
@@ -75,19 +100,40 @@ export function CityDetailView({ city }: CityDetailViewProps) {
         await queryClient.invalidateQueries(
           trpc.travel.getCitySets.queryOptions()
         );
-        toast.success("Description updated successfully");
+        setIsEditingTitle(false);
+        toast.success("City updated successfully");
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to update description");
+        toast.error(error.message || "Failed to update city");
       },
     })
   );
 
-  useEffect(() => {
-    if (cityData?.description !== undefined) {
-      form.setValue("description", cityData.description || "");
+  const startEditingTitle = () => {
+    setTitleInput(cityData?.city || "");
+    setIsEditingTitle(true);
+  };
+
+  const handleSaveTitle = () => {
+    if (!cityData || !titleInput.trim()) return;
+    if (titleInput.trim() === cityData.city) {
+      setIsEditingTitle(false);
+      return;
     }
-  }, [cityData?.description, form]);
+    updateCity.mutate({
+      cityId: cityData.id,
+      city: titleInput.trim(),
+    });
+  };
+
+  const handleFormSubmit = (values: CityFormValues) => {
+    if (!cityData) return;
+    updateCity.mutate({
+      cityId: cityData.id,
+      city: values.city.trim(),
+      description: values.description || "",
+    });
+  };
 
   const handleSetCover = async (photoId: string) => {
     if (!cityData) return;
@@ -155,9 +201,67 @@ export function CityDetailView({ city }: CityDetailViewProps) {
           <div className="mb-8">
             <div className="flex items-start justify-between mb-6">
               <div>
-                <h1 className="text-4xl font-bold tracking-tight mb-2">
-                  {cityData.city}
-                </h1>
+                {isEditingTitle ? (
+                  <div className="flex items-center gap-2 mb-3">
+                    <Input
+                      value={titleInput}
+                      onChange={(e) => setTitleInput(e.target.value)}
+                      className="text-2xl sm:text-3xl font-bold h-12 max-w-sm"
+                      autoFocus
+                      disabled={updateCity.isPending}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleSaveTitle();
+                        } else if (e.key === "Escape") {
+                          setIsEditingTitle(false);
+                          setTitleInput(cityData.city);
+                        }
+                      }}
+                    />
+                    <Button
+                      size="sm"
+                      onClick={handleSaveTitle}
+                      disabled={updateCity.isPending || !titleInput.trim()}
+                      className="h-10 px-3"
+                    >
+                      <Check className="h-4 w-4 mr-1" />
+                      Save
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setIsEditingTitle(false);
+                        setTitleInput(cityData.city);
+                      }}
+                      disabled={updateCity.isPending}
+                      className="h-10 px-3"
+                    >
+                      <X className="h-4 w-4 mr-1" />
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3 mb-2 group">
+                    <h1
+                      className="text-4xl font-bold tracking-tight cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={startEditingTitle}
+                      title="Click to edit city name"
+                    >
+                      {cityData.city}
+                    </h1>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 text-muted-foreground hover:text-foreground opacity-60 group-hover:opacity-100 transition-opacity"
+                      onClick={startEditingTitle}
+                      title="Edit city name"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
                 <div className="flex items-center gap-4 text-muted-foreground">
                   <div className="flex items-center gap-2">
                     <MapPin className="h-4 w-4" />
@@ -175,16 +279,32 @@ export function CityDetailView({ city }: CityDetailViewProps) {
 
             {/* Description Form Card */}
             <div className="bg-card border rounded-lg p-6 shadow-sm">
+              <h2 className="text-lg font-semibold mb-4">City Details</h2>
               <Form {...form}>
                 <form
-                  onSubmit={form.handleSubmit((values) => {
-                    updateDescription.mutate({
-                      cityId: cityData.id,
-                      description: values.description || "",
-                    });
-                  })}
+                  onSubmit={form.handleSubmit(handleFormSubmit)}
                   className="space-y-4"
                 >
+                  <FormField
+                    control={form.control}
+                    name="city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-base font-medium">
+                          City Name
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            placeholder="Enter city name..."
+                            disabled={updateCity.isPending}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   <FormField
                     control={form.control}
                     name="description"
@@ -199,6 +319,7 @@ export function CityDetailView({ city }: CityDetailViewProps) {
                             placeholder="Add a description for this city..."
                             className="min-h-[100px] resize-none"
                             rows={4}
+                            disabled={updateCity.isPending}
                           />
                         </FormControl>
                         <FormMessage />
@@ -208,12 +329,10 @@ export function CityDetailView({ city }: CityDetailViewProps) {
                   <div className="flex justify-end">
                     <Button
                       type="submit"
-                      disabled={updateDescription.isPending}
-                      className="min-w-[100px]"
+                      disabled={updateCity.isPending}
+                      className="min-w-[120px]"
                     >
-                      {updateDescription.isPending
-                        ? "Saving..."
-                        : "Save Description"}
+                      {updateCity.isPending ? "Saving..." : "Save Changes"}
                     </Button>
                   </div>
                 </form>

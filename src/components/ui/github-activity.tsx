@@ -297,24 +297,23 @@ function toWeeks(contributions: Contribution[]) {
   return weeks;
 }
 
-function useFittedColumns(cellSize: number, gap: number) {
+function useAvailableWidth() {
   const ref = React.useRef<HTMLDivElement>(null);
-  const [columns, setColumns] = React.useState<number>();
+  const [width, setWidth] = React.useState<number>();
 
   useIsoLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
 
     const observer = new ResizeObserver((entries) => {
-      const width = entries[0]?.contentRect.width ?? el.clientWidth;
-      setColumns(Math.max(1, Math.floor((width + gap) / (cellSize + gap))));
+      setWidth(entries[0]?.contentRect.width ?? el.clientWidth);
     });
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [cellSize, gap]);
+  }, []);
 
-  return [ref, columns] as const;
+  return [ref, width] as const;
 }
 
 const Tooltip = ({
@@ -377,12 +376,24 @@ const ContributionGrid = ({
   reduceMotion: boolean | null;
 }) => {
   const weeks = React.useMemo(() => toWeeks(contributions), [contributions]);
-  const gap = gapFor(cellSize);
-  const [ref, columns] = useFittedColumns(cellSize, gap);
+  const cap = Math.min(weeks.length, weeksFor(months));
+  const visible = weeks.slice(-cap);
+  const [ref, availableWidth] = useAvailableWidth();
+  const { fittedCellSize, gap } = React.useMemo(() => {
+    if (!availableWidth || visible.length === 0) {
+      return { fittedCellSize: cellSize, gap: gapFor(cellSize) };
+    }
+
+    const unit = Math.floor(availableWidth / visible.length);
+    const fittedGap = Math.max(1, Math.min(gapFor(cellSize), Math.floor(unit / 3)));
+
+    return {
+      fittedCellSize: Math.max(2, Math.min(cellSize, unit - fittedGap)),
+      gap: fittedGap,
+    };
+  }, [availableWidth, cellSize, visible.length]);
   const [hovered, setHovered] = React.useState<HoveredDay>();
 
-  const cap = Math.min(weeks.length, weeksFor(months));
-  const visible = weeks.slice(-Math.min(cap, columns ?? cap));
   const sweepEnd = (visible.length - 1) * COLUMN_STAGGER + CELL_FADE.duration;
 
   const hover = (day: Contribution) => (event: React.PointerEvent) => {
@@ -417,7 +428,7 @@ const ContributionGrid = ({
             <div
               key={index}
               className="relative h-3 shrink-0"
-              style={{ width: cellSize }}
+              style={{ width: fittedCellSize }}
             >
               {month && (
                 <span className="absolute top-0 left-0 text-[10px] leading-none text-current/45">
@@ -441,7 +452,7 @@ const ContributionGrid = ({
                 key={day.date}
                 onPointerEnter={hover(day)}
                 className="shrink-0 rounded-[3px] bg-current/15"
-                style={{ width: cellSize, height: cellSize }}
+                style={{ width: fittedCellSize, height: fittedCellSize }}
                 initial={reduceMotion ? false : { opacity: 0, scale: 0.4 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{

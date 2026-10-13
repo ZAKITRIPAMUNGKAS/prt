@@ -124,6 +124,165 @@ export const cityRouter = createTRPCRouter({
       return updatedCitySet;
     }),
 
+  // Update city (name and/or description)
+  update: protectedProcedure
+    .input(
+      z.object({
+        cityId: z.uuid(),
+        city: z.string().trim().min(1, "City name is required").optional(),
+        description: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { cityId, city: newCity, description } = input;
+
+      const [citySet] = await ctx.db
+        .select()
+        .from(citySets)
+        .where(eq(citySets.id, cityId));
+
+      if (!citySet) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "City not found",
+        });
+      }
+
+      const oldCity = citySet.city;
+      const isRenaming = newCity !== undefined && newCity !== oldCity;
+
+      if (isRenaming) {
+        const [existing] = await ctx.db
+          .select()
+          .from(citySets)
+          .where(
+            and(
+              eq(citySets.country, citySet.country),
+              eq(citySets.city, newCity),
+            ),
+          );
+
+        if (existing && existing.id !== cityId) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: `A city named "${newCity}" already exists in ${citySet.country}`,
+          });
+        }
+      }
+
+      return await ctx.db.transaction(async (tx) => {
+        if (isRenaming) {
+          await tx
+            .update(photos)
+            .set({
+              city: newCity,
+              updatedAt: new Date(),
+            })
+            .where(
+              and(
+                eq(photos.city, oldCity),
+                eq(photos.country, citySet.country),
+              ),
+            );
+        }
+
+        const updateData: {
+          city?: string;
+          description?: string;
+          updatedAt: Date;
+        } = {
+          updatedAt: new Date(),
+        };
+
+        if (isRenaming) {
+          updateData.city = newCity;
+        }
+        if (description !== undefined) {
+          updateData.description = description;
+        }
+
+        const [updatedCitySet] = await tx
+          .update(citySets)
+          .set(updateData)
+          .where(eq(citySets.id, cityId))
+          .returning();
+
+        return updatedCitySet;
+      });
+    }),
+
+  // Update city name specifically
+  updateName: protectedProcedure
+    .input(
+      z.object({
+        cityId: z.uuid(),
+        newName: z.string().trim().min(1, "City name is required"),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { cityId, newName } = input;
+
+      const [citySet] = await ctx.db
+        .select()
+        .from(citySets)
+        .where(eq(citySets.id, cityId));
+
+      if (!citySet) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "City not found",
+        });
+      }
+
+      const oldCity = citySet.city;
+      if (oldCity === newName) {
+        return citySet;
+      }
+
+      const [existing] = await ctx.db
+        .select()
+        .from(citySets)
+        .where(
+          and(
+            eq(citySets.country, citySet.country),
+            eq(citySets.city, newName),
+          ),
+        );
+
+      if (existing && existing.id !== cityId) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: `A city named "${newName}" already exists in ${citySet.country}`,
+        });
+      }
+
+      return await ctx.db.transaction(async (tx) => {
+        await tx
+          .update(photos)
+          .set({
+            city: newName,
+            updatedAt: new Date(),
+          })
+          .where(
+            and(
+              eq(photos.city, oldCity),
+              eq(photos.country, citySet.country),
+            ),
+          );
+
+        const [updatedCitySet] = await tx
+          .update(citySets)
+          .set({
+            city: newName,
+            updatedAt: new Date(),
+          })
+          .where(eq(citySets.id, cityId))
+          .returning();
+
+        return updatedCitySet;
+      });
+    }),
+
   // Update city description
   updateDescription: protectedProcedure
     .input(

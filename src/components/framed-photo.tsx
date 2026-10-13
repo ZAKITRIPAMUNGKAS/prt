@@ -72,11 +72,11 @@ export function FramedPhoto({
   return (
     <div
       className={cn(
-        "relative inline-block max-w-full bg-[#fbfaf6] p-3 shadow-[0_18px_38px_rgba(0,0,0,0.36)] ring-1 ring-black/15 sm:p-4",
+        "relative inline-flex max-w-full flex-col bg-[#fbfaf6] p-3 shadow-[0_18px_38px_rgba(0,0,0,0.36)] ring-1 ring-black/15 sm:p-4",
         frameClassName
       )}
     >
-      <div className="relative overflow-hidden border border-black/10 bg-neutral-100">
+      <div className="relative min-h-0 flex-1 overflow-hidden border border-black/10 bg-neutral-100">
         <BlurImage
           src={keyToUrl(src)}
           alt={alt}

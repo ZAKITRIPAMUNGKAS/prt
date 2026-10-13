@@ -2,7 +2,6 @@
 
 import BlurImage from "@/components/blur-image";
 import Footer from "@/components/footer";
-import { FramedPhoto } from "@/components/framed-photo";
 import VectorCombined from "@/components/vector-combined";
 import { keyToUrl } from "@/modules/s3/lib/key-to-url";
 import { useTRPC } from "@/trpc/client";
@@ -77,49 +76,55 @@ export const CityView = ({ city }: Props) => {
           {/* CITY INFO CARD  */}
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-1 2xl:grid-cols-3 gap-4 items-stretch">
             <div className="col-span-1 md:col-span-2 lg:col-span-1 2xl:col-span-2">
-              <div className="flex flex-col p-10 gap-24 bg-muted rounded-xl font-light relative h-full">
+              <div className="flex flex-col p-6 sm:p-8 justify-between gap-6 bg-muted rounded-xl font-light relative h-full">
                 <div className="flex gap-4 items-center">
                   {/* NAME  */}
-                  <div className="flex flex-col gap-[2px]">
-                    <h1 className="text-4xl">
+                  <div className="flex flex-col gap-1">
+                    <h1 className="text-3xl sm:text-4xl font-normal tracking-tight">
                       {data.city} {data.countryCode}
                     </h1>
                   </div>
                 </div>
 
-                <div>
-                  <p className="text-text-muted text-[15px]">
-                    {data.description}
+                {data.description ? (
+                  <div>
+                    <p className="text-muted-foreground text-sm sm:text-[15px] leading-relaxed">
+                      {data.description}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground/60 italic">
+                    No description provided
                   </p>
-                </div>
+                )}
               </div>
             </div>
 
-            <div className="col-span-1 md:col-span-1 lg:col-span-1 2xl:col-span-1 flex flex-col gap-3">
-              <div className="w-full h-full p-3 lg:p-5 bg-muted rounded-xl flex justify-between items-center">
-                <p className="text-xs text-text-muted">Country</p>
-                <p className="text-xs">{data.country}</p>
+            <div className="col-span-1 md:col-span-1 lg:col-span-1 2xl:col-span-1 flex flex-col justify-between gap-2.5">
+              <div className="w-full p-3 lg:p-4 bg-muted rounded-xl flex justify-between items-center">
+                <p className="text-xs text-muted-foreground">Country</p>
+                <p className="text-xs font-medium">{data.country}</p>
               </div>
 
-              <div className="w-full h-full p-3 lg:p-5 bg-muted rounded-xl flex justify-between items-center">
-                <p className="text-xs text-text-muted">City</p>
-                <p className="text-xs">{data.city}</p>
+              <div className="w-full p-3 lg:p-4 bg-muted rounded-xl flex justify-between items-center">
+                <p className="text-xs text-muted-foreground">City</p>
+                <p className="text-xs font-medium">{data.city}</p>
               </div>
 
-              <div className="w-full h-full p-3 lg:p-5 bg-muted rounded-xl flex justify-between items-center">
-                <p className="text-xs text-text-muted">Year</p>
-                <p className="text-xs">{coverPhotoYear}</p>
+              <div className="w-full p-3 lg:p-4 bg-muted rounded-xl flex justify-between items-center">
+                <p className="text-xs text-muted-foreground">Year</p>
+                <p className="text-xs font-medium">{coverPhotoYear}</p>
               </div>
 
-              <div className="w-full h-full p-3 lg:p-5 bg-muted rounded-xl flex justify-between items-center">
-                <p className="text-xs text-text-muted">Photos</p>
-                <p className="text-xs">{data.photos?.length}</p>
+              <div className="w-full p-3 lg:p-4 bg-muted rounded-xl flex justify-between items-center">
+                <p className="text-xs text-muted-foreground">Photos</p>
+                <p className="text-xs font-medium">{data.photos?.length}</p>
               </div>
             </div>
           </div>
 
-          {/* IMAGES  */}
-          <div className="w-full space-y-2">
+          {/* IMAGES (3 COLUMNS) */}
+          <div className="w-full grid grid-cols-2 sm:grid-cols-3 gap-3">
             {data.photos?.map((photo) => (
               <div
                 key={photo.id}
@@ -132,25 +137,26 @@ export const CityView = ({ city }: Props) => {
                     openPhoto(photo.id);
                   }
                 }}
-                className="space-y-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl transition-transform active:scale-[0.99]"
+                className="group flex flex-col cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl transition-all duration-200 active:scale-[0.98]"
                 aria-label={`View photo: ${photo.title}`}
               >
-                <div className="flex items-center justify-center bg-gray-50 dark:bg-muted p-4 rounded-xl">
-                  <FramedPhoto
-                    src={photo.url}
+                <div className="relative aspect-4/3 w-full overflow-hidden rounded-xl bg-muted border border-border/40 group-hover:border-primary/50 transition-colors">
+                  <BlurImage
+                    src={keyToUrl(photo.url)}
                     alt={photo.title}
-                    blurhash={photo.blurData!}
-                    width={photo.width}
-                    height={photo.height}
+                    blurhash={photo.blurData || ""}
+                    fill
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>
-                <div className="flex flex-col items-center justify-center">
-                  <p className="text-sm font-medium text-center">
+                <div className="pt-2 px-0.5">
+                  <p className="text-xs font-medium truncate group-hover:text-primary transition-colors">
                     {photo.title}
                   </p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-[11px] text-muted-foreground truncate">
                     {photo.dateTimeOriginal
-                      ? format(photo.dateTimeOriginal, "d MMM yyyy")
+                      ? format(new Date(photo.dateTimeOriginal), "d MMM yyyy")
                       : ""}
                   </p>
                 </div>
@@ -197,15 +203,13 @@ export const CityViewLoadingStatus = () => {
             </div>
           </CardContainer>
 
-          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-3">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className="space-y-2 rounded-xl">
-                <div className="bg-muted p-4 rounded-xl flex items-center justify-center">
-                  <Skeleton className="w-full aspect-4/3 rounded-lg" />
-                </div>
-                <div className="flex flex-col items-center gap-1.5 pt-1">
-                  <Skeleton className="w-24 h-4" />
-                  <Skeleton className="w-16 h-3" />
+          <div className="w-full grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="flex flex-col gap-2 rounded-xl">
+                <Skeleton className="w-full aspect-4/3 rounded-xl" />
+                <div className="space-y-1 px-0.5">
+                  <Skeleton className="w-24 h-3.5 rounded" />
+                  <Skeleton className="w-16 h-3 rounded" />
                 </div>
               </div>
             ))}
