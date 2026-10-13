@@ -42,7 +42,7 @@ export interface MapboxProps {
     lngLat: { lng: number; lat: number },
   ) => void;
   onGeoJsonClick?: (feature: GeoJSON.Feature) => void;
-  onMapClick?: () => void;
+  onMapClick?: (lngLat: { lng: number; lat: number }) => void;
   onMove?: (viewState: {
     zoom: number;
     latitude: number;
@@ -58,10 +58,34 @@ export interface MapboxProps {
   dragPan?: boolean;
 }
 
-const MAP_STYLES = {
-  light: siteConfig.mapbox.lightStyle,
-  dark: siteConfig.mapbox.darkStyle,
-} as const;
+const DEFAULT_LIGHT_STYLE = "mapbox://styles/mapbox/light-v11";
+const DEFAULT_DARK_STYLE = "mapbox://styles/mapbox/dark-v11";
+
+const OSM_FALLBACK_STYLE: mapboxgl.Style = {
+  version: 8,
+  sources: {
+    "osm-tiles": {
+      type: "raster",
+      tiles: [
+        "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "https://b.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "https://c.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      ],
+      tileSize: 256,
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    },
+  },
+  layers: [
+    {
+      id: "osm-tiles-layer",
+      type: "raster",
+      source: "osm-tiles",
+      minzoom: 0,
+      maxzoom: 19,
+    },
+  ],
+};
 
 const Mapbox = forwardRef<MapRef, MapboxProps>(
   (
@@ -151,13 +175,30 @@ const Mapbox = forwardRef<MapRef, MapboxProps>(
       },
     };
 
+    const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN?.trim();
+    const hasValidMapboxToken = Boolean(
+      token &&
+        !token.includes("placeholder") &&
+        token.startsWith("pk.") &&
+        token.length > 25,
+    );
+
+    const configuredStyle =
+      theme === "dark"
+        ? siteConfig.mapbox.darkStyle?.trim() || DEFAULT_DARK_STYLE
+        : siteConfig.mapbox.lightStyle?.trim() || DEFAULT_LIGHT_STYLE;
+
+    const activeMapStyle = hasValidMapboxToken
+      ? configuredStyle
+      : OSM_FALLBACK_STYLE;
+
     // Add Geocoder control
     useEffect(() => {
-      if (!showGeocoder || !mapRef.current) return;
+      if (!showGeocoder || !mapRef.current || !hasValidMapboxToken) return;
 
       const map = mapRef.current;
       const geocoderOptions: GeocoderOptions = {
-        accessToken: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN!,
+        accessToken: token!,
         mapboxgl: mapboxgl,
       };
       const geocoder = new MapboxGeocoder(geocoderOptions);
@@ -169,12 +210,12 @@ const Mapbox = forwardRef<MapRef, MapboxProps>(
           map.getMap().removeControl(geocoder);
         }
       };
-    }, [showGeocoder]);
+    }, [showGeocoder, hasValidMapboxToken, token]);
 
-    // Handle GeoJSON click
+    // Handle GeoJSON and Map click
     const onClick = useCallback(
       (
-        event: mapboxgl.MapMouseEvent & {
+        event: mapboxgl.MapLayerMouseEvent & {
           features?: mapboxgl.GeoJSONFeature[];
         },
       ) => {
@@ -184,8 +225,8 @@ const Mapbox = forwardRef<MapRef, MapboxProps>(
           return;
         }
 
-        if (onMapClick) {
-          onMapClick();
+        if (onMapClick && event.lngLat) {
+          onMapClick({ lng: event.lngLat.lng, lat: event.lngLat.lat });
         }
       },
       [onGeoJsonClick, onMapClick],
@@ -209,10 +250,10 @@ const Mapbox = forwardRef<MapRef, MapboxProps>(
         boxZoom={boxZoom}
         dragRotate={dragRotate}
         dragPan={dragPan}
-        mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
+        mapboxAccessToken={hasValidMapboxToken ? token : undefined}
         initialViewState={initialViewState}
         style={{ width: "100%", height: "100%" }}
-        mapStyle={MAP_STYLES[theme === "dark" ? "dark" : "light"]}
+        mapStyle={activeMapStyle}
         interactiveLayerIds={geoJsonData ? ["data"] : undefined}
         onClick={onClick}
         onMove={(evt) => {

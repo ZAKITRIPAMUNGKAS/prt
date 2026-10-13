@@ -99,21 +99,65 @@ export function ThirdStep({
     if (!searchQuery.trim()) return;
 
     setIsSearching(true);
+    const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN?.trim();
+    const hasValidToken = Boolean(
+      token &&
+        !token.includes("placeholder") &&
+        token.startsWith("pk.") &&
+        token.length > 25
+    );
+
+    if (hasValidToken) {
+      try {
+        const response = await fetch(
+          `https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(
+            searchQuery
+          )}&access_token=${token}&limit=10`
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.features && data.features.length > 0) {
+            setSearchResults(data.features);
+            return;
+          }
+        }
+      } catch (error) {
+        logger.error("Mapbox search failed, falling back to OSM", error);
+      }
+    }
+
+    // Fallback search using OpenStreetMap Nominatim
     try {
       const response = await fetch(
-        `https://api.mapbox.com/search/geocode/v6/forward?q=${encodeURIComponent(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
           searchQuery
-        )}&access_token=${process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}&limit=10`
+        )}&format=geojson&limit=10`,
+        { headers: { "Accept-Language": "id,en" } }
       );
 
-      if (!response.ok) {
-        throw new Error("Search failed");
+      if (response.ok) {
+        const data = await response.json();
+        const osmResults: SearchResult[] = (data.features || []).map(
+          (feature: {
+            properties: { name?: string; display_name: string };
+            geometry: { coordinates: [number, number] };
+          }) => ({
+            properties: {
+              name:
+                feature.properties.name ||
+                feature.properties.display_name.split(",")[0],
+              place_formatted: feature.properties.display_name,
+            },
+            geometry: feature.geometry,
+          })
+        );
+        setSearchResults(osmResults);
+      } else {
+        setSearchResults([]);
       }
-
-      const data = await response.json();
-      setSearchResults(data.features || []);
     } catch (error) {
-      logger.error("Place search failed", error);
+      logger.error("OSM search failed", error);
       setSearchResults([]);
     } finally {
       setIsSearching(false);
@@ -248,6 +292,9 @@ export function ThirdStep({
                 draggableMarker
                 markers={mapValues.markers}
                 initialViewState={mapValues.viewState}
+                onMapClick={(lngLat) => {
+                  handleLocationChange(lngLat.lat, lngLat.lng);
+                }}
                 onMarkerDragEnd={(_, lngLat) => {
                   handleLocationChange(lngLat.lat, lngLat.lng);
                 }}
@@ -265,7 +312,7 @@ export function ThirdStep({
                       currentLocation.lat,
                       currentLocation.lng
                     )
-                  : "Drag the marker to set a location, or continue without one. The temporary marker is not saved."}
+                  : "Klik pada peta, geser pin, atau cari lokasi di atas untuk memilih posisi foto."}
               </span>
             </div>
             {addressData?.features?.[0] && (

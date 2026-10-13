@@ -10,14 +10,26 @@ type MarkerProps = {
   onDragEnd: (event: { lngLat: { lng: number; lat: number } }) => void;
 };
 
-const captured = vi.hoisted(() => ({ markers: [] as MarkerProps[] }));
+const captured = vi.hoisted(() => ({
+  markers: [] as MarkerProps[],
+  mapProps: {} as Record<string, unknown>,
+}));
 
 vi.unmock("react");
 vi.mock("mapbox-gl", () => ({}));
 vi.mock("@mapbox/mapbox-gl-geocoder", () => ({ default: vi.fn() }));
 vi.mock("next-themes", () => ({ useTheme: () => ({ theme: "light" }) }));
 vi.mock("react-map-gl/mapbox", () => ({
-  default: ({ children }: { children: React.ReactNode }) => children,
+  default: ({
+    children,
+    ...props
+  }: {
+    children: React.ReactNode;
+    [key: string]: unknown;
+  }) => {
+    captured.mapProps = props;
+    return children;
+  },
   Marker: (props: MarkerProps) => {
     captured.markers.push(props);
     return null;
@@ -68,5 +80,16 @@ describe("editable map without coordinates", () => {
   it("does not create temporary markers on read-only maps", () => {
     render({ markers: [] });
     expect(captured.markers).toHaveLength(0);
+  });
+
+  it("passes clicked coordinates to onMapClick", () => {
+    const onMapClick = vi.fn();
+    render({ onMapClick });
+    const mapClickFn = captured.mapProps.onClick as (e: {
+      lngLat: { lng: number; lat: number };
+    }) => void;
+    expect(mapClickFn).toBeDefined();
+    mapClickFn({ lngLat: { lng: 106.8456, lat: -6.2088 } });
+    expect(onMapClick).toHaveBeenCalledWith({ lng: 106.8456, lat: -6.2088 });
   });
 });
