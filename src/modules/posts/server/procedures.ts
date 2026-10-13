@@ -121,24 +121,25 @@ export const postsRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const { page, pageSize, search } = input;
 
-      const data = await ctx.db
-        .select()
-        .from(posts)
-        .where(
-          search ? ilike(posts.title, `%${escapeLike(search)}%`) : undefined,
-        )
-        .orderBy(desc(posts.createdAt), desc(posts.id))
-        .limit(pageSize)
-        .offset((page - 1) * pageSize);
-
-      const [total] = await ctx.db
-        .select({
-          count: count(),
-        })
-        .from(posts)
-        .where(
-          search ? ilike(posts.title, `%${escapeLike(search)}%`) : undefined,
-        );
+      const [data, [total]] = await Promise.all([
+        ctx.db
+          .select()
+          .from(posts)
+          .where(
+            search ? ilike(posts.title, `%${escapeLike(search)}%`) : undefined,
+          )
+          .orderBy(desc(posts.createdAt), desc(posts.id))
+          .limit(pageSize)
+          .offset((page - 1) * pageSize),
+        ctx.db
+          .select({
+            count: count(),
+          })
+          .from(posts)
+          .where(
+            search ? ilike(posts.title, `%${escapeLike(search)}%`) : undefined,
+          ),
+      ]);
 
       const totalPages = Math.ceil(total.count / pageSize);
 

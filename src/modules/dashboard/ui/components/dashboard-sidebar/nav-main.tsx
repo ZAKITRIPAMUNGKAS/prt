@@ -64,7 +64,7 @@ export function NavMain({
                   }
                   asChild
                 >
-                  <Link href={item.url as Route}>
+                  <Link href={item.url as Route} prefetch={true}>
                     <IconMap icon={item.icon} />
                     <span>{item.title}</span>
                   </Link>

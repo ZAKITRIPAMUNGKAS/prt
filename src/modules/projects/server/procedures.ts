@@ -112,18 +112,19 @@ export const projectsRouter = createTRPCRouter({
         ? ilike(projects.title, `%${escapeLike(search)}%`)
         : undefined;
 
-      const items = await ctx.db
-        .select()
-        .from(projects)
-        .where(searchCondition)
-        .orderBy(asc(projects.order), desc(projects.createdAt))
-        .limit(pageSize)
-        .offset((page - 1) * pageSize);
-
-      const [total] = await ctx.db
-        .select({ count: count() })
-        .from(projects)
-        .where(searchCondition);
+      const [items, [total]] = await Promise.all([
+        ctx.db
+          .select()
+          .from(projects)
+          .where(searchCondition)
+          .orderBy(asc(projects.order), desc(projects.createdAt))
+          .limit(pageSize)
+          .offset((page - 1) * pageSize),
+        ctx.db
+          .select({ count: count() })
+          .from(projects)
+          .where(searchCondition),
+      ]);
 
       const totalPages = Math.ceil(total.count / pageSize);
 

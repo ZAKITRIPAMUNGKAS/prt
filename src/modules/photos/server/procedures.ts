@@ -248,28 +248,29 @@ export const photosRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const { page, pageSize, search, orderBy } = input;
 
-      const data = await ctx.db
-        .select()
-        .from(photos)
-        .where(
-          search ? ilike(photos.title, `%${escapeLike(search)}%`) : undefined,
-        )
-        .orderBy(
-          orderBy === "asc"
-            ? asc(photos.dateTimeOriginal)
-            : desc(photos.dateTimeOriginal),
-        )
-        .limit(pageSize)
-        .offset((page - 1) * pageSize);
-
-      const [total] = await ctx.db
-        .select({
-          count: count(),
-        })
-        .from(photos)
-        .where(
-          search ? ilike(photos.title, `%${escapeLike(search)}%`) : undefined,
-        );
+      const [data, [total]] = await Promise.all([
+        ctx.db
+          .select()
+          .from(photos)
+          .where(
+            search ? ilike(photos.title, `%${escapeLike(search)}%`) : undefined,
+          )
+          .orderBy(
+            orderBy === "asc"
+              ? asc(photos.dateTimeOriginal)
+              : desc(photos.dateTimeOriginal),
+          )
+          .limit(pageSize)
+          .offset((page - 1) * pageSize),
+        ctx.db
+          .select({
+            count: count(),
+          })
+          .from(photos)
+          .where(
+            search ? ilike(photos.title, `%${escapeLike(search)}%`) : undefined,
+          ),
+      ]);
 
       const totalPages = Math.ceil(total.count / pageSize);
 
