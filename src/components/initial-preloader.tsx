@@ -1,44 +1,55 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { PiSparkleFill } from "react-icons/pi";
 import { siteConfig } from "@/site.config";
 
+function getHasLoadedSnapshot(): boolean {
+  if (typeof window === "undefined") return true;
+  return Boolean(sessionStorage.getItem("app_initial_loaded"));
+}
+
+function subscribeToStorage(): () => void {
+  return () => {};
+}
+
 export function InitialPreloader() {
-  const [loading, setLoading] = useState(true);
+  const alreadyLoaded = useSyncExternalStore(
+    subscribeToStorage,
+    getHasLoadedSnapshot,
+    () => true
+  );
+
+  const [active, setActive] = useState(true);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    // Only show the cinematic preloader once per session
-    const hasLoaded = sessionStorage.getItem("app_initial_loaded");
-    if (hasLoaded) {
-      setLoading(false);
-      return;
-    }
+    if (alreadyLoaded) return;
 
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
           setTimeout(() => {
-            setLoading(false);
+            setActive(false);
             sessionStorage.setItem("app_initial_loaded", "true");
           }, 350);
           return 100;
         }
-        // Organic acceleration curve
         const step = Math.max(3, Math.floor((100 - prev) * 0.22));
         return Math.min(100, prev + step);
       });
     }, 45);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [alreadyLoaded]);
+
+  const show = !alreadyLoaded && active;
 
   return (
     <AnimatePresence mode="wait">
-      {loading && (
+      {show && (
         <motion.div
           key="preloader"
           initial={{ opacity: 1 }}

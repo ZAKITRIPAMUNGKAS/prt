@@ -154,46 +154,89 @@ export const dashboardRouter = createTRPCRouter({
   }),
 
   getDashboardStats: protectedProcedure.query(async ({ ctx }) => {
-    // Get total photo count
-    const totalPhotosResult = await ctx.db
-      .select({ count: sql<number>`COUNT(*)::int` })
-      .from(photos)
-      .where(sql`${photos.dateTimeOriginal} IS NOT NULL`);
-
-    const totalPhotos = totalPhotosResult[0]?.count ?? 0;
-
-    // Get current year photo count
     const currentYear = new Date().getFullYear();
     const yearStart = new Date(currentYear, 0, 1);
-    const thisYearPhotosResult = await ctx.db
-      .select({ count: sql<number>`COUNT(*)::int` })
-      .from(photos)
-      .where(
-        and(
-          gte(photos.dateTimeOriginal, yearStart),
-          sql`${photos.dateTimeOriginal} IS NOT NULL`,
-        ),
-      );
-
-    const thisYearPhotos = thisYearPhotosResult[0]?.count ?? 0;
-
-    // Get last year photo count
     const lastYearStart = new Date(currentYear - 1, 0, 1);
     const lastYearEnd = new Date(currentYear, 0, 1);
-    const lastYearPhotosResult = await ctx.db
-      .select({ count: sql<number>`COUNT(*)::int` })
-      .from(photos)
-      .where(
-        and(
-          gte(photos.dateTimeOriginal, lastYearStart),
-          sql`${photos.dateTimeOriginal} < ${lastYearEnd}`,
-          sql`${photos.dateTimeOriginal} IS NOT NULL`,
-        ),
-      );
 
+    // Run independent database queries in parallel
+    const [
+      totalPhotosResult,
+      thisYearPhotosResult,
+      lastYearPhotosResult,
+      countriesResult,
+      lastYearCountriesResult,
+      citiesResult,
+      lastYearCitiesResult,
+    ] = await Promise.all([
+      // 1. Total photo count
+      ctx.db
+        .select({ count: sql<number>`COUNT(*)::int` })
+        .from(photos)
+        .where(sql`${photos.dateTimeOriginal} IS NOT NULL`),
+
+      // 2. This year photo count
+      ctx.db
+        .select({ count: sql<number>`COUNT(*)::int` })
+        .from(photos)
+        .where(
+          and(
+            gte(photos.dateTimeOriginal, yearStart),
+            sql`${photos.dateTimeOriginal} IS NOT NULL`,
+          ),
+        ),
+
+      // 3. Last year photo count
+      ctx.db
+        .select({ count: sql<number>`COUNT(*)::int` })
+        .from(photos)
+        .where(
+          and(
+            gte(photos.dateTimeOriginal, lastYearStart),
+            sql`${photos.dateTimeOriginal} < ${lastYearEnd}`,
+            sql`${photos.dateTimeOriginal} IS NOT NULL`,
+          ),
+        ),
+
+      // 4. Total countries visited
+      ctx.db
+        .selectDistinct({ country: photos.country })
+        .from(photos)
+        .where(sql`${photos.country} IS NOT NULL`),
+
+      // 5. Last year countries visited
+      ctx.db
+        .selectDistinct({ country: photos.country })
+        .from(photos)
+        .where(
+          and(
+            gte(photos.dateTimeOriginal, lastYearStart),
+            sql`${photos.dateTimeOriginal} < ${lastYearEnd}`,
+            sql`${photos.country} IS NOT NULL`,
+          ),
+        ),
+
+      // 6. Total cities
+      ctx.db
+        .selectDistinct({ city: citySets.city })
+        .from(citySets),
+
+      // 7. Last year cities
+      ctx.db
+        .selectDistinct({ city: citySets.city })
+        .from(citySets)
+        .where(
+          and(
+            gte(citySets.createdAt, lastYearStart),
+            sql`${citySets.createdAt} < ${lastYearEnd}`,
+          ),
+        ),
+    ]);
+
+    const totalPhotos = totalPhotosResult[0]?.count ?? 0;
+    const thisYearPhotos = thisYearPhotosResult[0]?.count ?? 0;
     const lastYearPhotos = lastYearPhotosResult[0]?.count ?? 0;
 
-    // Calculate year-over-year percentage change for photos
     const thisYearPercentChange =
       lastYearPhotos === 0
         ? thisYearPhotos > 0
@@ -203,29 +246,9 @@ export const dashboardRouter = createTRPCRouter({
             ((thisYearPhotos - lastYearPhotos) / lastYearPhotos) * 100,
           );
 
-    // Get total countries visited
-    const countriesResult = await ctx.db
-      .selectDistinct({ country: photos.country })
-      .from(photos)
-      .where(sql`${photos.country} IS NOT NULL`);
-
     const totalCountries = countriesResult.length;
-
-    // Get last year countries visited
-    const lastYearCountriesResult = await ctx.db
-      .selectDistinct({ country: photos.country })
-      .from(photos)
-      .where(
-        and(
-          gte(photos.dateTimeOriginal, lastYearStart),
-          sql`${photos.dateTimeOriginal} < ${lastYearEnd}`,
-          sql`${photos.country} IS NOT NULL`,
-        ),
-      );
-
     const lastYearCountries = lastYearCountriesResult.length;
 
-    // Calculate year-over-year percentage change for countries
     const countriesPercentChange =
       lastYearCountries === 0
         ? totalCountries > 0
@@ -235,27 +258,9 @@ export const dashboardRouter = createTRPCRouter({
             ((totalCountries - lastYearCountries) / lastYearCountries) * 100,
           );
 
-    // Get total cities
-    const citiesResult = await ctx.db
-      .selectDistinct({ city: citySets.city })
-      .from(citySets);
-
     const totalCities = citiesResult.length;
-
-    // Get last year cities
-    const lastYearCitiesResult = await ctx.db
-      .selectDistinct({ city: citySets.city })
-      .from(citySets)
-      .where(
-        and(
-          gte(citySets.createdAt, lastYearStart),
-          sql`${citySets.createdAt} < ${lastYearEnd}`,
-        ),
-      );
-
     const lastYearCities = lastYearCitiesResult.length;
 
-    // Calculate year-over-year percentage change for cities
     const citiesPercentChange =
       lastYearCities === 0
         ? totalCities > 0
