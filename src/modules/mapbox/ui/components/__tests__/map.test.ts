@@ -16,10 +16,9 @@ const captured = vi.hoisted(() => ({
 }));
 
 vi.unmock("react");
-vi.mock("mapbox-gl", () => ({}));
-vi.mock("@mapbox/mapbox-gl-geocoder", () => ({ default: vi.fn() }));
+vi.mock("maplibre-gl", () => ({ default: {} }));
 vi.mock("next-themes", () => ({ useTheme: () => ({ theme: "light" }) }));
-vi.mock("react-map-gl/mapbox", () => ({
+vi.mock("react-map-gl/maplibre", () => ({
   default: ({
     children,
     ...props

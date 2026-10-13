@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
-import type { MapRef } from "react-map-gl/mapbox";
+import type { MapRef } from "react-map-gl/maplibre";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ArrowLeft, X, MapPin } from "lucide-react";
 import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";

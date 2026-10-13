@@ -192,6 +192,13 @@ export const photosUpdateSchema = createUpdateSchema(photos)
     latitude: true,
     longitude: true,
     visibility: true,
+    country: true,
+    countryCode: true,
+    region: true,
+    city: true,
+    district: true,
+    fullAddress: true,
+    placeFormatted: true,
   })
   .partial();
 

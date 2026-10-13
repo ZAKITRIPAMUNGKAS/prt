@@ -1,8 +1,9 @@
 "use client";
 
 // External dependencies
-import * as mapboxgl from "mapbox-gl";
-import { useCallback, useEffect, useRef, useState, forwardRef } from "react";
+import * as maplibregl from "maplibre-gl";
+import type { MapLayerMouseEvent } from "maplibre-gl";
+import { useCallback, useRef, useState, forwardRef } from "react";
 import Map, {
   GeolocateControl,
   Layer,
@@ -11,16 +12,11 @@ import Map, {
   Marker,
   NavigationControl,
   Source,
-} from "react-map-gl/mapbox";
-// Hooks & Types
-import MapboxGeocoder, {
-  type GeocoderOptions,
-} from "@mapbox/mapbox-gl-geocoder";
+} from "react-map-gl/maplibre";
 import { useTheme } from "next-themes";
 import { siteConfig } from "@/site.config";
 // Styles
-import "mapbox-gl/dist/mapbox-gl.css";
-import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 export interface MapboxProps {
   id?: string;
@@ -58,34 +54,10 @@ export interface MapboxProps {
   dragPan?: boolean;
 }
 
-const DEFAULT_LIGHT_STYLE = "mapbox://styles/mapbox/light-v11";
-const DEFAULT_DARK_STYLE = "mapbox://styles/mapbox/dark-v11";
-
-const OSM_FALLBACK_STYLE: mapboxgl.Style = {
-  version: 8,
-  sources: {
-    "osm-tiles": {
-      type: "raster",
-      tiles: [
-        "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        "https://b.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        "https://c.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      ],
-      tileSize: 256,
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    },
-  },
-  layers: [
-    {
-      id: "osm-tiles-layer",
-      type: "raster",
-      source: "osm-tiles",
-      minzoom: 0,
-      maxzoom: 19,
-    },
-  ],
-};
+const CARTO_LIGHT_STYLE =
+  "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
+const CARTO_DARK_STYLE =
+  "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
 
 const Mapbox = forwardRef<MapRef, MapboxProps>(
   (
@@ -103,7 +75,6 @@ const Mapbox = forwardRef<MapRef, MapboxProps>(
       onMapClick,
       onMove,
       draggableMarker = false,
-      showGeocoder = false,
       showControls = true,
       scrollZoom = true,
       doubleClickZoom = true,
@@ -175,53 +146,21 @@ const Mapbox = forwardRef<MapRef, MapboxProps>(
       },
     };
 
-    const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN?.trim();
-    const hasValidMapboxToken = Boolean(
-      token &&
-        !token.includes("placeholder") &&
-        token.startsWith("pk.") &&
-        token.length > 25,
-    );
-
-    const configuredStyle =
+    const activeMapStyle =
       theme === "dark"
-        ? siteConfig.mapbox.darkStyle?.trim() || DEFAULT_DARK_STYLE
-        : siteConfig.mapbox.lightStyle?.trim() || DEFAULT_LIGHT_STYLE;
-
-    const activeMapStyle = hasValidMapboxToken
-      ? configuredStyle
-      : OSM_FALLBACK_STYLE;
-
-    // Add Geocoder control
-    useEffect(() => {
-      if (!showGeocoder || !mapRef.current || !hasValidMapboxToken) return;
-
-      const map = mapRef.current;
-      const geocoderOptions: GeocoderOptions = {
-        accessToken: token!,
-        mapboxgl: mapboxgl,
-      };
-      const geocoder = new MapboxGeocoder(geocoderOptions);
-
-      map.getMap().addControl(geocoder);
-
-      return () => {
-        if (map) {
-          map.getMap().removeControl(geocoder);
-        }
-      };
-    }, [showGeocoder, hasValidMapboxToken, token]);
+        ? siteConfig.mapbox.darkStyle?.trim() || CARTO_DARK_STYLE
+        : siteConfig.mapbox.lightStyle?.trim() || CARTO_LIGHT_STYLE;
 
     // Handle GeoJSON and Map click
     const onClick = useCallback(
       (
-        event: mapboxgl.MapLayerMouseEvent & {
-          features?: mapboxgl.GeoJSONFeature[];
+        event: MapLayerMouseEvent & {
+          features?: GeoJSON.Feature[];
         },
       ) => {
         const feature = event.features?.[0];
         if (feature && onGeoJsonClick) {
-          onGeoJsonClick(feature as GeoJSON.Feature);
+          onGeoJsonClick(feature);
           return;
         }
 
@@ -245,12 +184,12 @@ const Mapbox = forwardRef<MapRef, MapboxProps>(
       <Map
         id={id}
         ref={handleRef}
+        mapLib={maplibregl}
         scrollZoom={scrollZoom}
         doubleClickZoom={doubleClickZoom}
         boxZoom={boxZoom}
         dragRotate={dragRotate}
         dragPan={dragPan}
-        mapboxAccessToken={hasValidMapboxToken ? token : undefined}
         initialViewState={initialViewState}
         style={{ width: "100%", height: "100%" }}
         mapStyle={activeMapStyle}
