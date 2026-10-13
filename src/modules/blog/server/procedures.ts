@@ -10,8 +10,8 @@ export const blogRouter = createTRPCRouter({
       .select()
       .from(posts)
       .where(eq(posts.visibility, "public"))
-      .orderBy(desc(posts.updatedAt))
-      .limit(10);
+      .orderBy(desc(posts.createdAt), desc(posts.id))
+      .limit(20);
 
     return data;
   }),

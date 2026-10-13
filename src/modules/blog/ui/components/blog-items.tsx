@@ -23,71 +23,81 @@ export const PostsSection = ({ data }: PostsSectionProps) => {
     return null;
   }
 
-  // Skip the first post (already shown in LatestPostSection)
-  const postsToShow = data.slice(1);
-
-  if (postsToShow.length === 0) {
-    return null;
-  }
+  // Show all posts in the list, with the latest tagged
+  const postsToShow = data;
 
   return (
-    <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-3">
-      {postsToShow.map((item) => {
-        const coverUrl = keyToUrl(item.coverImage) || "/placeholder.svg";
-        const transitionName = `blog-${item.slug}`;
+    <div className="w-full space-y-2">
+      <div className="flex items-center justify-between px-1">
+        <h2 className="text-sm font-medium text-text-muted">Semua Artikel</h2>
+        <span className="text-xs text-text-muted font-light">
+          {postsToShow.length} tulisan
+        </span>
+      </div>
 
-        return (
-          <AspectRatio ratio={0.75 / 1} key={item.id}>
-            <Link
-              href={`/blog/${item.slug}`}
-              onClick={(e) => {
-                e.preventDefault();
-                navigateWithViewTransition(() =>
-                  router.push(`/blog/${item.slug}`)
-                );
-              }}
-              className="block w-full h-full relative rounded-xl overflow-hidden group cursor-pointer bg-muted"
-              style={{ viewTransitionName: transitionName }}
-            >
-              <BlurImage
-                src={coverUrl}
-                alt={item.title || "Blog post"}
-                fill
-                quality={75}
-                sizes="(max-width: 767px) 100vw, (max-width: 1535px) 50vw, 33vw"
-                className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-              />
+      <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {postsToShow.map((item, index) => {
+          const coverUrl = keyToUrl(item.coverImage) || "/placeholder.svg";
+          const transitionName = `blog-${item.slug}`;
+          const isLatest = index === 0;
 
-              {/* Tag pill at top-right */}
-              {item.tags?.[0] && (
-                <div className="absolute top-3 right-3 z-10">
-                  <span className="px-2.5 py-1 bg-black/50 backdrop-blur-md text-white rounded-md text-[11px] font-normal tracking-wide uppercase">
-                    {item.tags[0]}
-                  </span>
+          return (
+            <AspectRatio ratio={0.88 / 1} key={item.id}>
+              <Link
+                href={`/blog/${item.slug}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigateWithViewTransition(() =>
+                    router.push(`/blog/${item.slug}`)
+                  );
+                }}
+                className="block w-full h-full relative rounded-xl overflow-hidden group cursor-pointer bg-muted"
+                style={{ viewTransitionName: transitionName }}
+              >
+                <BlurImage
+                  src={coverUrl}
+                  alt={item.title || "Blog post"}
+                  fill
+                  quality={75}
+                  sizes="(max-width: 767px) 100vw, (max-width: 1535px) 50vw, 33vw"
+                  className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                />
+
+                {/* Tag pill at top-right */}
+                <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5">
+                  {isLatest && (
+                    <span className="px-2 py-0.5 bg-primary text-black dark:text-white rounded-md text-[10px] font-semibold tracking-wide uppercase shadow-xs">
+                      Terbaru
+                    </span>
+                  )}
+                  {item.tags?.[0] && (
+                    <span className="px-2 py-0.5 bg-black/60 backdrop-blur-md text-white rounded-md text-[10px] font-normal tracking-wide uppercase">
+                      {item.tags[0]}
+                    </span>
+                  )}
                 </div>
-              )}
 
-              {/* Bottom Card Info Overlay */}
-              <div className="absolute inset-x-0 bottom-0 p-3 z-10">
-                <div className="bg-background/90 dark:bg-background/80 backdrop-blur-md p-4 rounded-xl border border-border/40 shadow-sm flex flex-col gap-1.5 transition-colors group-hover:border-border">
-                  <div className="flex items-center justify-between text-xs text-text-muted font-light">
-                    <span>{item.readingTimeMinutes || 3} min baca</span>
-                    <PiArrowUpRight
-                      size={15}
-                      className="text-foreground/70 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200"
-                    />
+                {/* Bottom Card Info Overlay */}
+                <div className="absolute inset-x-0 bottom-0 p-2.5 z-10">
+                  <div className="bg-background/90 dark:bg-background/85 backdrop-blur-md p-3.5 rounded-xl border border-border/40 shadow-xs flex flex-col gap-1 transition-colors group-hover:border-border">
+                    <div className="flex items-center justify-between text-xs text-text-muted font-light">
+                      <span>{item.readingTimeMinutes || 3} min baca</span>
+                      <PiArrowUpRight
+                        size={14}
+                        className="text-foreground/70 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200"
+                      />
+                    </div>
+
+                    <h2 className="text-sm font-medium leading-snug line-clamp-2 text-foreground">
+                      {item.title}
+                    </h2>
                   </div>
-
-                  <h2 className="text-sm md:text-[15px] font-medium leading-snug line-clamp-2 text-foreground">
-                    {item.title}
-                  </h2>
                 </div>
-              </div>
-            </Link>
-          </AspectRatio>
-        );
-      })}
+              </Link>
+            </AspectRatio>
+          );
+        })}
+      </div>
     </div>
   );
 };
-

@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "motion/react";
 import { useRouter } from "next/navigation";
+import Graphic from "../../../../../components/graphic";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowRight } from "lucide-react";
 import { useEffect } from "react";
@@ -60,10 +61,13 @@ export default function MobileMenu({ isOpen, onClose }: Props) {
               {/* CLOSE BUTTON  */}
               <button
                 onClick={onClose}
-                className="fixed top-3 right-3 z-50 bg-background/90 backdrop-blur-md rounded-full border border-border/40 shadow-xs px-4 py-2 cursor-pointer select-none hover:bg-muted transition-colors"
-                aria-label="Tutup menu navigasi"
+                className="fixed top-3 right-3 z-50 bg-background rounded-bl-[18px] cursor-pointer select-none"
               >
-                <span className="text-sm font-medium">Tutup</span>
+                <div className="relative pb-3 px-4">
+                  <h1 className="text-sm font-light">Tutup</h1>
+                  <Graphic className="absolute -bottom-4 right-0 rotate-90" />
+                  <Graphic className="absolute -left-4 top-0 rotate-90" />
+                </div>
               </button>
 
               <div className="flex gap-4 items-center">

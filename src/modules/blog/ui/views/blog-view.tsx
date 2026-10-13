@@ -28,9 +28,14 @@ export const BlogView = () => {
       <div className="w-full lg:w-1/2 space-y-3 pb-3">
         {/* DESCRIPTION CARD  */}
         <CardContainer>
-          <div className="flex flex-col p-8 md:p-12 gap-8 md:gap-16">
-            <h1 className="text-3xl">Blog</h1>
-            <div className="flex flex-col gap-4 font-light text-text-muted leading-relaxed text-[15px]">
+          <div className="flex flex-col p-6 md:p-8 gap-3">
+            <div className="flex items-center justify-between">
+              <h1 className="text-2xl md:text-3xl font-medium tracking-tight">Blog</h1>
+              <span className="text-xs text-text-muted bg-muted px-2.5 py-1 rounded-full border border-border/40 font-light">
+                {data.length} Artikel
+              </span>
+            </div>
+            <div className="font-light text-text-muted leading-relaxed text-sm md:text-[15px]">
               <p>
                 Selamat datang di blog saya. Di sini saya menuliskan pemikiran, catatan teknis seputar web development, studi kasus rekayasa sistem, serta cerita di balik foto dan proyek visual.
               </p>
@@ -79,9 +84,9 @@ export const BlogViewLoadingStatus = () => {
       <div className="w-full lg:w-1/2 space-y-3 pb-3">
         {/* DESCRIPTION CARD SKELETON */}
         <CardContainer>
-          <div className="flex flex-col p-8 md:p-12 gap-8 md:gap-16">
-            <h1 className="text-3xl">Blog</h1>
-            <div className="flex flex-col gap-4 font-light text-text-muted leading-relaxed text-[15px]">
+          <div className="flex flex-col p-6 md:p-8 gap-3">
+            <h1 className="text-2xl md:text-3xl font-medium tracking-tight">Blog</h1>
+            <div className="font-light text-text-muted leading-relaxed text-sm md:text-[15px]">
               <p>
                 Selamat datang di blog saya. Di sini saya menuliskan pemikiran, catatan teknis seputar web development, studi kasus rekayasa sistem, serta cerita di balik foto dan proyek visual.
               </p>

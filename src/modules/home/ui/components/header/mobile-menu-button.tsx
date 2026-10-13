@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Graphic from "../../../../../components/graphic";
 import MobileMenu from "./mobile-menu";
 
 const MobileMenuButton = () => {
@@ -10,11 +11,13 @@ const MobileMenuButton = () => {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed right-3 z-50 bg-background/85 dark:bg-background/80 backdrop-blur-md rounded-full border border-border/40 shadow-xs lg:hidden cursor-pointer select-none px-4 py-2 flex items-center justify-center transition-colors hover:bg-muted"
-        style={{ top: "calc(env(safe-area-inset-top, 0px) + 12px)" }}
-        aria-label="Buka menu navigasi"
+        className="fixed top-3 right-3 z-40 bg-background rounded-bl-[18px] lg:hidden cursor-pointer select-none"
       >
-        <span className="text-sm font-medium">Menu</span>
+        <div className="relative pb-3 px-4">
+          <h1 className="text-sm font-light">Menu</h1>
+          <Graphic className="absolute -bottom-4 right-0 rotate-90" />
+          <Graphic className="absolute -left-4 top-0 rotate-90" />
+        </div>
       </button>
 
       <MobileMenu isOpen={isOpen} onClose={() => setIsOpen(false)} />

@@ -62,46 +62,48 @@ export const SliderView = () => {
 
   return (
     <>
-      <Carousel
-        className="absolute top-0 left-0 w-full h-full rounded-xl"
-        containerClassName="h-full"
-        dotsCount={photos.length}
-      >
-        {displayPhotos.map((photo, index) => {
-          const isFirstSlide = index === 0;
+      <div className="w-full h-full relative rounded-xl overflow-hidden bg-muted">
+        <Carousel
+          className="w-full h-full"
+          containerClassName="h-full"
+          dotsCount={photos.length}
+        >
+          {displayPhotos.map((photo, index) => {
+            const isFirstSlide = index === 0;
 
-          return (
-            <div
-              key={`${photo.id}-${index}`}
-              role="button"
-              tabIndex={0}
-              onPointerDown={handlePointerDown}
-              onClick={(e) => handlePhotoClick(e, photo.id)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  openPhoto(photo.id);
-                }
-              }}
-              draggable={false}
-              onDragStart={(e) => e.preventDefault()}
-              className="flex-[0_0_100%] min-w-0 h-full relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary select-none touch-pan-y"
-              aria-label={`View photo: ${photo.title}`}
-            >
-              <BlurImage
-                src={keyToUrl(photo.url)}
-                alt={photo.title}
-                fill
-                sizes="(max-width: 1023px) 100vw, 50vw"
-                loading={isFirstSlide ? "eager" : "lazy"}
-                fetchPriority={isFirstSlide ? "high" : undefined}
-                blurhash={photo.blurData}
-                className="w-full h-full object-cover pointer-events-none select-none"
-              />
-            </div>
-          );
-        })}
-      </Carousel>
+            return (
+              <div
+                key={`${photo.id}-${index}`}
+                role="button"
+                tabIndex={0}
+                onPointerDown={handlePointerDown}
+                onClick={(e) => handlePhotoClick(e, photo.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    openPhoto(photo.id);
+                  }
+                }}
+                draggable={false}
+                onDragStart={(e) => e.preventDefault()}
+                className="flex-[0_0_100%] min-w-0 h-full relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary select-none touch-pan-y"
+                aria-label={`View photo: ${photo.title}`}
+              >
+                <BlurImage
+                  src={keyToUrl(photo.url)}
+                  alt={photo.title}
+                  fill
+                  sizes="(max-width: 1023px) 100vw, 50vw"
+                  loading={isFirstSlide ? "eager" : "lazy"}
+                  fetchPriority={isFirstSlide ? "high" : undefined}
+                  blurhash={photo.blurData}
+                  className="w-full h-full object-cover pointer-events-none select-none"
+                />
+              </div>
+            );
+          })}
+        </Carousel>
+      </div>
 
       <PhotoLightbox
         photos={photos}

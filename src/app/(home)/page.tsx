@@ -42,7 +42,7 @@ const page = async () => {
         {/* LEFT CONTENT - Fixed */}
         <PageEntrance
           delay={0.1}
-          className="relative overflow-hidden w-full lg:w-1/2 h-[70vh] lg:fixed lg:top-0 lg:left-0 lg:h-screen p-0 lg:p-3 rounded-xl"
+          className="w-full lg:w-1/2 h-[70vh] lg:fixed lg:top-0 lg:left-0 lg:h-screen p-0 lg:p-3"
         >
           <Suspense fallback={<SliderViewLoadingStatus />}>
             <ErrorBoundary fallback={<p>Something went wrong</p>}>
