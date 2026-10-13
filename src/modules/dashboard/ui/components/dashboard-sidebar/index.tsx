@@ -50,16 +50,12 @@ const data = {
   ],
   navSecondary: [
     {
-      title: "Settings",
-      url: "#",
+      title: "Lihat Web",
+      url: "/",
     },
     {
-      title: "Get Help",
-      url: "#",
-    },
-    {
-      title: "Search",
-      url: "#",
+      title: "Screensaver",
+      url: "/screensaver",
     },
   ],
 };

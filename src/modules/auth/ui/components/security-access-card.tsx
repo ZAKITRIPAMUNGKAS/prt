@@ -33,7 +33,7 @@ const SecurityAccessCard = (props: {
   return (
     <div className="space-y-8">
       {/* Account Management */}
-      <div className="max-w-lg">
+      <div className="max-w-2xl">
         <ProfileForm />
       </div>
 
@@ -66,7 +66,7 @@ const SecurityAccessCard = (props: {
               return (
                 <Card
                   key={session.id}
-                  className={`overflow-hidden transition-all duration-200 hover:shadow-sm min-w-[400px] ${
+                  className={`overflow-hidden transition-all duration-200 hover:shadow-sm w-full ${
                     isCurrentSession
                       ? "ring-1 ring-primary/30 border-primary/40 bg-primary/5"
                       : "border hover:border-primary/20"

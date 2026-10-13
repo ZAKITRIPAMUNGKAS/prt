@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 export function NavSecondary({
   items,
@@ -25,11 +25,10 @@ export function NavSecondary({
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild>
-                <a href={item.url}>
+              <SidebarMenuButton asChild size="sm">
+                <Link href={item.url}>
                   <span>{item.title}</span>
-                  <Badge variant="secondary">Todo</Badge>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
