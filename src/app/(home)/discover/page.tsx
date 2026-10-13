@@ -12,17 +12,21 @@ export const metadata = {
     "Explore photos on an interactive map. Discover stunning photography from cities and locations around the world.",
 };
 
+import { PageEntrance } from "@/components/page-entrance";
+
 const page = () => {
   const queryClient = getQueryClient();
   void queryClient.prefetchQuery(trpc.discover.getManyPhotos.queryOptions({}));
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<DiscoverLoading />}>
-        <ErrorBoundary fallback={<p>Error</p>}>
-          <DiscoverWidget />
-        </ErrorBoundary>
-      </Suspense>
+      <PageEntrance className="h-full min-h-[calc(100vh-1.5rem)]">
+        <Suspense fallback={<DiscoverLoading />}>
+          <ErrorBoundary fallback={<p>Error</p>}>
+            <DiscoverWidget />
+          </ErrorBoundary>
+        </Suspense>
+      </PageEntrance>
     </HydrationBoundary>
   );
 };

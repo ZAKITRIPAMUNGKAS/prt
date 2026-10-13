@@ -4,7 +4,7 @@ import { siteConfig } from "@/site.config";
 
 const Footer = () => {
   return (
-    <div className="flex flex-col items-center lg:items-start p-16 pb-12 gap-8 lg:gap-16 rounded-xl font-light relative flex-1 bg-primary text-white dark:text-black">
+    <div className="flex flex-col items-center lg:items-start p-8 sm:p-12 lg:p-16 pb-10 sm:pb-12 gap-8 lg:gap-16 rounded-xl font-light relative flex-1 bg-primary text-white dark:text-black">
       <div className="flex flex-col lg:flex-row gap-4 items-center">
         {/* AVATAR  */}
         <Avatar className="size-[60px]">

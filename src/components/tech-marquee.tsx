@@ -62,10 +62,10 @@ const technologies = [
 
 const TechMarquee = () => {
   return (
-    <div className="bg-muted flex items-center gap-12 p-8 rounded-xl">
-      <h2 className="text-lg font-light">Built with</h2>
+    <div className="bg-muted flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-8 lg:gap-12 p-5 sm:p-8 rounded-xl overflow-hidden">
+      <h2 className="text-base sm:text-lg font-light shrink-0">Built with</h2>
 
-      <div className="relative flex-1 overflow-hidden">
+      <div className="relative w-full flex-1 overflow-hidden">
         <MarqueeCard pauseOnHover className="[--duration:30s]">
           {technologies.map((tech) => (
             <div key={tech.name} className="flex items-center gap-4">
