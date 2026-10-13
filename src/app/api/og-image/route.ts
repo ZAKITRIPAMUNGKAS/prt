@@ -34,11 +34,17 @@ export async function GET(request: Request) {
       return new Response("Not found", { status: 404 });
     }
 
-    return new Response(object.Body.transformToWebStream(), {
+    // Read full body into buffer so we can set Content-Length
+    // Required by WhatsApp/Facebook/Twitter crawlers to display preview images
+    const bytes = await object.Body.transformToByteArray();
+    const buffer = Buffer.from(bytes);
+
+    return new Response(buffer, {
       headers: {
         "Cache-Control": CACHE_CONTROL,
         "Content-Disposition": "inline",
-        "Content-Type": object.ContentType || "application/octet-stream",
+        "Content-Type": object.ContentType || "image/jpeg",
+        "Content-Length": String(buffer.length),
         "X-Content-Type-Options": "nosniff",
       },
     });
