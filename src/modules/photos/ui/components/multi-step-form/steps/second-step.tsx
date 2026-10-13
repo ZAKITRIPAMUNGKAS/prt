@@ -143,7 +143,7 @@ export function SecondStep({
                   name="make"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Camera Make / Polaroid Icon</FormLabel>
+                      <FormLabel>Camera Make</FormLabel>
                       <FormControl>
                         <CameraBrandSelector
                           value={field.value || ""}

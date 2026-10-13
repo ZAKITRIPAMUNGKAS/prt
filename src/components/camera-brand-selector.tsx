@@ -10,7 +10,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Check, ChevronDown, Sparkles } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 
 export interface BrandOption {
   name: string;
@@ -20,12 +20,12 @@ export interface BrandOption {
 
 export const POPULAR_CAMERA_BRANDS: BrandOption[] = [
   { name: "Google", label: "Google (Pixel)", brandKey: "google" },
-  { name: "Google (G)", label: "Google (G icon)", brandKey: "googleg" },
+  { name: "Google (G)", label: "Google (G Icon)", brandKey: "googleg" },
   { name: "Apple", label: "Apple (iPhone)", brandKey: "apple" },
   { name: "Sony", label: "Sony Alpha", brandKey: "sony" },
   { name: "Canon", label: "Canon EOS", brandKey: "canon" },
-  { name: "Nikon", label: "Nikon Z / D", brandKey: "nikon" },
-  { name: "Fujifilm", label: "Fujifilm X / GFX", brandKey: "fujifilm" },
+  { name: "Nikon", label: "Nikon", brandKey: "nikon" },
+  { name: "Fujifilm", label: "Fujifilm", brandKey: "fujifilm" },
   { name: "Leica", label: "Leica", brandKey: "leica" },
   { name: "Hasselblad", label: "Hasselblad", brandKey: "hasselblad" },
   { name: "DJI", label: "DJI", brandKey: "dji" },
@@ -57,54 +57,49 @@ export function CameraBrandSelector({
     if (!value) return false;
     const v = value.toLowerCase().replace(/[^a-z0-9]/g, "");
     const b = brand.brandKey.toLowerCase().replace(/[^a-z0-9]/g, "");
-    return v.includes(b) || b.includes(v);
+    return v === b || v.includes(b) || b.includes(v);
   };
 
   return (
-    <div className={cn("space-y-2", className)}>
-      <div className="flex items-center gap-2">
-        <div className="relative flex-1">
-          <Input
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder={placeholder}
-            disabled={disabled}
-            className="pr-20"
-          />
-          {/* Live badge preview */}
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5 px-2 py-0.5 bg-muted/60 dark:bg-muted/40 rounded border border-border pointer-events-none">
-            <span className="text-[9px] font-medium text-muted-foreground uppercase">
-              Icon
-            </span>
-            <div className="h-4 w-9 flex items-center justify-center">
-              <BrandsLogo
-                brand={value || ""}
-                className="max-h-3.5 max-w-full object-contain"
-              />
-            </div>
-          </div>
-        </div>
+    <div className={cn("relative w-full", className)}>
+      {/* Brand Icon preview on the left inside the input */}
+      <div className="absolute left-2.5 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-7 h-5 pointer-events-none">
+        <BrandsLogo
+          brand={value || ""}
+          className="max-h-4 max-w-full object-contain"
+        />
+      </div>
 
-        {/* Dropdown to pick brand */}
+      {/* Main input */}
+      <Input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        disabled={disabled}
+        className="w-full pl-11 pr-20"
+      />
+
+      {/* Clean dropdown trigger on the right inside the input */}
+      <div className="absolute right-1 top-1/2 -translate-y-1/2 z-10">
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
               type="button"
-              variant="outline"
+              variant="ghost"
+              size="sm"
               disabled={disabled}
-              className="shrink-0 gap-1.5 px-3 text-xs"
-              title="Pilih brand & icon polaroid"
+              className="h-7 px-2 text-xs font-normal text-muted-foreground hover:text-foreground gap-1 rounded-sm"
+              title="Pilih ikon brand kamera"
             >
-              <Sparkles className="h-3.5 w-3.5 text-primary" />
-              <span className="hidden sm:inline">Pilih Icon</span>
+              <span>Pilih</span>
               <ChevronDown className="h-3 w-3 opacity-60" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-72 p-2" align="end">
-            <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
-              Pilih Icon Kamera untuk Polaroid
+            <div className="px-2 py-1 text-xs font-semibold text-muted-foreground border-b pb-1.5 mb-1">
+              Pilih Brand & Ikon Polaroid
             </div>
-            <div className="grid grid-cols-1 gap-1 max-h-64 overflow-y-auto pt-1">
+            <div className="grid grid-cols-1 gap-0.5 max-h-60 overflow-y-auto">
               {POPULAR_CAMERA_BRANDS.map((brand) => {
                 const active = isMatched(brand);
                 return (
@@ -116,7 +111,7 @@ export function CameraBrandSelector({
                       setOpen(false);
                     }}
                     className={cn(
-                      "flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-md text-xs transition-colors hover:bg-accent text-left",
+                      "flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-md text-xs transition-colors hover:bg-accent text-left w-full",
                       active && "bg-accent/80 font-medium text-primary"
                     )}
                   >
@@ -129,42 +124,18 @@ export function CameraBrandSelector({
                       </div>
                       <span className="truncate">{brand.label}</span>
                     </div>
-                    {active && <Check className="h-3.5 w-3.5 shrink-0 text-primary" />}
+                    {active && (
+                      <Check className="h-3.5 w-3.5 shrink-0 text-primary" />
+                    )}
                   </button>
                 );
               })}
             </div>
+            <p className="px-2 pt-2 text-[10px] text-muted-foreground border-t mt-1">
+              Atau ketik langsung di kolom input untuk merk kustom.
+            </p>
           </PopoverContent>
         </Popover>
-      </div>
-
-      {/* Quick selection chips for top brands */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs scrollbar-none">
-        <span className="text-[11px] text-muted-foreground shrink-0 font-medium">
-          Cepat:
-        </span>
-        {["Google", "Apple", "Sony", "Canon", "Nikon", "Fujifilm", "Leica"].map(
-          (name) => {
-            const isSelected =
-              value.toLowerCase().replace(/[^a-z0-9]/g, "") ===
-              name.toLowerCase().replace(/[^a-z0-9]/g, "");
-            return (
-              <button
-                key={name}
-                type="button"
-                onClick={() => onChange(name)}
-                className={cn(
-                  "inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[11px] transition-all shrink-0",
-                  isSelected
-                    ? "bg-primary text-primary-foreground border-primary shadow-xs font-medium"
-                    : "bg-background text-muted-foreground hover:bg-muted hover:text-foreground border-border"
-                )}
-              >
-                <span>{name}</span>
-              </button>
-            );
-          }
-        )}
       </div>
     </div>
   );
