@@ -18,6 +18,15 @@ import { siteConfig } from "@/site.config";
 // Styles
 import "maplibre-gl/dist/maplibre-gl.css";
 
+// Set worker URL so Next.js static asset serves the MapLibre web worker
+if (typeof window !== "undefined") {
+  try {
+    maplibregl.setWorkerUrl("/maplibre-gl-worker.mjs");
+  } catch (err) {
+    console.warn("Failed to set MapLibre worker URL:", err);
+  }
+}
+
 export interface MapboxProps {
   id?: string;
   initialViewState?: {
@@ -117,15 +126,15 @@ const Mapbox = forwardRef<MapRef, MapboxProps>(
       paint: {
         "fill-color": [
           "case",
-          ["get", "visited"],
+          ["boolean", ["get", "visited"], false],
           theme === "dark" ? "#3b82f6" : "#2563eb", // Blue color for visited countries
-          "#0080ff", // Default color for non-visited
+          theme === "dark" ? "rgba(255, 255, 255, 0.04)" : "rgba(0, 0, 0, 0.03)", // Subtle tone for others
         ],
         "fill-opacity": [
           "case",
-          ["get", "visited"],
-          0.6, // Higher opacity for visited countries
-          0.2, // Lower opacity for non-visited
+          ["boolean", ["get", "visited"], false],
+          0.6,
+          0.2,
         ],
       },
     };
@@ -137,11 +146,16 @@ const Mapbox = forwardRef<MapRef, MapboxProps>(
       paint: {
         "line-color": [
           "case",
-          ["get", "visited"],
-          theme === "dark" ? "#3b82f6" : "#2563eb", // Blue color for visited countries
-          "transparent",
+          ["boolean", ["get", "visited"], false],
+          theme === "dark" ? "#60a5fa" : "#1d4ed8",
+          theme === "dark" ? "rgba(255, 255, 255, 0.12)" : "rgba(0, 0, 0, 0.08)",
         ],
-        "line-width": 2,
+        "line-width": [
+          "case",
+          ["boolean", ["get", "visited"], false],
+          2,
+          0.75,
+        ],
         "line-opacity": 0.8,
       },
     };

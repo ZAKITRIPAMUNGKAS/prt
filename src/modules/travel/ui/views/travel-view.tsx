@@ -21,7 +21,27 @@ export const TravelView = () => {
     () => data?.[0] ?? null
   );
 
-  const lightboxPhotos: LightboxPhoto[] = (data || []).map((item) => ({
+  if (!data || data.length === 0) {
+    return (
+      <div className="flex flex-col lg:flex-row min-h-screen w-full">
+        <div className="w-full lg:w-1/2 p-6 lg:p-12 flex flex-col items-center justify-center min-h-[50vh] text-center">
+          <p className="text-base font-medium">Belum ada foto perjalanan</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Foto publik dengan data kota akan otomatis ditampilkan di sini.
+          </p>
+        </div>
+        <div className="hidden lg:block lg:w-1/2" />
+        <div className="w-full mt-3 lg:mt-0 lg:w-1/2 space-y-3 pb-3">
+          <Introduction />
+          <Footer />
+        </div>
+      </div>
+    );
+  }
+
+  const currentActiveCity = activeCity || data[0];
+
+  const lightboxPhotos: LightboxPhoto[] = data.map((item) => ({
     id: item.coverPhoto.id,
     url: item.coverPhoto.url,
     title: item.coverPhoto.title || item.city,
@@ -46,7 +66,7 @@ export const TravelView = () => {
   return (
     <div className="flex flex-col lg:flex-row min-h-screen w-full">
       <CoverPhoto
-        citySet={activeCity || data[0]}
+        citySet={currentActiveCity}
         citySets={data}
         onPhotoClick={openPhoto}
       />

@@ -31,7 +31,7 @@ export const MapView = () => {
   const chartConfig = {
     photoCount: {
       label: "Photos",
-      color: "hsl(var(--chart-1))",
+      color: "var(--primary)",
     },
   } satisfies ChartConfig;
 
@@ -49,24 +49,17 @@ export const MapView = () => {
 
   return (
     <div className="w-full h-[600px] grid grid-cols-1 lg:grid-cols-3 gap-4">
-      <div className="lg:col-span-2 rounded-xl overflow-hidden relative h-[400px] lg:h-full">
-        {false && (
-          <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-10">
-            <div className="text-sm text-muted-foreground">
-              Loading world map data...
-            </div>
-          </div>
-        )}
+      <div className="lg:col-span-2 rounded-xl overflow-hidden relative h-[400px] lg:h-full border bg-muted/20">
         <Mapbox
           id="dashboardMap"
           showControls={false}
-          scrollZoom={false}
-          doubleClickZoom={false}
+          scrollZoom={true}
+          doubleClickZoom={true}
           boxZoom={false}
           initialViewState={{
-            longitude: 0,
-            latitude: 20,
-            zoom: 0,
+            longitude: 110,
+            latitude: -2,
+            zoom: 2.2,
           }}
           geoJsonData={data?.geoJson || undefined}
         />
@@ -74,7 +67,7 @@ export const MapView = () => {
 
       {/* Country Statistics Chart */}
       <div className="lg:col-span-1 h-full">
-        {countriesData && countriesData.length > 0 && (
+        {countriesData.length > 0 ? (
           <Card className="h-full flex flex-col p-4">
             <CardHeader className="shrink-0 p-0 pb-3">
               <CardTitle className="text-lg">Countries by Photos</CardTitle>
@@ -117,8 +110,10 @@ export const MapView = () => {
                   />
                   <Bar
                     dataKey="photoCount"
-                    fill="var(--color-photoCount)"
-                    radius={5}
+                    fill="var(--primary)"
+                    radius={[0, 4, 4, 0]}
+                    barSize={20}
+                    maxBarSize={28}
                   />
                 </BarChart>
               </ChartContainer>
@@ -134,6 +129,23 @@ export const MapView = () => {
                   .reduce((sum, c) => sum + c.photoCount, 0)
                   .toLocaleString()}{" "}
                 photos
+              </div>
+            </CardFooter>
+          </Card>
+        ) : (
+          <Card className="h-full flex flex-col p-4 justify-between">
+            <CardHeader className="shrink-0 p-0 pb-3">
+              <CardTitle className="text-lg">Countries by Photos</CardTitle>
+              <CardDescription className="text-sm">
+                No location data yet
+              </CardDescription>
+            </CardHeader>
+            <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground text-center px-4">
+              Photos with location details will appear here.
+            </div>
+            <CardFooter className="shrink-0 flex-col items-start gap-1 text-sm p-0 pt-3">
+              <div className="text-muted-foreground leading-none">
+                0 countries visited
               </div>
             </CardFooter>
           </Card>

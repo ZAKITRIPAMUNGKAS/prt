@@ -55,7 +55,8 @@ export const columns: ColumnDef<photoGetMany[number]>[] = [
     accessorKey: "city",
     header: "City",
     cell: ({ row }) => {
-      const location = row.original.city + ", " + row.original.countryCode;
+      const parts = [row.original.city, row.original.countryCode].filter(Boolean);
+      const location = parts.length > 0 ? parts.join(", ") : "-";
       return <span>{location}</span>;
     },
   },

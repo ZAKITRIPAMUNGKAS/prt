@@ -4,12 +4,15 @@ import { keyToUrl } from "@/modules/s3/lib/key-to-url";
 import VectorCombined from "@/components/vector-combined";
 
 interface CoverPhotoProps {
-  citySet: PublicCitySet;
+  citySet?: PublicCitySet | null;
   citySets: PublicCitySet[];
   onPhotoClick?: (photoId: string) => void;
 }
 
 export const CoverPhoto = ({ citySet, citySets, onPhotoClick }: CoverPhotoProps) => {
+  const currentCity = citySet || citySets?.[0];
+  if (!currentCity) return null;
+
   return (
     <div className="w-full h-[70vh] lg:w-1/2 lg:fixed lg:top-0 lg:left-0 lg:h-screen p-0 lg:p-3">
       <div
@@ -17,16 +20,18 @@ export const CoverPhoto = ({ citySet, citySets, onPhotoClick }: CoverPhotoProps)
         role="button"
         tabIndex={0}
         style={{
-          viewTransitionName: `city-${encodeURIComponent(citySet.city.toLowerCase())}`,
+          viewTransitionName: currentCity.city
+            ? `city-${encodeURIComponent(currentCity.city.toLowerCase())}`
+            : undefined,
         }}
-        onClick={() => onPhotoClick?.(citySet.coverPhoto.id)}
+        onClick={() => onPhotoClick?.(currentCity.coverPhoto.id)}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            onPhotoClick?.(citySet.coverPhoto.id);
+            onPhotoClick?.(currentCity.coverPhoto.id);
           }
         }}
-        aria-label={`View photo: ${citySet.city}`}
+        aria-label={`View photo: ${currentCity.city}`}
       >
         {/* Cover photo */}
         <div className="relative w-full h-full">
@@ -34,7 +39,7 @@ export const CoverPhoto = ({ citySet, citySets, onPhotoClick }: CoverPhotoProps)
             <div
               key={city.id}
               className={`absolute inset-0 transition-opacity duration-300 ${
-                city.id === citySet.id ? "opacity-100 z-10" : "opacity-0 z-0"
+                city.id === currentCity.id ? "opacity-100 z-10" : "opacity-0 z-0"
               }`}
             >
               <BlurImage
@@ -50,7 +55,7 @@ export const CoverPhoto = ({ citySet, citySets, onPhotoClick }: CoverPhotoProps)
         </div>
 
         <div className="absolute right-0 bottom-0 z-10">
-          <VectorCombined title={citySet?.city || ""} position="bottom-right" />
+          <VectorCombined title={currentCity.city} position="bottom-right" />
         </div>
       </div>
     </div>

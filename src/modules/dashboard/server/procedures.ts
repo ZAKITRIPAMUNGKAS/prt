@@ -105,9 +105,15 @@ export const dashboardRouter = createTRPCRouter({
 
     const world = await loadWorldGeoJson();
 
-    const features = world.features.filter((feature) => {
+    const features = world.features.map((feature) => {
       const id = String(feature.id ?? "");
-      return visitedSet.has(id);
+      return {
+        ...feature,
+        properties: {
+          ...feature.properties,
+          visited: visitedSet.has(id),
+        },
+      };
     });
 
     return {
@@ -132,19 +138,17 @@ export const dashboardRouter = createTRPCRouter({
       visited.map((c) => c.countryCode as string).filter(Boolean),
     );
 
-    if (visitedSet.size === 0) {
-      const world = await loadWorldGeoJson();
-      return {
-        ...world,
-        features: [],
-      } as GeoJSON.FeatureCollection;
-    }
-
     const world = await loadWorldGeoJson();
 
-    const features = world.features.filter((feature) => {
+    const features = world.features.map((feature) => {
       const id = String(feature.id ?? "");
-      return visitedSet.has(id);
+      return {
+        ...feature,
+        properties: {
+          ...feature.properties,
+          visited: visitedSet.has(id),
+        },
+      };
     });
 
     return {

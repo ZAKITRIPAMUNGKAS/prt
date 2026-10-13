@@ -41,7 +41,9 @@ export const CityView = ({ city }: Props) => {
             role="button"
             tabIndex={0}
             style={{
-              viewTransitionName: `city-${encodeURIComponent(data.city.toLowerCase())}`,
+              viewTransitionName: data?.city
+                ? `city-${encodeURIComponent(data.city.toLowerCase())}`
+                : undefined,
             }}
             onClick={() => coverPhoto && openPhoto(coverPhoto.id)}
             onKeyDown={(e) => {
@@ -50,11 +52,11 @@ export const CityView = ({ city }: Props) => {
                 if (coverPhoto) openPhoto(coverPhoto.id);
               }
             }}
-            aria-label={`View cover photo: ${data.city}`}
+            aria-label={`View cover photo: ${data?.city || "City"}`}
           >
             <BlurImage
               src={keyToUrl(coverPhoto?.url) || "/placeholder.svg"}
-              alt={data.city}
+              alt={data?.city || "City cover photo"}
               fill
               quality={75}
               blurhash={coverPhoto?.blurData || ""}
@@ -62,7 +64,7 @@ export const CityView = ({ city }: Props) => {
               className="object-cover rounded-xl overflow-hidden transition-all duration-300 group-hover:brightness-95"
             />
             <div className="absolute right-0 bottom-0">
-              <VectorCombined title={data.city} position="bottom-right" />
+              <VectorCombined title={data?.city || ""} position="bottom-right" />
             </div>
           </div>
         </div>
