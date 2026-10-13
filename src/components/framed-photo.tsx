@@ -11,6 +11,7 @@ interface FramedPhotoProps {
   width?: number;
   height?: number;
   className?: string;
+  frameClassName?: string;
 }
 
 export function FramedPhoto({
@@ -20,9 +21,15 @@ export function FramedPhoto({
   width,
   height,
   className,
+  frameClassName,
 }: FramedPhotoProps) {
   return (
-    <div className="relative inline-block shadow-[10px_10px_8px_rgba(0,0,0,0.65)]">
+    <div
+      className={cn(
+        "relative inline-block shadow-[10px_10px_8px_rgba(0,0,0,0.65)]",
+        frameClassName
+      )}
+    >
       <div className="relative box-border border-10 border-neutral-700 bg-neutral-700">
         <div
           className={cn(

@@ -51,7 +51,8 @@ export const SliderView = () => {
     if (pointerStartRef.current) {
       const dx = Math.abs(e.clientX - pointerStartRef.current.x);
       const dy = Math.abs(e.clientY - pointerStartRef.current.y);
-      if (dx > 6 || dy > 6) {
+      pointerStartRef.current = null;
+      if (dx > 10 || dy > 10) {
         // Drag occurred, ignore click
         return;
       }
@@ -82,7 +83,9 @@ export const SliderView = () => {
                   openPhoto(photo.id);
                 }
               }}
-              className="flex-[0_0_100%] min-w-0 h-full relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary select-none"
+              draggable={false}
+              onDragStart={(e) => e.preventDefault()}
+              className="flex-[0_0_100%] min-w-0 h-full relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary select-none touch-pan-y"
               aria-label={`View photo: ${photo.title}`}
             >
               <BlurImage
@@ -93,7 +96,7 @@ export const SliderView = () => {
                 loading={isFirstSlide ? "eager" : "lazy"}
                 fetchPriority={isFirstSlide ? "high" : undefined}
                 blurhash={photo.blurData}
-                className="w-full h-full object-cover pointer-events-none"
+                className="w-full h-full object-cover pointer-events-none select-none"
               />
             </div>
           );

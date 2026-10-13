@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { ChevronLeft, ChevronRight, X, Info } from "lucide-react";
-import BlurImage from "@/components/blur-image";
+import { FramedPhoto } from "@/components/framed-photo";
 import { keyToUrl } from "@/modules/s3/lib/key-to-url";
 import { cn } from "@/lib/utils";
 import { ExifPanel } from "./exif-panel";
@@ -113,7 +113,6 @@ export function PhotoLightbox({
 
   if (!isOpen || !currentPhoto) return null;
 
-  const photoUrl = keyToUrl(currentPhoto.url);
   const locationLabel = currentPhoto.placeFormatted ||
     [currentPhoto.city, currentPhoto.country].filter(Boolean).join(", ");
 
@@ -234,29 +233,20 @@ export function PhotoLightbox({
               </button>
             )}
 
-            {/* Photo Container */}
+            {/* Framed Photo Container */}
             <div
-              className="relative max-w-full overflow-hidden rounded-lg shadow-2xl flex items-center justify-center"
-              style={{
-                width:
-                  currentPhoto.width && currentPhoto.height
-                    ? `min(100%, calc(78dvh * ${currentPhoto.width} / ${currentPhoto.height}))`
-                    : "100%",
-                aspectRatio:
-                  currentPhoto.width && currentPhoto.height
-                    ? `${currentPhoto.width} / ${currentPhoto.height}`
-                    : "auto",
-                maxHeight: "78dvh",
-              }}
+              className="relative flex items-center justify-center p-2 sm:p-4 select-none max-w-full max-h-[78dvh]"
+              onClick={(e) => e.stopPropagation()}
             >
-              <BlurImage
+              <FramedPhoto
                 key={currentPhoto.id}
-                src={photoUrl}
+                src={currentPhoto.url}
                 alt={currentPhoto.title || "Photo"}
-                fill
-                blurhash={currentPhoto.blurData}
-                className="object-contain rounded-lg"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1400px"
+                blurhash={currentPhoto.blurData || ""}
+                width={currentPhoto.width || 1200}
+                height={currentPhoto.height || 800}
+                className="max-h-[66dvh] sm:max-h-[72dvh] w-auto h-auto object-contain"
+                frameClassName="max-w-[94vw] max-h-[78dvh] flex items-center justify-center"
               />
             </div>
 

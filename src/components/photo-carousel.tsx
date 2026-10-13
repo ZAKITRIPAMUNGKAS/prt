@@ -10,6 +10,7 @@ import {
 } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { getPrefersReducedMotion } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 
 export type CarouselApi = ReturnType<typeof useEmblaCarousel>[1];
 
@@ -51,6 +52,7 @@ const Carousel = ({
     loop: true,
     align: "start",
     skipSnaps: false,
+    watchDrag: true,
   });
 
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -103,8 +105,13 @@ const Carousel = ({
       resetProgress();
     };
 
+    const onPointerDown = () => setIsTouching(true);
+    const onPointerUp = () => setIsTouching(false);
+
     emblaApi.on("select", onSelect);
     emblaApi.on("reInit", onInit);
+    emblaApi.on("pointerDown", onPointerDown);
+    emblaApi.on("pointerUp", onPointerUp);
 
     const timer = setTimeout(onInit, 0);
 
@@ -112,6 +119,8 @@ const Carousel = ({
       clearTimeout(timer);
       emblaApi.off("select", onSelect);
       emblaApi.off("reInit", onInit);
+      emblaApi.off("pointerDown", onPointerDown);
+      emblaApi.off("pointerUp", onPointerUp);
     };
   }, [emblaApi, resetProgress]);
 
@@ -190,13 +199,13 @@ const Carousel = ({
 
   return (
     <div
-      className={`overflow-hidden relative ${className}`}
+      className={cn(
+        "overflow-hidden relative select-none touch-pan-y",
+        className
+      )}
       ref={emblaRef}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onTouchStart={() => setIsTouching(true)}
-      onTouchEnd={() => setIsTouching(false)}
-      onTouchCancel={() => setIsTouching(false)}
     >
       {/* Screen-reader / Keyboard Accessible Play/Pause Button */}
       <button
@@ -208,7 +217,7 @@ const Carousel = ({
         {isManuallyPaused ? "Resume autoplay" : "Pause autoplay"}
       </button>
 
-      <div className={`flex ${containerClassName}`}>{children}</div>
+      <div className={cn("flex touch-pan-y", containerClassName)}>{children}</div>
 
       {/* Navigation Buttons */}
       {(dotsCount !== undefined ? dotsCount > 1 : scrollSnaps.length !== 1) && (
