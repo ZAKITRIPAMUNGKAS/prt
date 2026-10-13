@@ -50,6 +50,7 @@ export function SecondStep({
       exposureCompensation: initialData?.exposureCompensation,
       latitude: initialData?.latitude,
       longitude: initialData?.longitude,
+      dateTimeOriginal: initialData?.dateTimeOriginal || exif?.dateTimeOriginal,
     },
     mode: "onChange",
   });
@@ -171,19 +172,46 @@ export function SecondStep({
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="lensModel"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Lens Model</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="e.g., RF 24-70mm f/2.8L" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid grid-cols-1 gap-4 @sm:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="lensModel"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Lens Model</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="e.g., RF 24-70mm f/2.8L" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="dateTimeOriginal"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Taken Date</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="date"
+                          value={
+                            field.value
+                              ? new Date(field.value).toISOString().split("T")[0]
+                              : ""
+                          }
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            field.onChange(val ? new Date(val) : undefined);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <div className="grid grid-cols-1 gap-4 border-t pt-5 @sm:grid-cols-2">
                 <h4 className="col-span-full text-xs font-semibold tracking-wide text-muted-foreground">Focal length</h4>

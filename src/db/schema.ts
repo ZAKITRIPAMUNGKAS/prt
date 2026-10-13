@@ -209,9 +209,11 @@ export const photosUpdateSchema = createUpdateSchema(photos)
     exposureTime: true,
     exposureCompensation: true,
     gpsAltitude: true,
-    dateTimeOriginal: true,
   })
-  .partial();
+  .partial()
+  .extend({
+    dateTimeOriginal: z.date().nullish(),
+  });
 
 // Types
 export type Photo = InferSelectModel<typeof photos>;
