@@ -14,9 +14,22 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const city = (await params).city;
+  const decodedCity = decodeURIComponent(city);
+  const title = `Foto Perjalanan di ${decodedCity}`;
+  const description = `Galeri fotografi dan dokumentasi perjalanan di ${decodedCity} oleh Zaki Tri Pamungkas.`;
 
   return {
-    title: decodeURIComponent(city),
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
   };
 }
 

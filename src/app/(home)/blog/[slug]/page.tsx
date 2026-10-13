@@ -6,7 +6,6 @@ import { HydrationBoundary } from "@tanstack/react-query";
 import { dehydrate } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { keyToUrl } from "@/modules/s3/lib/key-to-url";
 import { siteConfig } from "@/site.config";
 
 type Props = {
@@ -32,12 +31,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://me.tepegrafi.id";
     const postUrl = `${baseUrl}/blog/${data.slug}`;
-    const rawImage = data.coverImage
-      ? keyToUrl(data.coverImage)
+    const ogImage = data.coverImage
+      ? `${baseUrl}/api/og-image?key=${encodeURIComponent(data.coverImage)}`
       : `${baseUrl}/fotoku.png`;
-    const ogImage = rawImage.startsWith("http")
-      ? rawImage
-      : `${baseUrl}${rawImage.startsWith("/") ? "" : "/"}${rawImage}`;
     const cleanDescription =
       data.description || siteConfig.metadata.description;
 
@@ -68,7 +64,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             width: 1200,
             height: 630,
             alt: data.title,
-            type: "image/png",
           },
         ],
       },
@@ -103,12 +98,9 @@ export default async function page({ params }: Props) {
     );
 
     if (post) {
-      const rawImage = post.coverImage
-        ? keyToUrl(post.coverImage)
+      const ogImage = post.coverImage
+        ? `${baseUrl}/api/og-image?key=${encodeURIComponent(post.coverImage)}`
         : `${baseUrl}/fotoku.png`;
-      const ogImage = rawImage.startsWith("http")
-        ? rawImage
-        : `${baseUrl}${rawImage.startsWith("/") ? "" : "/"}${rawImage}`;
 
       jsonLd = {
         "@context": "https://schema.org",

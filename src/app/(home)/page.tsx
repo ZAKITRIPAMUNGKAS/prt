@@ -21,6 +21,11 @@ import {
   SliderViewLoadingStatus,
   SliderView,
 } from "@/modules/home/ui/views/slider-view";
+import { LatestBlogCard } from "@/modules/blog/ui/components/latest-blog-card";
+import {
+  BlogHomeView,
+  BlogHomeLoadingStatus,
+} from "@/modules/blog/ui/views/blog-home-view";
 
 import { PageEntrance, StaggerContainer, StaggerItem } from "@/components/page-entrance";
 
@@ -34,6 +39,9 @@ const page = async () => {
   );
   void queryClient.prefetchQuery(
     trpc.projects.getMany.queryOptions({ limit: 3 })
+  );
+  void queryClient.prefetchQuery(
+    trpc.blog.getMany.queryOptions()
   );
 
   return (
@@ -86,6 +94,20 @@ const page = async () => {
             <Suspense fallback={<ProjectsHomeLoadingStatus />}>
               <ErrorBoundary fallback={<p>Something went wrong</p>}>
                 <ProjectsHomeView />
+              </ErrorBoundary>
+            </Suspense>
+          </StaggerItem>
+
+          {/* LATEST BLOG CARD */}
+          <StaggerItem>
+            <LatestBlogCard />
+          </StaggerItem>
+
+          {/* BLOG VIEW */}
+          <StaggerItem>
+            <Suspense fallback={<BlogHomeLoadingStatus />}>
+              <ErrorBoundary fallback={<p>Something went wrong</p>}>
+                <BlogHomeView />
               </ErrorBoundary>
             </Suspense>
           </StaggerItem>
