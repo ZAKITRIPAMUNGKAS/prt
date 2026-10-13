@@ -555,6 +555,8 @@ export type GitHubActivityProps = React.ComponentProps<"div"> & {
   contributions?: Contribution[];
   repos?: RepoContribution[];
   year?: number;
+  totalContributions?: number;
+  showRepos?: boolean;
   variant?: GitHubActivityVariant;
   accent?: string | string[];
   cellSize?: number;
@@ -572,6 +574,8 @@ const GitHubActivity = ({
   contributions: contributionsProp = [],
   repos: reposProp = [],
   year,
+  totalContributions,
+  showRepos = false,
   variant = "white",
   accent = [
     "color-mix(in oklab, currentcolor 15%, transparent)",
@@ -609,7 +613,9 @@ const GitHubActivity = ({
   const contributions = contributionsProp.length
     ? contributionsProp
     : (fetched?.contributions ?? placeholder);
-  const repos = reposProp.length ? reposProp : (fetched?.repos ?? []);
+  const repos = showRepos
+    ? (reposProp.length ? reposProp : (fetched?.repos ?? []))
+    : [];
 
   const scale = React.useMemo(
     () => toScale(accent ?? ACCENTS[variant]),
@@ -626,10 +632,11 @@ const GitHubActivity = ({
     exit: { opacity: 0, ...kick },
   };
 
-  const total = React.useMemo(
+  const calculatedTotal = React.useMemo(
     () => contributions.reduce((sum, day) => sum + day.count, 0),
     [contributions],
   );
+  const total = totalContributions ?? calculatedTotal;
 
   const parsedYear = Number(contributions.at(-1)?.date.slice(0, 4));
   const displayYear = year ?? (Number.isFinite(parsedYear) ? parsedYear : null);
