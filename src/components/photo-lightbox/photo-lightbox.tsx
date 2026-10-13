@@ -245,8 +245,8 @@ export function PhotoLightbox({
                 blurhash={currentPhoto.blurData || ""}
                 width={currentPhoto.width || 1200}
                 height={currentPhoto.height || 800}
-                className="max-h-[54dvh] sm:max-h-[62dvh] w-auto h-auto object-contain"
-                frameClassName="max-w-[94vw]"
+                className="mx-auto h-auto w-full max-h-[54dvh] object-contain sm:max-h-[62dvh]"
+                frameClassName="w-full max-w-[94vw]"
                 metadata={currentPhoto}
               />
             </div>

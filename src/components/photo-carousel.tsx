@@ -199,11 +199,7 @@ const Carousel = ({
 
   return (
     <div
-      className={cn(
-        "overflow-hidden relative select-none touch-pan-y",
-        className
-      )}
-      ref={emblaRef}
+      className={cn("relative select-none", className)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -217,10 +213,13 @@ const Carousel = ({
         {isManuallyPaused ? "Resume autoplay" : "Pause autoplay"}
       </button>
 
-      <div className={cn("flex touch-pan-y", containerClassName)}>{children}</div>
+      {/* Embla Viewport */}
+      <div className="overflow-hidden w-full h-full" ref={emblaRef}>
+        <div className={cn("flex touch-pan-y", containerClassName)}>{children}</div>
+      </div>
 
       {/* Navigation Buttons */}
-      {(dotsCount !== undefined ? dotsCount > 1 : scrollSnaps.length !== 1) && (
+      {(dotsCount !== undefined ? dotsCount > 1 : scrollSnaps.length > 1) && (
         <div className="flex absolute inset-y-0 left-0 right-0 items-center justify-between px-4 sm:px-8 pointer-events-none z-20">
           <button
             type="button"
