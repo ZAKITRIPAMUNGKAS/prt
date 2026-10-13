@@ -26,6 +26,10 @@ const nextConfig: NextConfig = {
       loaderFile: "./src/lib/cloudflare-image-loader.ts",
     }),
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**.r2.dev",
+      },
       ...(s3Hostname
         ? [
             {
