@@ -14,7 +14,7 @@ export const homeRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const { limit } = input;
 
-      const data = await ctx.db
+      let data = await ctx.db
         .select()
         .from(photos)
         .where(
@@ -22,6 +22,16 @@ export const homeRouter = createTRPCRouter({
         )
         .orderBy(desc(photos.updatedAt))
         .limit(limit);
+
+      // Fallback: If user hasn't favorited any photos yet, display latest public photos
+      if (data.length === 0) {
+        data = await ctx.db
+          .select()
+          .from(photos)
+          .where(eq(photos.visibility, "public"))
+          .orderBy(desc(photos.updatedAt))
+          .limit(limit);
+      }
 
       return data;
     }),
