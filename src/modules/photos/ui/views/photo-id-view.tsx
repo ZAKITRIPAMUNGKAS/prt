@@ -5,7 +5,8 @@ import type { MapRef } from "react-map-gl/maplibre";
 import { FramedPhoto } from "@/components/framed-photo";
 import { photosUpdateSchema } from "@/db/schema";
 import { useTRPC } from "@/trpc/client";
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -59,10 +60,21 @@ export const PhotoIdView = ({ id }: PhotoIdViewProps) => {
     })
   );
 
+  const queryClient = useQueryClient();
   const updateMutation = useMutation(
     trpc.photos.update.mutationOptions({
-      onSuccess: () => {},
-      onError: () => {},
+      onSuccess: async () => {
+        toast.success("Changes saved successfully!");
+        await queryClient.invalidateQueries(
+          trpc.photos.getOne.queryOptions({ id })
+        );
+        await queryClient.invalidateQueries(
+          trpc.photos.getMany.queryOptions({})
+        );
+      },
+      onError: (err) => {
+        toast.error(err.message || "Failed to save changes");
+      },
     })
   );
 
@@ -258,6 +270,15 @@ export const PhotoIdView = ({ id }: PhotoIdViewProps) => {
     updateMutation.mutate({ ...values, id: data.id });
   }
 
+  const onInvalid = (errors: Record<string, unknown>) => {
+    console.error("Form validation errors:", errors);
+    const firstMsg = Object.values(errors).find(
+      (e): e is { message?: string } =>
+        typeof e === "object" && e !== null && "message" in e
+    )?.message;
+    toast.error(firstMsg || "Please check required fields in the form");
+  };
+
   const takenAt = data.dateTimeOriginal
     ? format(new Date(data.dateTimeOriginal), "d MMM yyyy")
     : null;
@@ -283,7 +304,7 @@ export const PhotoIdView = ({ id }: PhotoIdViewProps) => {
           <div className="bg-card border rounded-xl p-6 shadow-sm w-full">
             <Form {...form}>
               <form
-                onSubmit={form.handleSubmit(onSubmit)}
+                onSubmit={form.handleSubmit(onSubmit, onInvalid)}
                 className="space-y-6"
               >
                 <FormField
@@ -400,7 +421,11 @@ export const PhotoIdView = ({ id }: PhotoIdViewProps) => {
                         <FormItem>
                           <FormLabel>Camera Model</FormLabel>
                           <FormControl>
-                            <Input {...field} placeholder="e.g., EOS R5" />
+                            <Input
+                              {...field}
+                              value={field.value ?? ""}
+                              placeholder="e.g., EOS R5"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -417,6 +442,7 @@ export const PhotoIdView = ({ id }: PhotoIdViewProps) => {
                         <FormControl>
                           <Input
                             {...field}
+                            value={field.value ?? ""}
                             placeholder="e.g., RF 24-70mm f/2.8L"
                           />
                         </FormControl>
@@ -488,7 +514,7 @@ export const PhotoIdView = ({ id }: PhotoIdViewProps) => {
                           <FormLabel>Aperture</FormLabel>
                           <FormControl>
                             <ApertureSelector
-                              value={field.value}
+                              value={field.value ?? undefined}
                               onChange={field.onChange}
                             />
                           </FormControl>
@@ -505,7 +531,7 @@ export const PhotoIdView = ({ id }: PhotoIdViewProps) => {
                           <FormLabel>Shutter Speed</FormLabel>
                           <FormControl>
                             <ShutterSpeedSelector
-                              value={field.value}
+                              value={field.value ?? undefined}
                               onChange={field.onChange}
                             />
                           </FormControl>
@@ -522,7 +548,7 @@ export const PhotoIdView = ({ id }: PhotoIdViewProps) => {
                           <FormLabel>ISO</FormLabel>
                           <FormControl>
                             <ISOSelector
-                              value={field.value}
+                              value={field.value ?? undefined}
                               onChange={field.onChange}
                             />
                           </FormControl>
@@ -539,7 +565,7 @@ export const PhotoIdView = ({ id }: PhotoIdViewProps) => {
                           <FormLabel>Compensation (EV)</FormLabel>
                           <FormControl>
                             <ExposureCompensationSelector
-                              value={field.value}
+                              value={field.value ?? undefined}
                               onChange={field.onChange}
                             />
                           </FormControl>

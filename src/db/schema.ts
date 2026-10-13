@@ -199,6 +199,17 @@ export const photosUpdateSchema = createUpdateSchema(photos)
     district: true,
     fullAddress: true,
     placeFormatted: true,
+    make: true,
+    model: true,
+    lensModel: true,
+    focalLength: true,
+    focalLength35mm: true,
+    fNumber: true,
+    iso: true,
+    exposureTime: true,
+    exposureCompensation: true,
+    gpsAltitude: true,
+    dateTimeOriginal: true,
   })
   .partial();
 
