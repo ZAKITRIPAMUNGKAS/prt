@@ -201,6 +201,15 @@ export const photosRouter = createTRPCRouter({
         throw new TRPCError({ code: "BAD_REQUEST" });
       }
 
+      const [oldPhoto] = await ctx.db
+        .select()
+        .from(photos)
+        .where(eq(photos.id, id));
+
+      if (!oldPhoto) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
       const [updatedPhoto] = await ctx.db
         .update(photos)
         .set({
@@ -212,6 +221,114 @@ export const photosRouter = createTRPCRouter({
 
       if (!updatedPhoto) {
         throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      const oldCityName = getCitySetName(oldPhoto);
+      const newCityName = getCitySetName(updatedPhoto);
+      const cityChanged =
+        oldPhoto.country !== updatedPhoto.country ||
+        oldCityName !== newCityName;
+
+      if (cityChanged) {
+        // Clean up old citySet if existed
+        if (oldPhoto.country && oldCityName) {
+          const oldCityColumn =
+            oldPhoto.countryCode === "JP" || oldPhoto.countryCode === "TW"
+              ? photos.region
+              : photos.city;
+
+          const [oldCitySet] = await ctx.db
+            .select()
+            .from(citySets)
+            .where(
+              and(
+                eq(citySets.country, oldPhoto.country),
+                eq(citySets.city, oldCityName),
+              ),
+            );
+
+          if (oldCitySet) {
+            if (oldCitySet.photoCount <= 1) {
+              await ctx.db
+                .delete(citySets)
+                .where(eq(citySets.id, oldCitySet.id));
+            } else {
+              const newCoverPhotoId =
+                oldCitySet.coverPhotoId === oldPhoto.id
+                  ? (
+                      await ctx.db
+                        .select({ id: photos.id })
+                        .from(photos)
+                        .where(
+                          and(
+                            eq(photos.country, oldPhoto.country),
+                            eq(oldCityColumn, oldCityName),
+                            sql`${photos.id} != ${oldPhoto.id}`,
+                          ),
+                        )
+                        .limit(1)
+                    )[0]?.id
+                  : undefined;
+
+              await ctx.db
+                .update(citySets)
+                .set({
+                  photoCount: sql`${citySets.photoCount} - 1`,
+                  ...(newCoverPhotoId ? { coverPhotoId: newCoverPhotoId } : {}),
+                  updatedAt: new Date(),
+                })
+                .where(eq(citySets.id, oldCitySet.id));
+            }
+          }
+        }
+
+        // Insert or increment new citySet
+        if (
+          updatedPhoto.country &&
+          newCityName &&
+          updatedPhoto.countryCode
+        ) {
+          await ctx.db
+            .insert(citySets)
+            .values({
+              country: updatedPhoto.country,
+              countryCode: updatedPhoto.countryCode,
+              city: newCityName,
+              photoCount: 1,
+              coverPhotoId: updatedPhoto.id,
+            })
+            .onConflictDoUpdate({
+              target: [citySets.country, citySets.city],
+              set: {
+                countryCode: updatedPhoto.countryCode,
+                photoCount: sql`${citySets.photoCount} + 1`,
+                coverPhotoId: sql`COALESCE(${citySets.coverPhotoId}, ${updatedPhoto.id})`,
+                updatedAt: new Date(),
+              },
+            });
+        }
+      } else if (
+        updatedPhoto.country &&
+        newCityName &&
+        updatedPhoto.countryCode
+      ) {
+        // Ensure citySet exists and coverPhoto is valid even if city didn't change
+        await ctx.db
+          .insert(citySets)
+          .values({
+            country: updatedPhoto.country,
+            countryCode: updatedPhoto.countryCode,
+            city: newCityName,
+            photoCount: 1,
+            coverPhotoId: updatedPhoto.id,
+          })
+          .onConflictDoUpdate({
+            target: [citySets.country, citySets.city],
+            set: {
+              coverPhotoId: sql`COALESCE(${citySets.coverPhotoId}, ${updatedPhoto.id})`,
+              updatedAt: new Date(),
+            },
+          });
       }
 
       return updatedPhoto;
