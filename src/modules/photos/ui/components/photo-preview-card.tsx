@@ -85,7 +85,9 @@ export function PhotoPreviewCard({
               )}
             >
               <span className="flex items-center justify-center gap-1">
-                {make} {model}
+                {make && model && model.toLowerCase().includes(make.toLowerCase())
+                  ? model
+                  : [make, model].filter(Boolean).join(" ")}
               </span>
             </h1>
             <p className="text-xs text-gray-500">{lensModel}</p>

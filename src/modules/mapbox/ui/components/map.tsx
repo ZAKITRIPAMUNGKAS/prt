@@ -18,15 +18,6 @@ import { siteConfig } from "@/site.config";
 // Styles
 import "maplibre-gl/dist/maplibre-gl.css";
 
-// Set worker URL so Next.js static asset serves the MapLibre web worker
-if (typeof window !== "undefined") {
-  try {
-    maplibregl.setWorkerUrl("/maplibre-gl-worker.mjs");
-  } catch (err) {
-    console.warn("Failed to set MapLibre worker URL:", err);
-  }
-}
-
 export interface MapboxProps {
   id?: string;
   initialViewState?: {

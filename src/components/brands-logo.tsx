@@ -33,23 +33,53 @@ export const BrandsLogo = ({
     nikon: { src: "/Nikon_Logo.svg", width: 40, height: 40 },
     canon: { src: "/Canon_logo.svg", width: 80, height: 20 },
     fujifilm: { src: "/Fujifilm_logo.svg", width: 90, height: 25 },
+    fuji: { src: "/Fujifilm_logo.svg", width: 90, height: 25 },
     hasselblad: { src: "/Hasselblad_logo.svg", width: 120, height: 30 },
     leica: { src: "/Leica_logo.svg", width: 40, height: 40 },
     lumix: { src: "/Lumix_logo.svg", width: 90, height: 30 },
+    panasonic: { src: "/Lumix_logo.svg", width: 90, height: 30 },
     olympus: { src: "/Olympus_logo.svg", width: 100, height: 30 },
     pentax: { src: "/Pentax_Logo.svg", width: 90, height: 30 },
     ricoh: { src: "/Ricoh_logo.svg", width: 90, height: 30 },
     sigma: { src: "/Sigma_logo.svg", width: 80, height: 30 },
     apple: { src: "/Apple_logo.svg", width: 30, height: 35 },
+    iphone: { src: "/Apple_logo.svg", width: 30, height: 35 },
     dji: { src: "/DJI_logo.svg", width: 50, height: 30 },
+    googleg: { src: "/Google_G_logo.svg", width: 28, height: 28 },
+    google: { src: "/Google_logo.svg", width: 75, height: 25 },
+    pixel: { src: "/Google_logo.svg", width: 75, height: 25 },
   };
 
-  // Case-insensitive search for brand that starts with the provided string
-  const normalizedBrand = brand.replace(/\s+/g, "").toLowerCase();
+  if (!brand || !brand.trim()) {
+    return (
+      <Image
+        src="/placeholder.svg"
+        alt="Camera placeholder"
+        width={width || 40}
+        height={height || 40}
+        className={`object-contain ${className}`}
+      />
+    );
+  }
 
-  const matchedBrand = Object.keys(brandConfigs).find((brandKey) =>
-    brandKey.startsWith(normalizedBrand)
+  // Case-insensitive search for brand
+  const normalizedBrand = brand.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+
+  // Sort keys by descending length so "googleg" matches before "google" if both contained
+  const brandKeys = Object.keys(brandConfigs).sort((a, b) => b.length - a.length);
+
+  // 1. Exact match first
+  const exactMatch = brandKeys.find(
+    (key) => key.replace(/[^a-zA-Z0-9]/g, "").toLowerCase() === normalizedBrand
   );
+
+  // 2. Substring match (e.g. "googlepixel" contains "google" or "pixel")
+  const matchedBrand =
+    exactMatch ||
+    brandKeys.find((brandKey) => {
+      const cleanKey = brandKey.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+      return normalizedBrand.includes(cleanKey);
+    });
 
   // If no brand matches, use placeholder
   const config = matchedBrand

@@ -31,6 +31,7 @@ import { ApertureSelector } from "../components/aperture-selector";
 import { ShutterSpeedSelector } from "../components/shutter-speed-selector";
 import { ISOSelector } from "../components/iso-selector";
 import { ExposureCompensationSelector } from "../components/exposure-compensation-selector";
+import { CameraBrandSelector } from "@/components/camera-brand-selector";
 
 import MapboxComponent from "@/modules/mapbox/ui/components/map";
 
@@ -379,9 +380,13 @@ export const PhotoIdView = ({ id }: PhotoIdViewProps) => {
                       name="make"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Camera Make</FormLabel>
+                          <FormLabel>Camera Make / Polaroid Icon</FormLabel>
                           <FormControl>
-                            <Input {...field} placeholder="e.g., Canon" />
+                            <CameraBrandSelector
+                              value={field.value || ""}
+                              onChange={field.onChange}
+                              placeholder="e.g., Google or Canon"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
