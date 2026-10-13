@@ -13,6 +13,12 @@ const captured = vi.hoisted(() => ({
 }));
 
 vi.unmock("react");
+vi.mock("@/modules/mapbox/ui/components/map", () => ({
+  default: (props: MapboxProps) => {
+    captured.map = props;
+    return null;
+  },
+}));
 vi.mock("next/dynamic", () => ({
   default: () => (props: MapboxProps) => {
     captured.map = props;

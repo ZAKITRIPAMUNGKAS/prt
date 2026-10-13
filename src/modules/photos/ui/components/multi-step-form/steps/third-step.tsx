@@ -1,4 +1,3 @@
-import dynamic from "next/dynamic";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMemo, useState, useEffect, useCallback, useRef } from "react";
@@ -8,7 +7,6 @@ import { ArrowRight, ArrowLeft, X, MapPin } from "lucide-react";
 import { Form, FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { thirdStepSchema, StepProps, ThirdStepData } from "../types";
 import type { AddressData } from "@/modules/mapbox/hooks/use-get-address";
-import { Skeleton } from "@/components/ui/skeleton";
 import { formatGPSCoordinates } from "@/lib/utils";
 import { useGetAddress } from "@/modules/mapbox/hooks/use-get-address";
 import { logger } from "@/lib/logger";
@@ -17,17 +15,7 @@ import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ButtonGroup } from "@/components/ui/button-group";
 
-const MapboxComponent = dynamic(
-  () => import("@/modules/mapbox/ui/components/map"),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="size-full flex items-center justify-center bg-muted">
-        <Skeleton className="h-full w-full" />
-      </div>
-    ),
-  }
-);
+import MapboxComponent from "@/modules/mapbox/ui/components/map";
 
 interface SearchResult {
   properties: {

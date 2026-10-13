@@ -54,8 +54,8 @@ export interface MapboxProps {
   dragPan?: boolean;
 }
 
-const CARTO_LIGHT_STYLE =
-  "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
+const CARTO_VOYAGER_STYLE =
+  "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
 const CARTO_DARK_STYLE =
   "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
 
@@ -149,7 +149,7 @@ const Mapbox = forwardRef<MapRef, MapboxProps>(
     const activeMapStyle =
       theme === "dark"
         ? siteConfig.mapbox.darkStyle?.trim() || CARTO_DARK_STYLE
-        : siteConfig.mapbox.lightStyle?.trim() || CARTO_LIGHT_STYLE;
+        : siteConfig.mapbox.lightStyle?.trim() || CARTO_VOYAGER_STYLE;
 
     // Handle GeoJSON and Map click
     const onClick = useCallback(

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, Suspense, useRef, useCallback, useEffect } from "react";
-import dynamic from "next/dynamic";
 import type { MapRef } from "react-map-gl/maplibre";
 import { FramedPhoto } from "@/components/framed-photo";
 import { photosUpdateSchema } from "@/db/schema";
@@ -33,21 +32,11 @@ import { ShutterSpeedSelector } from "../components/shutter-speed-selector";
 import { ISOSelector } from "../components/iso-selector";
 import { ExposureCompensationSelector } from "../components/exposure-compensation-selector";
 
+import MapboxComponent from "@/modules/mapbox/ui/components/map";
+
 interface PhotoIdViewProps {
   id: string;
 }
-
-const MapboxComponent = dynamic(
-  () => import("@/modules/mapbox/ui/components/map"),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="h-64 w-full rounded-md border flex items-center justify-center bg-muted">
-        <Skeleton className="h-full w-full" />
-      </div>
-    ),
-  }
-);
 
 const formSchema = photosUpdateSchema.extend({
   make: z.string().optional(),
