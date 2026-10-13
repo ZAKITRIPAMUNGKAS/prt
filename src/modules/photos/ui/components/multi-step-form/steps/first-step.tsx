@@ -26,6 +26,7 @@ export function FirstStep({
   initialData,
 }: UploadStepProps) {
   const [isCopied, setIsCopied] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const form = useForm<FirstStepData>({
     resolver: zodResolver(firstStepSchema),
@@ -62,7 +63,10 @@ export function FirstStep({
             <>
               <PhotoUploader
                 folder={DEFAULT_PHOTOS_UPLOAD_FOLDER}
-                onUploadSuccess={(url, exif, imageInfo) => {
+                onUploadSuccess={(url, exif, imageInfo, localPreview) => {
+                  if (localPreview) {
+                    setPreviewUrl(localPreview);
+                  }
                   onUploadSuccess(url, exif, imageInfo);
                   form.setValue("url", url, { shouldValidate: true });
                 }}
@@ -86,7 +90,10 @@ export function FirstStep({
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => onReupload(url)}
+                  onClick={() => {
+                    setPreviewUrl(null);
+                    onReupload(url);
+                  }}
                 >
                   Re-upload
                 </Button>
@@ -96,11 +103,10 @@ export function FirstStep({
               <div className="relative aspect-video w-full overflow-hidden rounded-lg border bg-muted">
                 <BlurImage
                   blurhash={imageInfo.blurhash}
-                  src={keyToUrl(url)}
+                  src={previewUrl || keyToUrl(url)}
                   alt="Uploaded photo"
                   fill
                   className="object-contain w-full h-full"
-                  unoptimized
                 />
               </div>
 

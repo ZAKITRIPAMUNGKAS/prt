@@ -11,11 +11,15 @@ import {
 import useEmblaCarousel from "embla-carousel-react";
 import { getPrefersReducedMotion } from "@/lib/motion";
 
-interface CarouselProps {
+export type CarouselApi = ReturnType<typeof useEmblaCarousel>[1];
+
+export interface CarouselProps {
   children: ReactNode;
   className?: string;
   containerClassName?: string;
   autoplayDelay?: number;
+  dotsCount?: number;
+  setApi?: (api: CarouselApi) => void;
 }
 
 function subscribeReducedMotion(callback: () => void) {
@@ -40,9 +44,13 @@ const Carousel = ({
   className = "",
   containerClassName = "",
   autoplayDelay = 6000,
+  dotsCount,
+  setApi,
 }: CarouselProps) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: true,
+    align: "start",
+    skipSnaps: false,
   });
 
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -106,6 +114,16 @@ const Carousel = ({
       emblaApi.off("reInit", onInit);
     };
   }, [emblaApi, resetProgress]);
+
+  useEffect(() => {
+    if (!emblaApi || !setApi) return;
+    setApi(emblaApi);
+  }, [emblaApi, setApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    emblaApi.reInit();
+  }, [emblaApi, children]);
 
   // Tab visibility listener
   useEffect(() => {
@@ -193,66 +211,91 @@ const Carousel = ({
       <div className={`flex ${containerClassName}`}>{children}</div>
 
       {/* Navigation Buttons */}
-      <div className="hidden lg:flex absolute inset-y-0 left-0 right-0 items-center justify-between px-8 pointer-events-none z-20">
-        <button
-          className="w-10 h-10 bg-black/15 backdrop-blur-sm flex items-center justify-center pointer-events-auto text-white rounded-md transition-opacity hover:bg-black/30"
-          aria-label="Previous slide"
-          onClick={() => {
-            resetProgress();
-            emblaApi?.scrollPrev();
-          }}
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+      {scrollSnaps.length > 1 && (
+        <div className="flex absolute inset-y-0 left-0 right-0 items-center justify-between px-3 sm:px-6 lg:px-8 pointer-events-none z-20">
+          <button
+            type="button"
+            className="w-10 h-10 bg-black/25 backdrop-blur-md flex items-center justify-center pointer-events-auto text-white rounded-full transition-all hover:bg-black/50 hover:scale-105 active:scale-95 shadow-md"
+            aria-label="Previous slide"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              resetProgress();
+              emblaApi?.scrollPrev();
+            }}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </button>
-        <button
-          className="w-10 h-10 bg-black/15 backdrop-blur-sm flex items-center justify-center pointer-events-auto text-white rounded-md transition-opacity hover:bg-black/30"
-          aria-label="Next slide"
-          onClick={() => {
-            resetProgress();
-            emblaApi?.scrollNext();
-          }}
-        >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+          <button
+            type="button"
+            className="w-10 h-10 bg-black/25 backdrop-blur-md flex items-center justify-center pointer-events-auto text-white rounded-full transition-all hover:bg-black/50 hover:scale-105 active:scale-95 shadow-md"
+            aria-label="Next slide"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              resetProgress();
+              emblaApi?.scrollNext();
+            }}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
-          </svg>
-        </button>
-      </div>
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+        </div>
+      )}
 
       {/* Dots */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 bg-black/15 backdrop-blur-sm px-3 py-1 rounded-full z-20">
-        {scrollSnaps.map((_, index) => (
-          <button
-            key={index}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              index === selectedIndex ? "w-6 bg-white" : "w-2 bg-white/50"
-            }`}
-            aria-label={`Slide ${index + 1}`}
-            onClick={() => scrollTo(index)}
-          />
-        ))}
-      </div>
+      {(dotsCount ? dotsCount > 1 : scrollSnaps.length > 1) && (
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 bg-black/25 backdrop-blur-md px-3 py-1.5 rounded-full z-20 shadow-md">
+          {Array.from({ length: dotsCount ?? scrollSnaps.length }).map((_, index) => {
+            const isActive = dotsCount
+              ? selectedIndex % dotsCount === index
+              : index === selectedIndex;
+            return (
+              <button
+                key={index}
+                type="button"
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  isActive ? "w-6 bg-white" : "w-2 bg-white/50 hover:bg-white/75"
+                }`}
+                aria-label={`Slide ${index + 1}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (dotsCount) {
+                    const currentCycle = Math.floor(selectedIndex / dotsCount);
+                    scrollTo(currentCycle * dotsCount + index);
+                  } else {
+                    scrollTo(index);
+                  }
+                }}
+              />
+            );
+          })}
+        </div>
+      )}
 
       {/* 2px Progress Bar at bottom of carousel */}
       {!isReducedMotion && scrollSnaps.length > 1 && (

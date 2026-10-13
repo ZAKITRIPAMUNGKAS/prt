@@ -1,6 +1,7 @@
 "use client";
 
 // UI Components
+import { useRef } from "react";
 import Link from "next/link";
 import Carousel from "@/components/photo-carousel";
 import BlurImage from "@/components/blur-image";
@@ -19,6 +20,7 @@ export const SliderView = () => {
     trpc.home.getManyLikePhotos.queryOptions({ limit: 10 })
   );
   const { activePhotoId, openPhoto, closePhoto, setActivePhotoId } = usePhotoLightbox();
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
 
   if (photos.length === 0) {
     return (
@@ -36,28 +38,51 @@ export const SliderView = () => {
     );
   }
 
+  // Embla Carousel loop requires at least 3 slides to loop seamlessly in both directions.
+  // If there are exactly 2 photos, duplicate them to 4 slides so Embla can loop infinitely.
+  const isDuplicated = photos.length === 2;
+  const displayPhotos = isDuplicated ? [...photos, ...photos] : photos;
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    pointerStartRef.current = { x: e.clientX, y: e.clientY };
+  };
+
+  const handlePhotoClick = (e: React.MouseEvent, photoId: string) => {
+    if (pointerStartRef.current) {
+      const dx = Math.abs(e.clientX - pointerStartRef.current.x);
+      const dy = Math.abs(e.clientY - pointerStartRef.current.y);
+      if (dx > 6 || dy > 6) {
+        // Drag occurred, ignore click
+        return;
+      }
+    }
+    openPhoto(photoId);
+  };
+
   return (
     <>
       <Carousel
         className="absolute top-0 left-0 w-full h-full rounded-xl"
         containerClassName="h-full"
+        dotsCount={photos.length}
       >
-        {photos.map((photo, index) => {
+        {displayPhotos.map((photo, index) => {
           const isFirstSlide = index === 0;
 
           return (
             <div
-              key={photo.id}
+              key={`${photo.id}-${index}`}
               role="button"
               tabIndex={0}
-              onClick={() => openPhoto(photo.id)}
+              onPointerDown={handlePointerDown}
+              onClick={(e) => handlePhotoClick(e, photo.id)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
                   openPhoto(photo.id);
                 }
               }}
-              className="flex-[0_0_100%] h-full relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="flex-[0_0_100%] min-w-0 h-full relative cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary select-none"
               aria-label={`View photo: ${photo.title}`}
             >
               <BlurImage
@@ -68,7 +93,7 @@ export const SliderView = () => {
                 loading={isFirstSlide ? "eager" : "lazy"}
                 fetchPriority={isFirstSlide ? "high" : undefined}
                 blurhash={photo.blurData}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover pointer-events-none"
               />
             </div>
           );

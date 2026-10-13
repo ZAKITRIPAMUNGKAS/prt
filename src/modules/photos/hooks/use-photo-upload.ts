@@ -17,7 +17,8 @@ interface UsePhotoUploadProps {
   onUploadSuccess?: (
     url: string,
     exif: TExifData | null,
-    imageInfo: TImageInfo
+    imageInfo: TImageInfo,
+    previewUrl?: string
   ) => void;
 }
 
@@ -75,8 +76,9 @@ export function usePhotoUpload({
       });
 
       setUploadedImageUrl(publicUrl);
+      const previewUrl = URL.createObjectURL(file);
       toast.success("Photo uploaded successfully!");
-      onUploadSuccess?.(publicUrl, exifData, imageInfo);
+      onUploadSuccess?.(publicUrl, exifData, imageInfo, previewUrl);
     } catch (error) {
       setExif(null);
       setImageInfo(null);
