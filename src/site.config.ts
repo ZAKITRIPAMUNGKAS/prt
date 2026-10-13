@@ -57,11 +57,11 @@ export const siteConfig = {
     },
     {
       title: "LinkedIn",
-      href: "https://www.linkedin.com/in/zakitripamungkas",
+      href: "https://s.id/linkedin_zakitripamungkas",
     },
     {
       title: "Contact me",
-      href: "mailto:zakitripamungkas@gmail.com",
+      href: "mailto:zakitripamungkas03@gmail.com",
       /** If true, this link gets the primary button style */
       primary: true,
     },
