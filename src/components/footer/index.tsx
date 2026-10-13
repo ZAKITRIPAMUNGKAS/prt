@@ -4,21 +4,21 @@ import { siteConfig } from "@/site.config";
 
 const Footer = () => {
   return (
-    <footer className="flex flex-col items-start p-6 sm:p-10 lg:p-14 gap-8 lg:gap-12 rounded-xl font-light relative flex-1 bg-black text-white dark:bg-card dark:text-foreground dark:border border-border">
+    <footer className="flex flex-col items-start p-6 sm:p-10 lg:p-14 gap-8 lg:gap-12 rounded-xl font-light relative flex-1 bg-black text-white dark:bg-white dark:text-black">
       {/* Brand & Author */}
       <div className="flex items-center gap-4 w-full">
-        <Avatar className="size-12 sm:size-14 border border-white/20 dark:border-border shrink-0">
+        <Avatar className="size-12 sm:size-14 border border-white/20 dark:border-black/15 shrink-0">
           <AvatarImage src={siteConfig.avatar} alt={siteConfig.name} />
           <AvatarFallback>{siteConfig.initials}</AvatarFallback>
         </Avatar>
 
         <div className="flex flex-col gap-0.5">
-          <h2 className="text-xl sm:text-2xl font-medium tracking-tight text-white dark:text-foreground">{siteConfig.name}</h2>
-          <p className="text-xs sm:text-sm text-white/70 dark:text-muted-foreground">{siteConfig.role}</p>
+          <h2 className="text-xl sm:text-2xl font-medium tracking-tight text-white dark:text-black">{siteConfig.name}</h2>
+          <p className="text-xs sm:text-sm text-white/70 dark:text-black/60">{siteConfig.role}</p>
         </div>
       </div>
 
-      <div className="w-full h-px bg-white/15 dark:bg-border" />
+      <div className="w-full h-px bg-white/15 dark:bg-black/10" />
 
       {/* Nav Links Grid */}
       <div className="w-full grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
@@ -43,10 +43,10 @@ const Footer = () => {
         />
       </div>
 
-      <div className="w-full h-px bg-white/15 dark:bg-border" />
+      <div className="w-full h-px bg-white/15 dark:bg-black/10" />
 
       {/* Copyright */}
-      <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-white/60 dark:text-muted-foreground">
+      <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-white/60 dark:text-black/60">
         <p>© {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</p>
         <p>Surakarta, Indonesia</p>
       </div>
