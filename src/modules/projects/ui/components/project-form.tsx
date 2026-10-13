@@ -7,7 +7,8 @@ import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ArrowLeft, Loader2, Save, Sparkles } from "lucide-react";
+import { ArrowLeft, Globe, Loader2, Save, Sparkles } from "lucide-react";
+import { PiGithubLogo } from "react-icons/pi";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,7 @@ import { Switch } from "@/components/ui/switch";
 import { useTRPC } from "@/trpc/client";
 import FileUploader from "@/modules/s3/ui/components/file-uploader";
 import { VideoUploader } from "./video-uploader";
-import { TagsInput } from "@/modules/posts/ui/components/tags-input";
+import { TechStackSelector } from "./tech-stack-selector";
 import { projectFormSchema, ProjectFormData } from "../../schemas";
 import { generateProjectSlug } from "../../lib/utils";
 import { Project } from "@/db/schema";
@@ -372,13 +373,13 @@ export const ProjectForm = ({ project }: ProjectFormProps) => {
               <FormItem>
                 <FormLabel>Tech Stack</FormLabel>
                 <FormControl>
-                  <TagsInput
+                  <TechStackSelector
                     value={field.value}
                     onChange={(tags) => field.onChange(tags)}
                   />
                 </FormControl>
                 <FormDescription>
-                  Ketik teknologi (misal: Laravel, Next.js, MySQL) lalu tekan Enter atau koma.
+                  Pilih dari daftar framework/bahasa populer yang memiliki icon otomatis (Next.js, Laravel, React, Tailwind, PostgreSQL, dll) atau ketik custom stack.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -391,14 +392,20 @@ export const ProjectForm = ({ project }: ProjectFormProps) => {
               name="liveUrl"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Live URL / Demo (Opsional)</FormLabel>
+                  <FormLabel className="flex items-center gap-1.5">
+                    <Globe className="size-4 text-primary" />
+                    <span>Live Website / Demo (Opsional)</span>
+                  </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="https://..."
+                      placeholder="https://contoh-web.com"
                       value={field.value ?? ""}
                       onChange={field.onChange}
                     />
                   </FormControl>
+                  <FormDescription>
+                    Jika dikosongkan, tombol &quot;Lihat Demo&quot; otomatis disembunyikan di halaman detail proyek.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -409,14 +416,20 @@ export const ProjectForm = ({ project }: ProjectFormProps) => {
               name="repoUrl"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Repository URL (Opsional)</FormLabel>
+                  <FormLabel className="flex items-center gap-1.5">
+                    <PiGithubLogo className="size-4" />
+                    <span>Repository GitHub / GitLab (Opsional)</span>
+                  </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="https://github.com/..."
+                      placeholder="https://github.com/username/repo"
                       value={field.value ?? ""}
                       onChange={field.onChange}
                     />
                   </FormControl>
+                  <FormDescription>
+                    Jika dikosongkan (misal: private repo client), tombol &quot;Source Code&quot; otomatis disembunyikan.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

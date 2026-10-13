@@ -12,6 +12,7 @@ import { PiGithubLogo, PiGlobe, PiArrowLeft } from "react-icons/pi";
 import { navigateWithViewTransition } from "@/lib/view-transition";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { getTechIcon } from "../../lib/tech-stack-catalog";
 
 interface Props {
   slug: string;
@@ -164,21 +165,27 @@ export const ProjectSlugView = ({ slug }: Props) => {
           </div>
 
           {/* TECH STACK CARD */}
-          <div className="p-5 bg-muted rounded-xl flex flex-col gap-3">
-            <p className="text-xs text-text-muted uppercase tracking-wider">
-              Tech Stack
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {project.stack?.map((tech) => (
-                <span
-                  key={tech}
-                  className="px-3 py-1 bg-background/60 border rounded-md text-xs font-mono"
-                >
-                  {tech}
-                </span>
-              ))}
+          {project.stack && project.stack.length > 0 && (
+            <div className="p-5 bg-muted rounded-xl flex flex-col gap-3">
+              <p className="text-xs text-text-muted uppercase tracking-wider">
+                Tech Stack
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {project.stack.map((tech) => {
+                  const Icon = getTechIcon(tech);
+                  return (
+                    <span
+                      key={tech}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-background/80 border rounded-lg text-xs font-medium"
+                    >
+                      <Icon className="size-3.5 text-foreground/80 shrink-0" />
+                      <span>{tech}</span>
+                    </span>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* CASE STUDY CONTENT CARD */}
           <div className="p-8 md:p-10 bg-muted rounded-xl flex flex-col gap-4">

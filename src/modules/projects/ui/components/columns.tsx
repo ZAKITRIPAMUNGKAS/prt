@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { getProjectCoverUrl } from "../../lib/utils";
+import { getTechIcon } from "../../lib/tech-stack-catalog";
 
 export const columns: ColumnDef<Project>[] = [
   {
@@ -51,17 +52,21 @@ export const columns: ColumnDef<Project>[] = [
     cell: ({ row }) => {
       const stack = row.original.stack || [];
       return (
-        <div className="flex flex-wrap gap-1 max-w-[200px]">
-          {stack.slice(0, 3).map((item) => (
-            <span
-              key={item}
-              className="text-[11px] px-2 py-0.5 bg-muted rounded font-mono"
-            >
-              {item}
-            </span>
-          ))}
+        <div className="flex flex-wrap gap-1 max-w-[220px]">
+          {stack.slice(0, 3).map((item) => {
+            const Icon = getTechIcon(item);
+            return (
+              <span
+                key={item}
+                className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 bg-muted rounded font-medium"
+              >
+                <Icon className="size-3 shrink-0" />
+                <span>{item}</span>
+              </span>
+            );
+          })}
           {stack.length > 3 && (
-            <span className="text-[11px] px-1 text-muted-foreground">
+            <span className="text-[11px] px-1 text-muted-foreground self-center">
               +{stack.length - 3}
             </span>
           )}
