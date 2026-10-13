@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { ChevronLeft, ChevronRight, X, Info } from "lucide-react";
-import { Blurhash } from "react-blurhash";
+import BlurImage from "@/components/blur-image";
 import { keyToUrl } from "@/modules/s3/lib/key-to-url";
 import { cn } from "@/lib/utils";
 import { ExifPanel } from "./exif-panel";
@@ -24,7 +24,6 @@ export function PhotoLightbox({
 }: PhotoLightboxProps) {
   const isOpen = Boolean(activePhotoId);
   const [isExifOpen, setIsExifOpen] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
 
   // Find index of current photo
   const currentIndex = photos.findIndex((p) => p.id === activePhotoId);
@@ -38,24 +37,16 @@ export function PhotoLightbox({
   const handlePrev = useCallback(() => {
     if (photos.length <= 1 || currentIndex === -1) return;
     const prevIndex = (currentIndex - 1 + photos.length) % photos.length;
-    setImageLoaded(false);
     onNavigate?.(photos[prevIndex].id);
   }, [photos, currentIndex, onNavigate]);
 
   const handleNext = useCallback(() => {
     if (photos.length <= 1 || currentIndex === -1) return;
     const nextIndex = (currentIndex + 1) % photos.length;
-    setImageLoaded(false);
     onNavigate?.(photos[nextIndex].id);
   }, [photos, currentIndex, onNavigate]);
 
-  const [prevId, setPrevId] = useState<string | null>(activePhotoId);
-  if (activePhotoId !== prevId) {
-    setPrevId(activePhotoId);
-    setImageLoaded(false);
-  }
-
-  // Preload next and prev images
+  // Preload next and prev images via Next.js image optimizer proxy
   useEffect(() => {
     if (currentIndex === -1 || photos.length <= 1) return;
 
@@ -64,11 +55,11 @@ export function PhotoLightbox({
 
     if (nextPhoto?.url) {
       const imgNext = new Image();
-      imgNext.src = keyToUrl(nextPhoto.url);
+      imgNext.src = `/_next/image?url=${encodeURIComponent(keyToUrl(nextPhoto.url))}&w=1920&q=75`;
     }
     if (prevPhoto?.url) {
       const imgPrev = new Image();
-      imgPrev.src = keyToUrl(prevPhoto.url);
+      imgPrev.src = `/_next/image?url=${encodeURIComponent(keyToUrl(prevPhoto.url))}&w=1920&q=75`;
     }
   }, [currentIndex, photos]);
 
@@ -243,41 +234,29 @@ export function PhotoLightbox({
               </button>
             )}
 
-            {/* Photo Container with BlurHash placeholder */}
-            <div className="relative max-w-full max-h-full flex items-center justify-center">
-              {/* Blurhash Placeholder */}
-              {currentPhoto.blurData && !imageLoaded && (
-                <div
-                  className="absolute inset-0 flex items-center justify-center overflow-hidden rounded-lg pointer-events-none"
-                  style={{
-                    aspectRatio:
-                      currentPhoto.width && currentPhoto.height
-                        ? `${currentPhoto.width} / ${currentPhoto.height}`
-                        : "auto",
-                  }}
-                >
-                  <Blurhash
-                    hash={currentPhoto.blurData}
-                    width="100%"
-                    height="100%"
-                    resolutionX={32}
-                    resolutionY={32}
-                    punch={1}
-                  />
-                </div>
-              )}
-
-              {/* Full Resolution Image */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+            {/* Photo Container */}
+            <div
+              className="relative max-w-full overflow-hidden rounded-lg shadow-2xl flex items-center justify-center"
+              style={{
+                width:
+                  currentPhoto.width && currentPhoto.height
+                    ? `min(100%, calc(78dvh * ${currentPhoto.width} / ${currentPhoto.height}))`
+                    : "100%",
+                aspectRatio:
+                  currentPhoto.width && currentPhoto.height
+                    ? `${currentPhoto.width} / ${currentPhoto.height}`
+                    : "auto",
+                maxHeight: "78dvh",
+              }}
+            >
+              <BlurImage
                 key={currentPhoto.id}
                 src={photoUrl}
                 alt={currentPhoto.title || "Photo"}
-                onLoad={() => setImageLoaded(true)}
-                className={cn(
-                  "max-w-full max-h-[75vh] sm:max-h-[82vh] object-contain rounded-lg transition-opacity duration-200 shadow-2xl",
-                  imageLoaded ? "opacity-100" : "opacity-0"
-                )}
+                fill
+                blurhash={currentPhoto.blurData}
+                className="object-contain rounded-lg"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1400px"
               />
             </div>
 

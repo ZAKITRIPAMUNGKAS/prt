@@ -211,11 +211,11 @@ const Carousel = ({
       <div className={`flex ${containerClassName}`}>{children}</div>
 
       {/* Navigation Buttons */}
-      {scrollSnaps.length > 1 && (
-        <div className="flex absolute inset-y-0 left-0 right-0 items-center justify-between px-3 sm:px-6 lg:px-8 pointer-events-none z-20">
+      {(dotsCount !== undefined ? dotsCount > 1 : scrollSnaps.length !== 1) && (
+        <div className="flex absolute inset-y-0 left-0 right-0 items-center justify-between px-4 sm:px-8 pointer-events-none z-20">
           <button
             type="button"
-            className="w-10 h-10 bg-black/25 backdrop-blur-md flex items-center justify-center pointer-events-auto text-white rounded-full transition-all hover:bg-black/50 hover:scale-105 active:scale-95 shadow-md"
+            className="w-10 h-10 bg-black/25 hover:bg-black/45 backdrop-blur-sm flex items-center justify-center pointer-events-auto text-white rounded-md transition-all shadow-md active:scale-95"
             aria-label="Previous slide"
             onClick={(e) => {
               e.preventDefault();
@@ -225,7 +225,7 @@ const Carousel = ({
             }}
           >
             <svg
-              className="w-5 h-5"
+              className="w-6 h-6"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -233,14 +233,14 @@ const Carousel = ({
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2.5}
+                strokeWidth={2}
                 d="M15 19l-7-7 7-7"
               />
             </svg>
           </button>
           <button
             type="button"
-            className="w-10 h-10 bg-black/25 backdrop-blur-md flex items-center justify-center pointer-events-auto text-white rounded-full transition-all hover:bg-black/50 hover:scale-105 active:scale-95 shadow-md"
+            className="w-10 h-10 bg-black/25 hover:bg-black/45 backdrop-blur-sm flex items-center justify-center pointer-events-auto text-white rounded-md transition-all shadow-md active:scale-95"
             aria-label="Next slide"
             onClick={(e) => {
               e.preventDefault();
@@ -250,7 +250,7 @@ const Carousel = ({
             }}
           >
             <svg
-              className="w-5 h-5"
+              className="w-6 h-6"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -258,7 +258,7 @@ const Carousel = ({
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2.5}
+                strokeWidth={2}
                 d="M9 5l7 7-7 7"
               />
             </svg>
