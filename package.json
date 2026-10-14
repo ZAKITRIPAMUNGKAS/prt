@@ -11,6 +11,7 @@
     "seed:user": "bun tsx scripts/seed-user.ts",
     "seed:demo-post": "bun tsx scripts/seed-demo-post.ts",
     "seed:projects": "bun tsx scripts/seed-projects.ts",
+    "seed:applications": "bun tsx scripts/seed-applications.ts",
     "seed:dummy": "bun tsx scripts/seed-dummy-content.ts",
     "clean:photo-urls": "bun tsx scripts/clean-photo-urls-safe.ts",
     "rollback:photo-urls": "bun tsx scripts/rollback-photo-urls.ts",
