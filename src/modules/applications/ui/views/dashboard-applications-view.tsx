@@ -13,11 +13,13 @@ import { SummaryCards, SummaryCardsSkeleton } from "../components/summary-cards"
 import { DataPagination } from "@/components/data-pagination";
 import {
   Empty,
+  EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -116,6 +118,11 @@ const EmptyStatus = ({ onAddNew }: { onAddNew: () => void }) => {
           Mulai catat lowongan dan pantau proses lamaran pekerjaan Anda di sini.
         </EmptyDescription>
       </EmptyHeader>
+      <EmptyContent>
+        <Button onClick={onAddNew} size="sm">
+          Tambah Lamaran Pertama
+        </Button>
+      </EmptyContent>
     </Empty>
   );
 };
