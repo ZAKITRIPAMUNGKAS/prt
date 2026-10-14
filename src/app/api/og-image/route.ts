@@ -1,5 +1,6 @@
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { s3Client } from "@/modules/s3/lib/server-client";
+import sharp from "sharp";
 
 export const runtime = "nodejs";
 
@@ -34,17 +35,35 @@ export async function GET(request: Request) {
       return new Response("Not found", { status: 404 });
     }
 
-    // Read full body into buffer so we can set Content-Length
-    // Required by WhatsApp/Facebook/Twitter crawlers to display preview images
+    // Read full body into buffer
     const bytes = await object.Body.transformToByteArray();
-    const buffer = Buffer.from(bytes);
+    const rawBuffer = Buffer.from(bytes);
 
-    return new Response(buffer, {
+    // Optimize image for WhatsApp and social crawlers:
+    // WhatsApp hard requirements:
+    // 1. Max file size < 300 KB (WhatsApp scraper ignores images > 300KB)
+    // 2. Aspect ratio ~1.91:1 (ideal 1200x630)
+    // 3. Format JPEG / PNG
+    const optimizedBuffer = await sharp(rawBuffer)
+      .resize({
+        width: 1200,
+        height: 630,
+        fit: "cover",
+        position: "center",
+      })
+      .jpeg({
+        quality: 80,
+        progressive: true,
+        mozjpeg: true,
+      })
+      .toBuffer();
+
+    return new Response(new Uint8Array(optimizedBuffer), {
       headers: {
         "Cache-Control": CACHE_CONTROL,
         "Content-Disposition": "inline",
-        "Content-Type": object.ContentType || "image/jpeg",
-        "Content-Length": String(buffer.length),
+        "Content-Type": "image/jpeg",
+        "Content-Length": String(optimizedBuffer.length),
         "X-Content-Type-Options": "nosniff",
       },
     });
