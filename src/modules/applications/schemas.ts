@@ -16,8 +16,7 @@ export const optionalUrlSchema = z
       }
     },
     { message: "URL lowongan tidak valid" }
-  )
-  .transform((val) => (val && val.length > 0 ? val : null));
+  );
 
 export const dateNotFutureSchema = z
   .string()
@@ -41,8 +40,7 @@ export const dateNotFutureSchema = z
       return parsed <= endOfToday;
     },
     { message: "Tanggal lamar tidak boleh di masa depan" }
-  )
-  .transform((val) => (val && val.length > 0 ? val : null));
+  );
 
 export const optionalDateStringSchema = z
   .string()
@@ -55,17 +53,12 @@ export const optionalDateStringSchema = z
       return !isNaN(parsed.getTime());
     },
     { message: "Format tanggal tidak valid" }
-  )
-  .transform((val) => (val && val.length > 0 ? val : null));
+  );
 
 export const applicationFormSchema = z
   .object({
     company: z.string().trim().min(1, { message: "Nama perusahaan wajib diisi" }),
-    position: z
-      .string()
-      .trim()
-      .nullish()
-      .transform((val) => (val && val.length > 0 ? val : null)),
+    position: z.string().trim().nullish(),
     platform: z.string().trim().min(1, { message: "Platform lowongan wajib diisi" }),
     jobUrl: optionalUrlSchema,
     status: z.enum(APPLICATION_STATUSES, {
@@ -87,27 +80,11 @@ export const applicationFormSchema = z
       .int({ message: "Ekspektasi gaji harus bilangan bulat" })
       .nonnegative({ message: "Ekspektasi gaji tidak boleh negatif" })
       .nullish(),
-    employmentType: z
-      .string()
-      .trim()
-      .nullish()
-      .transform((val) => (val && val.length > 0 ? val : null)),
-    location: z
-      .string()
-      .trim()
-      .nullish()
-      .transform((val) => (val && val.length > 0 ? val : null)),
-    nextStep: z
-      .string()
-      .trim()
-      .nullish()
-      .transform((val) => (val && val.length > 0 ? val : null)),
+    employmentType: z.string().trim().nullish(),
+    location: z.string().trim().nullish(),
+    nextStep: z.string().trim().nullish(),
     nextStepAt: optionalDateStringSchema,
-    notes: z
-      .string()
-      .trim()
-      .nullish()
-      .transform((val) => (val && val.length > 0 ? val : null)),
+    notes: z.string().trim().nullish(),
   })
   .refine(
     (data) => {

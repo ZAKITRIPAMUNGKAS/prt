@@ -43,6 +43,11 @@ const data = {
       icon: "project",
     },
     {
+      title: "Lamaran Kerja",
+      url: "/dashboard/applications",
+      icon: "application",
+    },
+    {
       title: "Profile",
       url: "/dashboard/profile",
       icon: "user",
