@@ -169,7 +169,6 @@ function describeDay({ count, date }: Contribution) {
   return `${count} ${noun} on ${DATE_FORMAT.format(new Date(`${date}T00:00:00`))}`;
 }
 
-const CALENDAR_API = "https://github-contributions-api.jogruber.de/v4";
 const EVENTS_API = "https://api.github.com/users";
 
 type ApiDay = { date: string; count: number; level: number };
@@ -181,11 +180,22 @@ type PushEvent = {
 
 async function fetchCalendar(login: string) {
   try {
-    const res = await fetch(`${CALENDAR_API}/${login}?y=last`);
-    if (!res.ok) return null;
+    const res = await fetch("/api/github-activity");
+    const days: ApiDay[] = res.ok ? (await res.json())?.contributions ?? [] : [];
 
-    const days: ApiDay[] = (await res.json())?.contributions ?? [];
-    if (!days.length) return null;
+    if (!days.length) {
+      const fallback = await fetch(
+        `https://github-contributions-api.jogruber.de/v4/${login}?y=last`
+      );
+      if (!fallback.ok) return null;
+      const fallbackDays: ApiDay[] = (await fallback.json())?.contributions ?? [];
+      if (!fallbackDays.length) return null;
+      return fallbackDays.map<Contribution>((day) => ({
+        date: day.date,
+        count: day.count,
+        level: Math.min(4, Math.max(0, day.level)) as ContributionLevel,
+      }));
+    }
 
     // columns are weeks, so the first day has to be a sunday or every column shears
     const start = days.findIndex(
