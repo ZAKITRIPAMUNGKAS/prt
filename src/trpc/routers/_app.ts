@@ -9,6 +9,7 @@ import { travelRouter } from "@/modules/travel/server/procedures";
 import { blogRouter } from "@/modules/blog/server/procedures";
 import { dashboardRouter } from "@/modules/dashboard/server/procedures";
 import { projectsRouter } from "@/modules/projects/server/procedures";
+import { applicationsRouter } from "@/modules/applications/server/procedures";
 
 export const appRouter = createTRPCRouter({
   posts: postsRouter,
@@ -21,6 +22,7 @@ export const appRouter = createTRPCRouter({
   blog: blogRouter,
   dashboard: dashboardRouter,
   projects: projectsRouter,
+  applications: applicationsRouter,
 });
 // export type definition of API
 export type AppRouter = typeof appRouter;
