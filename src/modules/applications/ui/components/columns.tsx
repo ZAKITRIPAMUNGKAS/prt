@@ -1,8 +1,6 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { format, formatDistanceToNow } from "date-fns";
-import { id as idLocale } from "date-fns/locale";
 import {
   ExternalLink,
   PenBoxIcon,
@@ -10,6 +8,7 @@ import {
   MapPin,
   Briefcase,
   Coins,
+  FileText,
 } from "lucide-react";
 
 import { JobApplication } from "@/db/schema";
@@ -24,7 +23,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { formatRupiahShort } from "../../lib/utils";
+import {
+  formatFullDate,
+  formatRelativeDate,
+  formatRupiahShort,
+} from "../../lib/utils";
 
 export function isFollowUpNeeded(application: {
   status: string;
@@ -50,13 +53,13 @@ export const getColumns = ({ onEdit }: ColumnOptions): ColumnDef<JobApplication>
   // 1. Perusahaan
   {
     accessorKey: "company",
-    header: "Perusahaan",
+    header: () => <span className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">Perusahaan</span>,
     cell: ({ row }) => {
       const app = row.original;
       const needsFollowUp = isFollowUpNeeded(app);
 
       return (
-        <div className="flex flex-col gap-1 max-w-[240px]">
+        <div className="flex flex-col gap-1 min-w-[180px] max-w-[240px]">
           <div className="flex items-center gap-1.5 flex-wrap">
             {app.jobUrl ? (
               <a
@@ -67,7 +70,7 @@ export const getColumns = ({ onEdit }: ColumnOptions): ColumnDef<JobApplication>
                 title="Buka link lowongan"
               >
                 <span className="truncate">{app.company}</span>
-                <ExternalLink className="size-3 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                <ExternalLink className="size-3 opacity-60 group-hover:opacity-100 transition-opacity shrink-0" />
               </a>
             ) : (
               <span className="font-semibold text-sm text-foreground truncate">
@@ -75,6 +78,24 @@ export const getColumns = ({ onEdit }: ColumnOptions): ColumnDef<JobApplication>
               </span>
             )}
 
+            {/* Note tooltip icon */}
+            {app.notes && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="cursor-help text-muted-foreground hover:text-foreground inline-flex items-center">
+                      <FileText className="size-3 text-muted-foreground/70" />
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-xs text-xs">
+                    <p className="font-medium text-foreground mb-0.5">Catatan:</p>
+                    <p className="text-muted-foreground">{app.notes}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+
+            {/* Follow up pill */}
             {needsFollowUp && (
               <TooltipProvider>
                 <Tooltip>
@@ -96,12 +117,6 @@ export const getColumns = ({ onEdit }: ColumnOptions): ColumnDef<JobApplication>
               </TooltipProvider>
             )}
           </div>
-
-          {app.notes && (
-            <span className="text-xs text-muted-foreground line-clamp-1">
-              {app.notes}
-            </span>
-          )}
         </div>
       );
     },
@@ -110,14 +125,14 @@ export const getColumns = ({ onEdit }: ColumnOptions): ColumnDef<JobApplication>
   // 2. Posisi
   {
     accessorKey: "position",
-    header: "Posisi",
+    header: () => <span className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">Posisi</span>,
     cell: ({ row }) => {
       const app = row.original;
       const hasSalary = app.salaryMin != null || app.salaryMax != null;
 
       return (
-        <div className="flex flex-col gap-1 max-w-[220px]">
-          <span className="text-sm font-medium leading-snug">
+        <div className="flex flex-col gap-1 min-w-[200px] max-w-[260px]">
+          <span className="text-sm font-medium text-foreground leading-snug truncate">
             {app.position || (
               <span className="text-muted-foreground italic text-xs">
                 Belum ditentukan
@@ -126,13 +141,13 @@ export const getColumns = ({ onEdit }: ColumnOptions): ColumnDef<JobApplication>
           </span>
           <div className="flex flex-wrap items-center gap-1">
             {app.employmentType && (
-              <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground bg-muted/80 px-1.5 py-0.5 rounded font-medium">
+              <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground bg-muted/70 px-1.5 py-0.5 rounded font-medium">
                 <Briefcase className="size-2.5" />
                 {app.employmentType}
               </span>
             )}
             {app.location && (
-              <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground bg-muted/80 px-1.5 py-0.5 rounded font-medium">
+              <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground bg-muted/70 px-1.5 py-0.5 rounded font-medium">
                 <MapPin className="size-2.5" />
                 {app.location}
               </span>
@@ -156,15 +171,17 @@ export const getColumns = ({ onEdit }: ColumnOptions): ColumnDef<JobApplication>
   // 3. Platform
   {
     accessorKey: "platform",
-    header: "Platform",
+    header: () => <span className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">Platform</span>,
     cell: ({ row }) => {
       return (
-        <Badge
-          variant="secondary"
-          className="font-normal text-xs px-2 py-0.5 bg-muted/80"
-        >
-          {row.original.platform}
-        </Badge>
+        <div className="min-w-[100px] whitespace-nowrap">
+          <Badge
+            variant="secondary"
+            className="font-normal text-xs px-2.5 py-0.5 bg-muted/70 text-foreground"
+          >
+            {row.original.platform}
+          </Badge>
+        </div>
       );
     },
   },
@@ -172,39 +189,35 @@ export const getColumns = ({ onEdit }: ColumnOptions): ColumnDef<JobApplication>
   // 4. Tanggal Lamar
   {
     accessorKey: "appliedAt",
-    header: "Tanggal Lamar",
+    header: () => <span className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">Tanggal Lamar</span>,
     cell: ({ row }) => {
       const appliedAt = row.original.appliedAt;
       if (!appliedAt) {
         return (
-          <span className="text-xs text-muted-foreground italic">
+          <span className="text-xs text-muted-foreground italic min-w-[100px] block">
             Draft
           </span>
         );
       }
 
-      const dateObj = new Date(`${appliedAt}T00:00:00`);
-      const relativeDate = formatDistanceToNow(dateObj, {
-        addSuffix: true,
-        locale: idLocale,
-      });
-      const fullDate = format(dateObj, "EEEE, d MMMM yyyy", {
-        locale: idLocale,
-      });
+      const relativeDate = formatRelativeDate(appliedAt);
+      const fullDate = formatFullDate(appliedAt);
 
       return (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span className="text-sm cursor-help hover:text-foreground underline decoration-dotted decoration-muted-foreground/60 text-muted-foreground">
-                {relativeDate}
-              </span>
-            </TooltipTrigger>
-            <TooltipContent side="top">
-              <p className="text-xs">{fullDate}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <div className="min-w-[110px] whitespace-nowrap">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="text-xs font-medium text-muted-foreground hover:text-foreground cursor-help transition-colors">
+                  {relativeDate}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p className="text-xs">{fullDate}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       );
     },
   },
@@ -212,14 +225,16 @@ export const getColumns = ({ onEdit }: ColumnOptions): ColumnDef<JobApplication>
   // 5. Status
   {
     accessorKey: "status",
-    header: "Status",
+    header: () => <span className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">Status</span>,
     cell: ({ row }) => {
       return (
-        <StatusDropdown
-          id={row.original.id}
-          currentStatus={row.original.status as ApplicationStatus}
-          companyName={row.original.company}
-        />
+        <div className="min-w-[120px] whitespace-nowrap">
+          <StatusDropdown
+            id={row.original.id}
+            currentStatus={row.original.status as ApplicationStatus}
+            companyName={row.original.company}
+          />
+        </div>
       );
     },
   },
@@ -227,21 +242,19 @@ export const getColumns = ({ onEdit }: ColumnOptions): ColumnDef<JobApplication>
   // 6. Langkah Berikutnya
   {
     accessorKey: "nextStep",
-    header: "Langkah Berikutnya",
+    header: () => <span className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">Langkah Berikutnya</span>,
     cell: ({ row }) => {
       const { nextStep, nextStepAt } = row.original;
       if (!nextStep && !nextStepAt) {
-        return <span className="text-muted-foreground text-xs">—</span>;
+        return <span className="text-muted-foreground/60 text-xs">—</span>;
       }
 
       return (
-        <div className="flex flex-col text-xs max-w-[180px]">
-          {nextStep && <span className="font-medium text-foreground">{nextStep}</span>}
+        <div className="flex flex-col text-xs min-w-[140px] max-w-[180px]">
+          {nextStep && <span className="font-medium text-foreground truncate">{nextStep}</span>}
           {nextStepAt && (
             <span className="text-[11px] text-muted-foreground mt-0.5">
-              {format(new Date(`${nextStepAt}T00:00:00`), "d MMM yyyy", {
-                locale: idLocale,
-              })}
+              {formatFullDate(nextStepAt)}
             </span>
           )}
         </div>
@@ -252,18 +265,18 @@ export const getColumns = ({ onEdit }: ColumnOptions): ColumnDef<JobApplication>
   // 7. Aksi
   {
     id: "actions",
-    header: () => <div className="text-right pr-2">Aksi</div>,
+    header: () => <div className="text-right pr-2 font-semibold text-xs text-muted-foreground uppercase tracking-wider">Aksi</div>,
     cell: ({ row }) => {
       return (
-        <div className="flex justify-end items-center gap-1">
+        <div className="flex justify-end items-center gap-0.5">
           <Button
             variant="ghost"
             size="icon"
-            className="size-8 text-muted-foreground hover:text-foreground"
+            className="size-7 text-muted-foreground hover:text-foreground rounded-md"
             onClick={() => onEdit(row.original)}
             title="Edit lamaran"
           >
-            <PenBoxIcon className="size-4" />
+            <PenBoxIcon className="size-3.5" />
           </Button>
 
           <DeleteApplicationDialog

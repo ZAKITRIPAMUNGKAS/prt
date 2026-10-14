@@ -4,8 +4,6 @@ import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import {
   Card,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -27,137 +25,128 @@ export const SummaryCards = () => {
   );
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3.5">
-      {/* 1. Total Lamaran */}
-      <Card className="shadow-xs hover:border-primary/30 transition-colors">
-        <CardHeader className="p-4 pb-2">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      {/* 1. Total */}
+      <Card className="shadow-2xs hover:border-primary/40 transition-colors">
+        <CardHeader className="p-3.5 flex flex-col justify-between h-full gap-2">
           <div className="flex items-center justify-between">
-            <CardDescription className="text-xs font-medium">
-              Total Lamaran
-            </CardDescription>
-            <div className="size-7 rounded-md bg-muted flex items-center justify-center text-muted-foreground">
+            <span className="text-xs font-medium text-muted-foreground">Total</span>
+            <div className="size-6 rounded-md bg-muted flex items-center justify-center text-muted-foreground">
               <IconBriefcase className="size-3.5" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold tabular-nums tracking-tight mt-1">
-            {stats.total.toLocaleString()}
-          </CardTitle>
+          <div>
+            <CardTitle className="text-2xl font-bold tabular-nums tracking-tight">
+              {stats.total}
+            </CardTitle>
+            <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+              {stats.last7Days} dalam 7 hari
+            </p>
+          </div>
         </CardHeader>
-        <CardFooter className="p-4 pt-1 text-[11px] text-muted-foreground">
-          <span className="truncate">
-            <strong className="text-foreground font-semibold">
-              {stats.last7Days}
-            </strong>{" "}
-            dalam 7 hari terakhir
-          </span>
-        </CardFooter>
       </Card>
 
       {/* 2. Terkirim */}
-      <Card className="shadow-xs hover:border-blue-500/30 transition-colors">
-        <CardHeader className="p-4 pb-2">
+      <Card className="shadow-2xs hover:border-blue-500/40 transition-colors">
+        <CardHeader className="p-3.5 flex flex-col justify-between h-full gap-2">
           <div className="flex items-center justify-between">
-            <CardDescription className="text-xs font-medium">
-              Terkirim
-            </CardDescription>
-            <div className="size-7 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+            <span className="text-xs font-medium text-blue-600 dark:text-blue-400">Terkirim</span>
+            <div className="size-6 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
               <IconSend className="size-3.5" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold tabular-nums tracking-tight text-blue-600 dark:text-blue-400 mt-1">
-            {stats.applied.toLocaleString()}
-          </CardTitle>
+          <div>
+            <CardTitle className="text-2xl font-bold tabular-nums tracking-tight text-blue-600 dark:text-blue-400">
+              {stats.applied}
+            </CardTitle>
+            <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+              Menunggu respon
+            </p>
+          </div>
         </CardHeader>
-        <CardFooter className="p-4 pt-1 text-[11px] text-muted-foreground">
-          <span className="truncate">Menunggu respon awal</span>
-        </CardFooter>
       </Card>
 
       {/* 3. Dalam Proses */}
-      <Card className="shadow-xs hover:border-amber-500/30 transition-colors">
-        <CardHeader className="p-4 pb-2">
+      <Card className="shadow-2xs hover:border-amber-500/40 transition-colors">
+        <CardHeader className="p-3.5 flex flex-col justify-between h-full gap-2">
           <div className="flex items-center justify-between">
-            <CardDescription className="text-xs font-medium">
-              Dalam Proses
-            </CardDescription>
-            <div className="size-7 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+            <span className="text-xs font-medium text-amber-600 dark:text-amber-400">Dalam Proses</span>
+            <div className="size-6 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
               <IconChecklist className="size-3.5" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold tabular-nums tracking-tight text-amber-600 dark:text-amber-400 mt-1">
-            {stats.inProgress.toLocaleString()}
-          </CardTitle>
+          <div>
+            <CardTitle className="text-2xl font-bold tabular-nums tracking-tight text-amber-600 dark:text-amber-400">
+              {stats.inProgress}
+            </CardTitle>
+            <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+              {stats.byStatus.screening} scr · {stats.byStatus.test} tes · {stats.byStatus.interview} intv
+            </p>
+          </div>
         </CardHeader>
-        <CardFooter className="p-4 pt-1 text-[11px] text-muted-foreground">
-          <span className="truncate">
-            {stats.byStatus.screening} scr · {stats.byStatus.test} tes ·{" "}
-            {stats.byStatus.interview} intv
-          </span>
-        </CardFooter>
       </Card>
 
       {/* 4. Offer */}
-      <Card className="shadow-xs hover:border-emerald-500/30 transition-colors">
-        <CardHeader className="p-4 pb-2">
+      <Card className="shadow-2xs hover:border-emerald-500/40 transition-colors">
+        <CardHeader className="p-3.5 flex flex-col justify-between h-full gap-2">
           <div className="flex items-center justify-between">
-            <CardDescription className="text-xs font-medium">
-              Offer
-            </CardDescription>
-            <div className="size-7 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+            <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">Offer</span>
+            <div className="size-6 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
               <IconAward className="size-3.5" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400 mt-1">
-            {stats.offer.toLocaleString()}
-          </CardTitle>
+          <div>
+            <CardTitle className="text-2xl font-bold tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400">
+              {stats.offer}
+            </CardTitle>
+            <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+              {stats.byStatus.accepted} diterima
+            </p>
+          </div>
         </CardHeader>
-        <CardFooter className="p-4 pt-1 text-[11px] text-muted-foreground">
-          <span className="truncate">
-            <strong className="text-foreground font-semibold">
-              {stats.byStatus.accepted}
-            </strong>{" "}
-            telah diterima
-          </span>
-        </CardFooter>
       </Card>
 
       {/* 5. Ditolak */}
-      <Card className="shadow-xs hover:border-destructive/30 transition-colors">
-        <CardHeader className="p-4 pb-2">
+      <Card className="shadow-2xs hover:border-destructive/40 transition-colors">
+        <CardHeader className="p-3.5 flex flex-col justify-between h-full gap-2">
           <div className="flex items-center justify-between">
-            <CardDescription className="text-xs font-medium">
-              Ditolak
-            </CardDescription>
-            <div className="size-7 rounded-md bg-destructive/10 text-destructive flex items-center justify-center">
+            <span className="text-xs font-medium text-destructive">Ditolak</span>
+            <div className="size-6 rounded-md bg-destructive/10 text-destructive flex items-center justify-center">
               <IconCircleX className="size-3.5" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold tabular-nums tracking-tight text-destructive mt-1">
-            {stats.rejected.toLocaleString()}
-          </CardTitle>
+          <div>
+            <CardTitle className="text-2xl font-bold tabular-nums tracking-tight text-destructive">
+              {stats.rejected}
+            </CardTitle>
+            <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+              {stats.byStatus.closed} tutup · {stats.byStatus.withdrawn} batal
+            </p>
+          </div>
         </CardHeader>
-        <CardFooter className="p-4 pt-1 text-[11px] text-muted-foreground">
-          <span className="truncate">
-            {stats.byStatus.closed} tutup · {stats.byStatus.withdrawn} batal
-          </span>
-        </CardFooter>
       </Card>
 
-      {/* 6. Perlu Follow-up */}
+      {/* 6. Follow-up */}
       <Card
-        className={`shadow-xs transition-colors ${
+        className={`shadow-2xs transition-colors ${
           stats.followUpNeeded > 0
-            ? "border-orange-500/30 bg-orange-500/[0.02]"
-            : "hover:border-primary/30"
+            ? "border-orange-500/40 bg-orange-500/[0.04]"
+            : "hover:border-primary/40"
         }`}
       >
-        <CardHeader className="p-4 pb-2">
+        <CardHeader className="p-3.5 flex flex-col justify-between h-full gap-2">
           <div className="flex items-center justify-between">
-            <CardDescription className="text-xs font-medium">
-              Perlu Follow-up
-            </CardDescription>
+            <span
+              className={`text-xs font-medium ${
+                stats.followUpNeeded > 0
+                  ? "text-orange-600 dark:text-orange-400 font-semibold"
+                  : "text-muted-foreground"
+              }`}
+            >
+              Follow-up
+            </span>
             <div
-              className={`size-7 rounded-md flex items-center justify-center ${
+              className={`size-6 rounded-md flex items-center justify-center ${
                 stats.followUpNeeded > 0
                   ? "bg-orange-500/10 text-orange-600 dark:text-orange-400"
                   : "bg-muted text-muted-foreground"
@@ -170,23 +159,23 @@ export const SummaryCards = () => {
               )}
             </div>
           </div>
-          <CardTitle
-            className={`text-2xl font-bold tabular-nums tracking-tight mt-1 ${
-              stats.followUpNeeded > 0
-                ? "text-orange-600 dark:text-orange-400"
-                : ""
-            }`}
-          >
-            {stats.followUpNeeded.toLocaleString()}
-          </CardTitle>
+          <div>
+            <CardTitle
+              className={`text-2xl font-bold tabular-nums tracking-tight ${
+                stats.followUpNeeded > 0
+                  ? "text-orange-600 dark:text-orange-400"
+                  : ""
+              }`}
+            >
+              {stats.followUpNeeded}
+            </CardTitle>
+            <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+              {stats.followUpNeeded > 0
+                ? "Terkirim > 14 hari"
+                : "Semua respon wajar"}
+            </p>
+          </div>
         </CardHeader>
-        <CardFooter className="p-4 pt-1 text-[11px] text-muted-foreground">
-          <span className="truncate">
-            {stats.followUpNeeded > 0
-              ? "> 14 hari tanpa kabar"
-              : "Semua respon wajar"}
-          </span>
-        </CardFooter>
       </Card>
     </div>
   );
@@ -194,19 +183,17 @@ export const SummaryCards = () => {
 
 export const SummaryCardsSkeleton = () => {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3.5">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
       {[1, 2, 3, 4, 5, 6].map((i) => (
-        <Card key={i} className="shadow-xs">
-          <CardHeader className="p-4 pb-2">
+        <Card key={i} className="shadow-2xs">
+          <CardHeader className="p-3.5 space-y-2">
             <div className="flex items-center justify-between">
-              <Skeleton className="h-3.5 w-16" />
-              <Skeleton className="size-7 rounded-md" />
+              <Skeleton className="h-3 w-16" />
+              <Skeleton className="size-6 rounded-md" />
             </div>
-            <Skeleton className="h-7 w-12 mt-2" />
+            <Skeleton className="h-7 w-12" />
+            <Skeleton className="h-2.5 w-24" />
           </CardHeader>
-          <CardFooter className="p-4 pt-1">
-            <Skeleton className="h-3 w-28" />
-          </CardFooter>
         </Card>
       ))}
     </div>
