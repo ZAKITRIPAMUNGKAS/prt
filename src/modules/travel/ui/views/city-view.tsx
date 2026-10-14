@@ -154,7 +154,7 @@ export const CityView = ({ city }: Props) => {
                   <p className="text-xs font-medium truncate group-hover:text-primary transition-colors">
                     {photo.title}
                   </p>
-                  <p className="text-[11px] text-muted-foreground truncate">
+                  <p className="text-[11px] text-muted-foreground truncate" suppressHydrationWarning>
                     {photo.dateTimeOriginal
                       ? format(new Date(photo.dateTimeOriginal), "d MMM yyyy")
                       : ""}

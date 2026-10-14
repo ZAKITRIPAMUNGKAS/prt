@@ -40,8 +40,8 @@ const gapFor = (cellSize: number) => Math.max(2, Math.round(cellSize / 4));
 const weeksFor = (months: number) =>
   Math.max(1, Math.ceil(months * WEEKS_PER_MONTH));
 
-const useIsoLayoutEffect =
-  typeof window !== "undefined" ? React.useLayoutEffect : React.useEffect;
+const useIsoLayoutEffect = React.useEffect;
+const emptySubscribe = () => () => {};
 
 const EASE_OUT = [0.22, 1, 0.36, 1] as const;
 const SPRING = { type: "spring", bounce: 0.2, duration: 0.62 } as const;
@@ -612,6 +612,12 @@ const GitHubActivity = ({
   const uid = React.useId();
   const [openState, setOpenState] = React.useState(defaultOpen);
 
+  const mounted = React.useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+
   const open = openProp ?? openState;
   const toggle = () => {
     if (openProp === undefined) setOpenState(!open);
@@ -660,6 +666,21 @@ const GitHubActivity = ({
   const surfaceClasses = slim
     ? "relative max-w-full p-2.5 sm:p-3 font-runde select-none"
     : SURFACE;
+
+  if (!mounted) {
+    return (
+      <div
+        data-slot="github-activity"
+        data-variant={variant}
+        className={cn(surfaceClasses, VARIANTS[variant].ink, className)}
+        style={{ width: "100%", ...style }}
+        {...props}
+      >
+        <Squircle className={VARIANTS[variant].paint} />
+        <div className={cn(CONTENT, "h-[105px]")} />
+      </div>
+    );
+  }
 
   return (
     <div

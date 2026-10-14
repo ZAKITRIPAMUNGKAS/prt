@@ -46,7 +46,7 @@ export const BlogHomeCard = ({ post }: Props) => {
             {post.title}
           </p>
           <div className="flex items-center gap-2 mt-1.5 text-[11px] text-white/70">
-            <span>
+            <span suppressHydrationWarning>
               {post.createdAt
                 ? format(new Date(post.createdAt), "d MMM yyyy")
                 : ""}

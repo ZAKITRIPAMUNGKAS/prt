@@ -45,6 +45,7 @@ const formatCaptureDate = (value?: string | Date | null) => {
     day: "numeric",
     month: "short",
     year: "numeric",
+    timeZone: "UTC",
   }).format(date);
 };
 
@@ -100,9 +101,9 @@ export function FramedPhoto({
               {(location || captureDate) && (
                 <p className="mt-1 flex items-center gap-1.5 truncate text-xs text-neutral-500">
                   {location && <MapPin className="size-3 shrink-0" />}
-                  <span className="truncate">{location || captureDate}</span>
+                  <span className="truncate" suppressHydrationWarning>{location || captureDate}</span>
                   {location && captureDate && <span className="text-neutral-300">/</span>}
-                  {location && captureDate && <span className="shrink-0">{captureDate}</span>}
+                  {location && captureDate && <span className="shrink-0" suppressHydrationWarning>{captureDate}</span>}
                 </p>
               )}
             </div>

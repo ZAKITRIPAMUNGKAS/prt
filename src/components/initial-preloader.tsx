@@ -1,31 +1,27 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { PiSparkleFill } from "react-icons/pi";
 import { siteConfig } from "@/site.config";
 
-function getHasLoadedSnapshot(): boolean {
-  if (typeof window === "undefined") return true;
-  return Boolean(sessionStorage.getItem("app_initial_loaded"));
-}
-
-function subscribeToStorage(): () => void {
-  return () => {};
-}
-
 export function InitialPreloader() {
-  const alreadyLoaded = useSyncExternalStore(
-    subscribeToStorage,
-    getHasLoadedSnapshot,
-    () => true
-  );
-
+  const [mounted, setMounted] = useState(false);
+  const [alreadyLoaded, setAlreadyLoaded] = useState(true);
   const [active, setActive] = useState(true);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    if (alreadyLoaded) return;
+    const timer = setTimeout(() => {
+      const loaded = Boolean(sessionStorage.getItem("app_initial_loaded"));
+      setAlreadyLoaded(loaded);
+      setMounted(true);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted || alreadyLoaded) return;
 
     const interval = setInterval(() => {
       setProgress((prev) => {
@@ -43,9 +39,9 @@ export function InitialPreloader() {
     }, 45);
 
     return () => clearInterval(interval);
-  }, [alreadyLoaded]);
+  }, [mounted, alreadyLoaded]);
 
-  const show = !alreadyLoaded && active;
+  const show = mounted && !alreadyLoaded && active;
 
   return (
     <AnimatePresence mode="wait">

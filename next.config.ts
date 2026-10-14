@@ -21,6 +21,17 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   images: {
     qualities: [65, 75],
+    // The endpoint independently validates its `key` to `projects/` image
+    // objects before reading from R2. Query parameters are required for that
+    // allowlisted key, so permit this one same-origin image path.
+    localPatterns: [
+      {
+        pathname: "/api/media",
+      },
+      {
+        pathname: "/**",
+      },
+    ],
     ...(useCloudflareLoader && {
       loader: "custom",
       loaderFile: "./src/lib/cloudflare-image-loader.ts",

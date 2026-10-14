@@ -367,7 +367,7 @@ export function CityDetailView({ city }: CityDetailViewProps) {
             </div>
             <div className="flex flex-col w-full items-center justify-center">
               <p className="text-sm font-medium">{photo.title}</p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground" suppressHydrationWarning>
                 {photo.dateTimeOriginal
                   ? format(photo.dateTimeOriginal, "d MMM yyyy")
                   : ""}

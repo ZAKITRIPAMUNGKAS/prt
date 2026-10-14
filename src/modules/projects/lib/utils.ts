@@ -9,11 +9,8 @@ export function getProjectCoverUrl(coverKey: string | null | undefined): string 
   ) {
     return coverKey;
   }
-  const s3Url = keyToUrl(coverKey);
-  if (!s3Url || s3Url.includes("your-custom-domain.com") || s3Url.startsWith("/")) {
-    return "/placeholder.svg";
-  }
-  return s3Url;
+
+  return `/api/media?${new URLSearchParams({ key: coverKey }).toString()}`;
 }
 
 export function getProjectVideoUrl(videoKey: string | null | undefined): string | null {

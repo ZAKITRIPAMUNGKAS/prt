@@ -17,7 +17,6 @@ import dynamic from "next/dynamic";
 
 const RichTextViewer = dynamic(
   () => import("@/components/editor/rich-text-viewer"),
-  { ssr: false },
 );
 import { siteConfig } from "@/site.config";
 import { useBlogReaderTracking } from "../../hooks/use-blog-reader-tracking";

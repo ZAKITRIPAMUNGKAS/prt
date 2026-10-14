@@ -12,6 +12,32 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
+function getSocialVersion(
+  updatedAt: Date | string | null | undefined,
+  fallback: string
+) {
+  return `3-${updatedAt ? new Date(updatedAt).getTime() : fallback}`;
+}
+
+function getOgImageUrl(
+  baseUrl: string,
+  coverImage: string | null | undefined,
+  updatedAt: Date | string | null | undefined
+) {
+  if (!coverImage) {
+    return `${baseUrl}/fotoku.png`;
+  }
+
+  const params = new URLSearchParams({
+    key: coverImage,
+    // A new version prevents social crawlers from reusing a previous failed
+    // thumbnail fetch. Changes to the post naturally produce a new URL.
+    v: getSocialVersion(updatedAt, coverImage),
+  });
+
+  return `${baseUrl}/api/og-image?${params.toString()}`;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const slug = (await params).slug;
   const decodedSlug = decodeURIComponent(slug);
@@ -31,12 +57,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://me.tepegrafi.id";
     const postUrl = `${baseUrl}/blog/${data.slug}`;
+    const socialUrl = `${postUrl}?og=${getSocialVersion(
+      data.updatedAt,
+      data.coverImage || data.slug
+    )}`;
 
     // Proxy via /api/og-image (served over me.tepegrafi.id with valid SSL)
     // Direct R2 CDN URL has broken SSL cert so WhatsApp/social crawlers can't fetch it
-    const ogImage = data.coverImage
-      ? `${baseUrl}/api/og-image?key=${encodeURIComponent(data.coverImage)}`
-      : `${baseUrl}/fotoku.png`;
+    const ogImage = getOgImageUrl(baseUrl, data.coverImage, data.updatedAt);
 
     const cleanDescription =
       data.description || siteConfig.metadata.description;
@@ -50,7 +78,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       openGraph: {
         title: data.title,
         description: cleanDescription,
-        url: postUrl,
+        // Keep the canonical URL clean, but rotate this cache identity when a
+        // post changes so WhatsApp/Meta fetches a fresh preview.
+        url: socialUrl,
         siteName: siteConfig.name,
         locale: "id_ID",
         type: "article",
@@ -104,9 +134,7 @@ export default async function page({ params }: Props) {
     );
 
     if (post) {
-      const ogImage = post.coverImage
-        ? `${baseUrl}/api/og-image?key=${encodeURIComponent(post.coverImage)}`
-        : `${baseUrl}/fotoku.png`;
+      const ogImage = getOgImageUrl(baseUrl, post.coverImage, post.updatedAt);
 
       jsonLd = {
         "@context": "https://schema.org",

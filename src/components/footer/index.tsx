@@ -47,7 +47,7 @@ const Footer = () => {
 
       {/* Copyright */}
       <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-white/60 dark:text-black/60">
-        <p>© {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</p>
+        <p suppressHydrationWarning>© {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</p>
         <p>Surakarta, Indonesia</p>
       </div>
     </footer>

@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { projectFormSchema } from "../schemas";
-import { getProjectVideoUrl, generateProjectSlug } from "../lib/utils";
+import {
+  generateProjectSlug,
+  getProjectCoverUrl,
+  getProjectVideoUrl,
+} from "../lib/utils";
 
 const baseProject = {
   title: "ARQAM App",
@@ -57,5 +61,19 @@ describe("getProjectVideoUrl", () => {
       "https://example.com/video.mp4"
     );
     expect(getProjectVideoUrl("/video.mp4")).toBe("/video.mp4");
+  });
+});
+
+describe("getProjectCoverUrl", () => {
+  it("serves R2 project keys through the same-origin media proxy", () => {
+    expect(getProjectCoverUrl("projects/arqam app.jpg")).toBe(
+      "/api/media?key=projects%2Farqam+app.jpg"
+    );
+  });
+
+  it("leaves direct URLs unchanged", () => {
+    expect(getProjectCoverUrl("https://example.com/cover.jpg")).toBe(
+      "https://example.com/cover.jpg"
+    );
   });
 });
