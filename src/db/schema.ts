@@ -11,6 +11,7 @@ import {
   uniqueIndex,
   index,
   pgEnum,
+  date,
 } from "drizzle-orm/pg-core";
 import {
   createInsertSchema,
@@ -311,4 +312,58 @@ export type Project = InferSelectModel<typeof projects>;
 export const projectsInsertSchema = createInsertSchema(projects);
 export const projectsSelectSchema = createSelectSchema(projects);
 export const projectsUpdateSchema = createUpdateSchema(projects);
+
+/***************************
+ ***************************
+ *  Job Applications Table  *
+ ***************************
+ ***************************/
+
+export const applicationStatus = pgEnum("application_status", [
+  "draft",
+  "applied",
+  "screening",
+  "test",
+  "interview",
+  "offer",
+  "accepted",
+  "rejected",
+  "withdrawn",
+  "closed",
+]);
+
+export const jobApplications = pgTable(
+  "job_applications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    company: text("company").notNull(),
+    position: text("position"),
+    platform: text("platform").notNull(),
+    jobUrl: text("job_url"),
+    status: applicationStatus("status").default("applied").notNull(),
+    appliedAt: date("applied_at"),
+    salaryMin: integer("salary_min"),
+    salaryMax: integer("salary_max"),
+    expectedSalary: integer("expected_salary"),
+    employmentType: text("employment_type"),
+    location: text("location"),
+    nextStep: text("next_step"),
+    nextStepAt: date("next_step_at"),
+    notes: text("notes"),
+
+    ...timestamps,
+  },
+  (t) => [
+    index("job_applications_status_idx").on(t.status),
+    index("job_applications_applied_at_idx").on(t.appliedAt),
+  ]
+);
+
+// Types
+export type JobApplication = InferSelectModel<typeof jobApplications>;
+
+// Schemas
+export const jobApplicationsInsertSchema = createInsertSchema(jobApplications);
+export const jobApplicationsSelectSchema = createSelectSchema(jobApplications);
+export const jobApplicationsUpdateSchema = createUpdateSchema(jobApplications);
 
