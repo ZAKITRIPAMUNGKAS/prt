@@ -198,7 +198,6 @@ describe("applicationFormSchema - Status validation", () => {
   it("fails when status is invalid", () => {
     const res = applicationFormSchema.safeParse({
       ...baseApplication,
-      // @ts-expect-error Testing invalid runtime status
       status: "sedang_review",
     });
     expect(res.success).toBe(false);
