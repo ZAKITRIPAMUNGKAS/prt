@@ -9,6 +9,7 @@ import {
   Clock,
   MapPin,
   Briefcase,
+  Coins,
 } from "lucide-react";
 
 import { JobApplication } from "@/db/schema";
@@ -23,6 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { formatRupiahShort } from "../../lib/utils";
 
 export function isFollowUpNeeded(application: {
   status: string;
@@ -54,28 +56,8 @@ export const getColumns = ({ onEdit }: ColumnOptions): ColumnDef<JobApplication>
       const needsFollowUp = isFollowUpNeeded(app);
 
       return (
-        <div className="flex items-start gap-2 max-w-[220px]">
-          {needsFollowUp && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span
-                    className="inline-flex items-center text-amber-500 mt-0.5 shrink-0"
-                    aria-label="Perlu follow-up"
-                  >
-                    <Clock className="size-3.5" />
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  <p className="text-xs">
-                    Perlu follow-up: status terkirim lebih dari 14 hari
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
-
-          <div className="flex flex-col">
+        <div className="flex flex-col gap-1 max-w-[240px]">
+          <div className="flex items-center gap-1.5 flex-wrap">
             {app.jobUrl ? (
               <a
                 href={app.jobUrl}
@@ -92,12 +74,34 @@ export const getColumns = ({ onEdit }: ColumnOptions): ColumnDef<JobApplication>
                 {app.company}
               </span>
             )}
-            {app.notes && (
-              <span className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
-                {app.notes}
-              </span>
+
+            {needsFollowUp && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 px-1.5 py-0 h-4.5 gap-0.5 shrink-0"
+                    >
+                      <Clock className="size-2.5" />
+                      <span>Follow-up</span>
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p className="text-xs">
+                      Status terkirim sudah lebih dari 14 hari tanpa perubahan
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             )}
           </div>
+
+          {app.notes && (
+            <span className="text-xs text-muted-foreground line-clamp-1">
+              {app.notes}
+            </span>
+          )}
         </div>
       );
     },
@@ -109,26 +113,38 @@ export const getColumns = ({ onEdit }: ColumnOptions): ColumnDef<JobApplication>
     header: "Posisi",
     cell: ({ row }) => {
       const app = row.original;
+      const hasSalary = app.salaryMin != null || app.salaryMax != null;
+
       return (
-        <div className="flex flex-col gap-1 max-w-[200px]">
-          <span className="text-sm font-medium">
+        <div className="flex flex-col gap-1 max-w-[220px]">
+          <span className="text-sm font-medium leading-snug">
             {app.position || (
               <span className="text-muted-foreground italic text-xs">
                 Belum ditentukan
               </span>
             )}
           </span>
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap items-center gap-1">
             {app.employmentType && (
-              <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+              <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground bg-muted/80 px-1.5 py-0.5 rounded font-medium">
                 <Briefcase className="size-2.5" />
                 {app.employmentType}
               </span>
             )}
             {app.location && (
-              <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+              <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground bg-muted/80 px-1.5 py-0.5 rounded font-medium">
                 <MapPin className="size-2.5" />
                 {app.location}
+              </span>
+            )}
+            {hasSalary && (
+              <span className="inline-flex items-center gap-0.5 text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded font-medium">
+                <Coins className="size-2.5" />
+                {app.salaryMin != null && app.salaryMax != null
+                  ? `${formatRupiahShort(app.salaryMin)} - ${formatRupiahShort(app.salaryMax)}`
+                  : app.salaryMin != null
+                  ? `Min ${formatRupiahShort(app.salaryMin)}`
+                  : `Maks ${formatRupiahShort(app.salaryMax)}`}
               </span>
             )}
           </div>
@@ -143,7 +159,10 @@ export const getColumns = ({ onEdit }: ColumnOptions): ColumnDef<JobApplication>
     header: "Platform",
     cell: ({ row }) => {
       return (
-        <Badge variant="secondary" className="font-normal text-xs">
+        <Badge
+          variant="secondary"
+          className="font-normal text-xs px-2 py-0.5 bg-muted/80"
+        >
           {row.original.platform}
         </Badge>
       );
@@ -159,7 +178,7 @@ export const getColumns = ({ onEdit }: ColumnOptions): ColumnDef<JobApplication>
       if (!appliedAt) {
         return (
           <span className="text-xs text-muted-foreground italic">
-            Draft (belum dikirim)
+            Draft
           </span>
         );
       }
@@ -212,14 +231,14 @@ export const getColumns = ({ onEdit }: ColumnOptions): ColumnDef<JobApplication>
     cell: ({ row }) => {
       const { nextStep, nextStepAt } = row.original;
       if (!nextStep && !nextStepAt) {
-        return <span className="text-muted-foreground text-xs">-</span>;
+        return <span className="text-muted-foreground text-xs">—</span>;
       }
 
       return (
         <div className="flex flex-col text-xs max-w-[180px]">
           {nextStep && <span className="font-medium text-foreground">{nextStep}</span>}
           {nextStepAt && (
-            <span className="text-muted-foreground mt-0.5">
+            <span className="text-[11px] text-muted-foreground mt-0.5">
               {format(new Date(`${nextStepAt}T00:00:00`), "d MMM yyyy", {
                 locale: idLocale,
               })}

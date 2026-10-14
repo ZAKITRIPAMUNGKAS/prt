@@ -4,15 +4,14 @@ import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import {
   Card,
-  CardAction,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
+  IconBriefcase,
   IconSend,
   IconClock,
   IconChecklist,
@@ -28,137 +27,151 @@ export const SummaryCards = () => {
   );
 
   return (
-    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:shadow-xs sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
+    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3.5">
       {/* 1. Total Lamaran */}
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription>Total Lamaran</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+      <Card className="shadow-xs hover:border-primary/30 transition-colors">
+        <CardHeader className="p-4 pb-2">
+          <div className="flex items-center justify-between">
+            <CardDescription className="text-xs font-medium">
+              Total Lamaran
+            </CardDescription>
+            <div className="size-7 rounded-md bg-muted flex items-center justify-center text-muted-foreground">
+              <IconBriefcase className="size-3.5" />
+            </div>
+          </div>
+          <CardTitle className="text-2xl font-bold tabular-nums tracking-tight mt-1">
             {stats.total.toLocaleString()}
           </CardTitle>
-          <CardAction>
-            <Badge variant="outline">Semua</Badge>
-          </CardAction>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Aktivitas terbaru
-          </div>
-          <div className="text-muted-foreground">
-            {stats.last7Days} lamaran dalam 7 hari terakhir
-          </div>
+        <CardFooter className="p-4 pt-1 text-[11px] text-muted-foreground">
+          <span className="truncate">
+            <strong className="text-foreground font-semibold">
+              {stats.last7Days}
+            </strong>{" "}
+            dalam 7 hari terakhir
+          </span>
         </CardFooter>
       </Card>
 
       {/* 2. Terkirim */}
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription>Terkirim</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-blue-600 dark:text-blue-400">
+      <Card className="shadow-xs hover:border-blue-500/30 transition-colors">
+        <CardHeader className="p-4 pb-2">
+          <div className="flex items-center justify-between">
+            <CardDescription className="text-xs font-medium">
+              Terkirim
+            </CardDescription>
+            <div className="size-7 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+              <IconSend className="size-3.5" />
+            </div>
+          </div>
+          <CardTitle className="text-2xl font-bold tabular-nums tracking-tight text-blue-600 dark:text-blue-400 mt-1">
             {stats.applied.toLocaleString()}
           </CardTitle>
-          <CardAction>
-            <Badge
-              variant="outline"
-              className="bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"
-            >
-              <IconSend className="size-3.5 mr-1" /> Applied
-            </Badge>
-          </CardAction>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Menunggu tanggapan
-          </div>
-          <div className="text-muted-foreground">Formulir telah dikirimkan</div>
+        <CardFooter className="p-4 pt-1 text-[11px] text-muted-foreground">
+          <span className="truncate">Menunggu respon awal</span>
         </CardFooter>
       </Card>
 
       {/* 3. Dalam Proses */}
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription>Dalam Proses</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-amber-600 dark:text-amber-400">
+      <Card className="shadow-xs hover:border-amber-500/30 transition-colors">
+        <CardHeader className="p-4 pb-2">
+          <div className="flex items-center justify-between">
+            <CardDescription className="text-xs font-medium">
+              Dalam Proses
+            </CardDescription>
+            <div className="size-7 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+              <IconChecklist className="size-3.5" />
+            </div>
+          </div>
+          <CardTitle className="text-2xl font-bold tabular-nums tracking-tight text-amber-600 dark:text-amber-400 mt-1">
             {stats.inProgress.toLocaleString()}
           </CardTitle>
-          <CardAction>
-            <Badge
-              variant="outline"
-              className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
-            >
-              <IconChecklist className="size-3.5 mr-1" /> Seleksi
-            </Badge>
-          </CardAction>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Screening, Tes & Interview
-          </div>
-          <div className="text-muted-foreground">
-            {stats.byStatus.screening} screen · {stats.byStatus.test} tes ·{" "}
+        <CardFooter className="p-4 pt-1 text-[11px] text-muted-foreground">
+          <span className="truncate">
+            {stats.byStatus.screening} scr · {stats.byStatus.test} tes ·{" "}
             {stats.byStatus.interview} intv
-          </div>
+          </span>
         </CardFooter>
       </Card>
 
       {/* 4. Offer */}
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription>Offer</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-emerald-600 dark:text-emerald-400">
+      <Card className="shadow-xs hover:border-emerald-500/30 transition-colors">
+        <CardHeader className="p-4 pb-2">
+          <div className="flex items-center justify-between">
+            <CardDescription className="text-xs font-medium">
+              Offer
+            </CardDescription>
+            <div className="size-7 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+              <IconAward className="size-3.5" />
+            </div>
+          </div>
+          <CardTitle className="text-2xl font-bold tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400 mt-1">
             {stats.offer.toLocaleString()}
           </CardTitle>
-          <CardAction>
-            <Badge
-              variant="outline"
-              className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
-            >
-              <IconAward className="size-3.5 mr-1" /> Penawaran
-            </Badge>
-          </CardAction>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Tahap penawaran kerja
-          </div>
-          <div className="text-muted-foreground">
-            {stats.byStatus.accepted} diterima
-          </div>
+        <CardFooter className="p-4 pt-1 text-[11px] text-muted-foreground">
+          <span className="truncate">
+            <strong className="text-foreground font-semibold">
+              {stats.byStatus.accepted}
+            </strong>{" "}
+            telah diterima
+          </span>
         </CardFooter>
       </Card>
 
       {/* 5. Ditolak */}
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription>Ditolak</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-destructive">
+      <Card className="shadow-xs hover:border-destructive/30 transition-colors">
+        <CardHeader className="p-4 pb-2">
+          <div className="flex items-center justify-between">
+            <CardDescription className="text-xs font-medium">
+              Ditolak
+            </CardDescription>
+            <div className="size-7 rounded-md bg-destructive/10 text-destructive flex items-center justify-center">
+              <IconCircleX className="size-3.5" />
+            </div>
+          </div>
+          <CardTitle className="text-2xl font-bold tabular-nums tracking-tight text-destructive mt-1">
             {stats.rejected.toLocaleString()}
           </CardTitle>
-          <CardAction>
-            <Badge
-              variant="outline"
-              className="bg-destructive/10 text-destructive border-destructive/20"
-            >
-              <IconCircleX className="size-3.5 mr-1" /> Tidak lolos
-            </Badge>
-          </CardAction>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Belum rezeki
-          </div>
-          <div className="text-muted-foreground">
-            {stats.byStatus.closed} ditutup · {stats.byStatus.withdrawn} dibatalkan
-          </div>
+        <CardFooter className="p-4 pt-1 text-[11px] text-muted-foreground">
+          <span className="truncate">
+            {stats.byStatus.closed} tutup · {stats.byStatus.withdrawn} batal
+          </span>
         </CardFooter>
       </Card>
 
       {/* 6. Perlu Follow-up */}
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription>Perlu Follow-up</CardDescription>
+      <Card
+        className={`shadow-xs transition-colors ${
+          stats.followUpNeeded > 0
+            ? "border-orange-500/30 bg-orange-500/[0.02]"
+            : "hover:border-primary/30"
+        }`}
+      >
+        <CardHeader className="p-4 pb-2">
+          <div className="flex items-center justify-between">
+            <CardDescription className="text-xs font-medium">
+              Perlu Follow-up
+            </CardDescription>
+            <div
+              className={`size-7 rounded-md flex items-center justify-center ${
+                stats.followUpNeeded > 0
+                  ? "bg-orange-500/10 text-orange-600 dark:text-orange-400"
+                  : "bg-muted text-muted-foreground"
+              }`}
+            >
+              {stats.followUpNeeded > 0 ? (
+                <IconAlertCircle className="size-3.5" />
+              ) : (
+                <IconClock className="size-3.5" />
+              )}
+            </div>
+          </div>
           <CardTitle
-            className={`text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${
+            className={`text-2xl font-bold tabular-nums tracking-tight mt-1 ${
               stats.followUpNeeded > 0
                 ? "text-orange-600 dark:text-orange-400"
                 : ""
@@ -166,36 +179,13 @@ export const SummaryCards = () => {
           >
             {stats.followUpNeeded.toLocaleString()}
           </CardTitle>
-          <CardAction>
-            <Badge
-              variant="outline"
-              className={
-                stats.followUpNeeded > 0
-                  ? "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20"
-                  : ""
-              }
-            >
-              {stats.followUpNeeded > 0 ? (
-                <>
-                  <IconAlertCircle className="size-3.5 mr-1" /> Perhatian
-                </>
-              ) : (
-                <>
-                  <IconClock className="size-3.5 mr-1" /> Aman
-                </>
-              )}
-            </Badge>
-          </CardAction>
         </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Terkirim &gt; 14 hari
-          </div>
-          <div className="text-muted-foreground">
+        <CardFooter className="p-4 pt-1 text-[11px] text-muted-foreground">
+          <span className="truncate">
             {stats.followUpNeeded > 0
-              ? "Perlu pesan konfirmasi / cek portal"
-              : "Semua lamaran masih dalam waktu wajar"}
-          </div>
+              ? "> 14 hari tanpa kabar"
+              : "Semua respon wajar"}
+          </span>
         </CardFooter>
       </Card>
     </div>
@@ -204,23 +194,18 @@ export const SummaryCards = () => {
 
 export const SummaryCardsSkeleton = () => {
   return (
-    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:shadow-xs sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
+    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3.5">
       {[1, 2, 3, 4, 5, 6].map((i) => (
-        <Card key={i} className="@container/card">
-          <CardHeader>
-            <CardDescription>
-              <Skeleton className="h-4 w-20" />
-            </CardDescription>
-            <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-              <Skeleton className="h-8 w-16 mt-2" />
-            </CardTitle>
-            <CardAction>
-              <Skeleton className="h-6 w-16 rounded-full" />
-            </CardAction>
+        <Card key={i} className="shadow-xs">
+          <CardHeader className="p-4 pb-2">
+            <div className="flex items-center justify-between">
+              <Skeleton className="h-3.5 w-16" />
+              <Skeleton className="size-7 rounded-md" />
+            </div>
+            <Skeleton className="h-7 w-12 mt-2" />
           </CardHeader>
-          <CardFooter className="flex-col items-start gap-1.5 text-sm">
-            <Skeleton className="h-4 w-28" />
-            <Skeleton className="h-3 w-36" />
+          <CardFooter className="p-4 pt-1">
+            <Skeleton className="h-3 w-28" />
           </CardFooter>
         </Card>
       ))}

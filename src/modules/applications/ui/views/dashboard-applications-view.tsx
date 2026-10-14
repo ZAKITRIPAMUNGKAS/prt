@@ -7,7 +7,8 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { DataTable } from "@/components/data-table";
 import { getColumns } from "../components/columns";
 import { ApplicationsMobileCards } from "../components/applications-mobile-cards";
-import { ApplicationsListHeader } from "../components/applications-list-header";
+import { ApplicationsPageHeader } from "../components/applications-page-header";
+import { ApplicationsFilterBar } from "../components/applications-filter-bar";
 import { ApplicationFormDialog } from "../components/application-form-dialog";
 import { SummaryCards, SummaryCardsSkeleton } from "../components/summary-cards";
 import { DataPagination } from "@/components/data-pagination";
@@ -62,20 +63,23 @@ export const DashboardApplicationsView = () => {
   const columns = getColumns({ onEdit: handleEdit });
 
   return (
-    <div className="flex-1 pb-8 px-4 md:px-8 flex flex-col gap-y-6">
-      {/* 1. Kartu Ringkasan Statistik */}
+    <div className="py-4 px-4 md:px-8 flex flex-col gap-6">
+      {/* 1. Header (Judul, Deskripsi & Tombol Tambah Lamaran) */}
+      <ApplicationsPageHeader onAddNew={handleAddNew} />
+
+      {/* 2. Kartu Ringkasan Statistik */}
       <SummaryCards />
 
-      {/* 2. Header & Filter */}
-      <ApplicationsListHeader onAddNew={handleAddNew} />
+      {/* 3. Bar Filter & Pencarian */}
+      <ApplicationsFilterBar />
 
-      {/* 3. Daftar Lamaran (Tabel Desktop + Kartu Mobile) */}
+      {/* 4. Daftar Lamaran (Tabel Desktop + Kartu Mobile) */}
       {data.items.length === 0 ? (
         <EmptyStatus onAddNew={handleAddNew} />
       ) : (
         <div className="flex flex-col gap-y-4">
           {/* Desktop Table View */}
-          <div className="hidden md:block">
+          <div className="hidden md:block rounded-md border bg-card shadow-2xs overflow-hidden">
             <DataTable columns={columns} data={data.items} />
           </div>
 
@@ -108,7 +112,7 @@ export const DashboardApplicationsView = () => {
 
 const EmptyStatus = ({ onAddNew }: { onAddNew: () => void }) => {
   return (
-    <Empty className="border border-dashed py-12">
+    <Empty className="border border-dashed py-12 bg-card/50">
       <EmptyHeader>
         <EmptyMedia variant="icon">
           <IconFileCv className="size-8 text-muted-foreground" />
@@ -119,7 +123,7 @@ const EmptyStatus = ({ onAddNew }: { onAddNew: () => void }) => {
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button onClick={onAddNew} size="sm">
+        <Button onClick={onAddNew} size="sm" className="shadow-xs">
           Tambah Lamaran Pertama
         </Button>
       </EmptyContent>
@@ -129,7 +133,7 @@ const EmptyStatus = ({ onAddNew }: { onAddNew: () => void }) => {
 
 export const ApplicationsErrorStatus = () => {
   return (
-    <div className="p-8 text-center text-destructive">
+    <div className="py-12 px-4 text-center text-destructive">
       Terjadi kesalahan saat memuat data lamaran kerja. Silakan coba lagi nanti.
     </div>
   );
@@ -137,16 +141,24 @@ export const ApplicationsErrorStatus = () => {
 
 export const ApplicationsLoadingStatus = () => {
   return (
-    <div className="flex-1 pb-8 px-4 md:px-8 flex flex-col gap-y-6">
-      <SummaryCardsSkeleton />
-      <div className="space-y-4">
-        <Skeleton className="h-10 w-48" />
-        <div className="flex gap-2">
-          <Skeleton className="h-9 w-64" />
-          <Skeleton className="h-9 w-28" />
+    <div className="py-4 px-4 md:px-8 flex flex-col gap-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="space-y-1.5">
+          <Skeleton className="h-8 w-44" />
+          <Skeleton className="h-4 w-72" />
         </div>
+        <Skeleton className="h-9 w-36" />
       </div>
-      <div className="rounded-md border">
+
+      <SummaryCardsSkeleton />
+
+      <div className="flex gap-2">
+        <Skeleton className="h-9 w-64" />
+        <Skeleton className="h-9 w-24" />
+        <Skeleton className="h-9 w-44" />
+      </div>
+
+      <div className="rounded-md border bg-card shadow-2xs overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>

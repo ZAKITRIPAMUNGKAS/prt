@@ -44,6 +44,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   applicationFormSchema,
@@ -196,285 +197,327 @@ export const ApplicationFormDialog = ({
       <form
         id="application-form"
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-4 px-1"
+        className="space-y-6 px-1"
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Perusahaan */}
-          <FormField
-            control={form.control}
-            name="company"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-1">
-                <FormLabel>Perusahaan *</FormLabel>
-                <FormControl>
-                  <Input placeholder="Contoh: Bank Central Asia" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Posisi */}
-          <FormField
-            control={form.control}
-            name="position"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-1">
-                <FormLabel>Posisi / Jabatan</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Contoh: Software Engineer"
-                    value={field.value ?? ""}
-                    onChange={field.onChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Platform */}
-          <FormField
-            control={form.control}
-            name="platform"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-1">
-                <FormLabel>Platform *</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Contoh: LinkedIn, JobStreet, Kalibrr, dll."
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Status */}
-          <FormField
-            control={form.control}
-            name="status"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-1">
-                <FormLabel>Status *</FormLabel>
-                <Select
-                  value={field.value}
-                  onValueChange={field.onChange}
-                >
+        {/* Grup 1: Informasi Utama */}
+        <div className="space-y-3">
+          <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            Informasi Lowongan
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            {/* Perusahaan */}
+            <FormField
+              control={form.control}
+              name="company"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-1">
+                  <FormLabel className="text-xs font-medium">Perusahaan *</FormLabel>
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Pilih status lamaran" />
-                    </SelectTrigger>
+                    <Input placeholder="Contoh: Bank Central Asia" className="h-9 text-sm" {...field} />
                   </FormControl>
-                  <SelectContent>
-                    {APPLICATION_STATUSES.map((statusKey) => (
-                      <SelectItem key={statusKey} value={statusKey}>
-                        {APPLICATION_STATUS_LABELS[statusKey]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* URL Lowongan */}
-          <FormField
-            control={form.control}
-            name="jobUrl"
-            render={({ field }) => (
-              <FormItem className="col-span-1 sm:col-span-2">
-                <FormLabel>URL Lowongan Pekerjaan</FormLabel>
-                <FormControl>
-                  <Input
-                    type="url"
-                    placeholder="https://..."
-                    value={field.value ?? ""}
-                    onChange={field.onChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            {/* Posisi */}
+            <FormField
+              control={form.control}
+              name="position"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-1">
+                  <FormLabel className="text-xs font-medium">Posisi / Jabatan</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Contoh: Software Engineer"
+                      className="h-9 text-sm"
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Tanggal Lamar */}
-          <FormField
-            control={form.control}
-            name="appliedAt"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-1">
-                <FormLabel>Tanggal Lamar</FormLabel>
-                <FormControl>
-                  <Input
-                    type="date"
-                    value={field.value ?? ""}
-                    onChange={field.onChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            {/* Platform */}
+            <FormField
+              control={form.control}
+              name="platform"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-1">
+                  <FormLabel className="text-xs font-medium">Platform *</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Contoh: LinkedIn, JobStreet, Kalibrr"
+                      className="h-9 text-sm"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Tipe Pekerjaan */}
-          <FormField
-            control={form.control}
-            name="employmentType"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-1">
-                <FormLabel>Tipe Pekerjaan</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Full time / Kontrak / Magang / ODP"
-                    value={field.value ?? ""}
-                    onChange={field.onChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            {/* Status */}
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-1">
+                  <FormLabel className="text-xs font-medium">Status *</FormLabel>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="h-9 text-sm">
+                        <SelectValue placeholder="Pilih status" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {APPLICATION_STATUSES.map((statusKey) => (
+                        <SelectItem key={statusKey} value={statusKey} className="text-sm">
+                          {APPLICATION_STATUS_LABELS[statusKey]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Lokasi */}
-          <FormField
-            control={form.control}
-            name="location"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-1">
-                <FormLabel>Lokasi</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Contoh: Jakarta Selatan / Remote"
-                    value={field.value ?? ""}
-                    onChange={field.onChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            {/* URL Lowongan */}
+            <FormField
+              control={form.control}
+              name="jobUrl"
+              render={({ field }) => (
+                <FormItem className="col-span-1 sm:col-span-2">
+                  <FormLabel className="text-xs font-medium">URL Lowongan</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="url"
+                      placeholder="https://..."
+                      className="h-9 text-sm"
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
 
-          {/* Ekspektasi Gaji */}
-          <FormField
-            control={form.control}
-            name="expectedSalary"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-1">
-                <FormLabel>Ekspektasi Gaji (Rp/bulan)</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="Contoh: 8000000"
-                    value={field.value ?? ""}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      field.onChange(val === "" ? null : Number(val));
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <Separator />
 
-          {/* Gaji Lowongan Min */}
-          <FormField
-            control={form.control}
-            name="salaryMin"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-1">
-                <FormLabel>Gaji Minimum Lowongan (Rp)</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="Contoh: 7000000"
-                    value={field.value ?? ""}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      field.onChange(val === "" ? null : Number(val));
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        {/* Grup 2: Jadwal & Tahapan */}
+        <div className="space-y-3">
+          <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            Jadwal & Tahapan
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            {/* Tanggal Lamar */}
+            <FormField
+              control={form.control}
+              name="appliedAt"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-1">
+                  <FormLabel className="text-xs font-medium">Tanggal Lamar</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="date"
+                      className="h-9 text-sm"
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Gaji Lowongan Max */}
-          <FormField
-            control={form.control}
-            name="salaryMax"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-1">
-                <FormLabel>Gaji Maksimum Lowongan (Rp)</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="Contoh: 8000000"
-                    value={field.value ?? ""}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      field.onChange(val === "" ? null : Number(val));
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            {/* Tipe Pekerjaan */}
+            <FormField
+              control={form.control}
+              name="employmentType"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-1">
+                  <FormLabel className="text-xs font-medium">Tipe Pekerjaan</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Full time / Kontrak / Magang / ODP"
+                      className="h-9 text-sm"
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Langkah Berikutnya */}
-          <FormField
-            control={form.control}
-            name="nextStep"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-1">
-                <FormLabel>Langkah Berikutnya</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Contoh: Tes online / Follow up pesan"
-                    value={field.value ?? ""}
-                    onChange={field.onChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            {/* Langkah Berikutnya */}
+            <FormField
+              control={form.control}
+              name="nextStep"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-1">
+                  <FormLabel className="text-xs font-medium">Langkah Berikutnya</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Contoh: Tes online / Interview HR"
+                      className="h-9 text-sm"
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Tanggal Langkah Berikutnya */}
-          <FormField
-            control={form.control}
-            name="nextStepAt"
-            render={({ field }) => (
-              <FormItem className="sm:col-span-1">
-                <FormLabel>Tanggal Langkah Berikutnya</FormLabel>
-                <FormControl>
-                  <Input
-                    type="date"
-                    value={field.value ?? ""}
-                    onChange={field.onChange}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            {/* Tanggal Langkah Berikutnya */}
+            <FormField
+              control={form.control}
+              name="nextStepAt"
+              render={({ field }) => (
+                <FormItem className="sm:col-span-1">
+                  <FormLabel className="text-xs font-medium">Jadwal Langkah Berikutnya</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="date"
+                      className="h-9 text-sm"
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Catatan */}
+            {/* Lokasi */}
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem className="col-span-1 sm:col-span-2">
+                  <FormLabel className="text-xs font-medium">Lokasi</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Contoh: Jakarta Selatan / Hybrid / Remote"
+                      className="h-9 text-sm"
+                      value={field.value ?? ""}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
+        <Separator />
+
+        {/* Grup 3: Kompensasi & Gaji */}
+        <div className="space-y-3">
+          <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            Gaji & Kompensasi (IDR)
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+            {/* Ekspektasi Gaji */}
+            <FormField
+              control={form.control}
+              name="expectedSalary"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs font-medium">Ekspektasi Gaji</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="8000000"
+                      className="h-9 text-sm"
+                      value={field.value ?? ""}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        field.onChange(val === "" ? null : Number(val));
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Gaji Lowongan Min */}
+            <FormField
+              control={form.control}
+              name="salaryMin"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs font-medium">Gaji Min Lowongan</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="7000000"
+                      className="h-9 text-sm"
+                      value={field.value ?? ""}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        field.onChange(val === "" ? null : Number(val));
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Gaji Lowongan Max */}
+            <FormField
+              control={form.control}
+              name="salaryMax"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs font-medium">Gaji Maks Lowongan</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="10000000"
+                      className="h-9 text-sm"
+                      value={field.value ?? ""}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        field.onChange(val === "" ? null : Number(val));
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+
+        <Separator />
+
+        {/* Grup 4: Catatan */}
+        <div className="space-y-3">
           <FormField
             control={form.control}
             name="notes"
             render={({ field }) => (
-              <FormItem className="col-span-1 sm:col-span-2">
-                <FormLabel>Catatan</FormLabel>
+              <FormItem>
+                <FormLabel className="text-xs font-medium">Catatan Tambahan</FormLabel>
                 <FormControl>
                   <Textarea
-                    placeholder="Catatan tambahan, kontak recruiter, instruksi khusus..."
+                    placeholder="Tuliskan catatan interview, link tugas, nomor kontak recruiter..."
                     rows={3}
+                    className="text-sm resize-none"
                     value={field.value ?? ""}
                     onChange={field.onChange}
                   />
@@ -492,26 +535,27 @@ export const ApplicationFormDialog = ({
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerContent className="max-h-[90vh]">
-          <DrawerHeader>
+          <DrawerHeader className="pb-2">
             <DrawerTitle>
               {isEditing ? "Edit Lamaran Kerja" : "Tambah Lamaran Kerja"}
             </DrawerTitle>
-            <DrawerDescription>
+            <DrawerDescription className="text-xs">
               {isEditing
                 ? "Perbarui rincian lamaran kerja Anda"
-                : "Catat lamaran kerja baru untuk dipantau perkembangannya"}
+                : "Catat lamaran baru untuk dipantau perkembangannya"}
             </DrawerDescription>
           </DrawerHeader>
           <div className="overflow-y-auto px-4 py-2">{formBody}</div>
-          <DrawerFooter className="pt-2">
+          <DrawerFooter className="pt-3 border-t">
             <Button
               type="submit"
               form="application-form"
               disabled={isSubmitting}
+              className="w-full"
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="size-4 animate-spin mr-1" />
+                  <Loader2 className="size-4 animate-spin mr-1.5" />
                   Menyimpan...
                 </>
               ) : isEditing ? (
@@ -521,7 +565,7 @@ export const ApplicationFormDialog = ({
               )}
             </Button>
             <DrawerClose asChild>
-              <Button variant="outline" disabled={isSubmitting}>
+              <Button variant="outline" disabled={isSubmitting} className="w-full">
                 Batal
               </Button>
             </DrawerClose>
@@ -533,25 +577,26 @@ export const ApplicationFormDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0">
-        <DialogHeader className="p-6 pb-2">
-          <DialogTitle>
+      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0 gap-0 shadow-lg">
+        <DialogHeader className="p-6 pb-4 border-b">
+          <DialogTitle className="text-lg">
             {isEditing ? "Edit Lamaran Kerja" : "Tambah Lamaran Kerja"}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-xs text-muted-foreground">
             {isEditing
               ? "Perbarui rincian lamaran kerja Anda"
-              : "Catat lamaran kerja baru untuk dipantau perkembangannya"}
+              : "Catat lamaran baru untuk dipantau perkembangannya"}
           </DialogDescription>
         </DialogHeader>
-        <ScrollArea className="flex-1 px-6 max-h-[calc(90vh-140px)]">
-          <div className="pb-4">{formBody}</div>
+        <ScrollArea className="flex-1 px-6 py-4 max-h-[calc(90vh-140px)]">
+          {formBody}
         </ScrollArea>
-        <DialogFooter className="p-6 pt-2 border-t">
+        <DialogFooter className="p-4 px-6 border-t bg-muted/20 flex items-center justify-end gap-2">
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={isSubmitting}
+            size="sm"
           >
             Batal
           </Button>
@@ -559,10 +604,11 @@ export const ApplicationFormDialog = ({
             type="submit"
             form="application-form"
             disabled={isSubmitting}
+            size="sm"
           >
             {isSubmitting ? (
               <>
-                <Loader2 className="size-4 animate-spin mr-1" />
+                <Loader2 className="size-4 animate-spin mr-1.5" />
                 Menyimpan...
               </>
             ) : isEditing ? (
