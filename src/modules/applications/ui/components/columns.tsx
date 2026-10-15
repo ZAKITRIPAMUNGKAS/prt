@@ -14,6 +14,7 @@ import {
 import { JobApplication } from "@/db/schema";
 import { ApplicationStatus } from "../../types";
 import { StatusDropdown } from "./status-dropdown";
+import { ApplicationStatusBadge } from "./status-badge";
 import { DeleteApplicationDialog } from "./delete-application-dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -46,10 +47,12 @@ export function isFollowUpNeeded(application: {
 }
 
 interface ColumnOptions {
-  onEdit: (application: JobApplication) => void;
+  onEdit?: (application: JobApplication) => void;
+  readOnly?: boolean;
 }
 
-export const getColumns = ({ onEdit }: ColumnOptions): ColumnDef<JobApplication>[] => [
+export const getColumns = ({ onEdit, readOnly = false }: ColumnOptions): ColumnDef<JobApplication>[] => {
+  const baseColumns: ColumnDef<JobApplication>[] = [
   // 1. Perusahaan
   {
     accessorKey: "company",
@@ -227,6 +230,14 @@ export const getColumns = ({ onEdit }: ColumnOptions): ColumnDef<JobApplication>
     accessorKey: "status",
     header: () => <span className="font-semibold text-xs text-muted-foreground uppercase tracking-wider">Status</span>,
     cell: ({ row }) => {
+      if (readOnly) {
+        return (
+          <div className="min-w-[110px] whitespace-nowrap">
+            <ApplicationStatusBadge status={row.original.status} />
+          </div>
+        );
+      }
+
       return (
         <div className="min-w-[120px] whitespace-nowrap">
           <StatusDropdown
@@ -250,8 +261,21 @@ export const getColumns = ({ onEdit }: ColumnOptions): ColumnDef<JobApplication>
       }
 
       return (
-        <div className="flex flex-col text-xs min-w-[140px] max-w-[180px]">
-          {nextStep && <span className="font-medium text-foreground truncate">{nextStep}</span>}
+        <div className="flex flex-col text-xs min-w-[130px] max-w-[180px]">
+          {nextStep && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="font-medium text-foreground truncate cursor-default">
+                    {nextStep}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs text-xs">
+                  <p>{nextStep}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
           {nextStepAt && (
             <span className="text-[11px] text-muted-foreground mt-0.5">
               {formatFullDate(nextStepAt)}
@@ -261,30 +285,38 @@ export const getColumns = ({ onEdit }: ColumnOptions): ColumnDef<JobApplication>
       );
     },
   },
+  ];
 
-  // 7. Aksi
-  {
-    id: "actions",
-    header: () => <div className="text-right pr-2 font-semibold text-xs text-muted-foreground uppercase tracking-wider">Aksi</div>,
-    cell: ({ row }) => {
-      return (
-        <div className="flex justify-end items-center gap-0.5">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="size-7 text-muted-foreground hover:text-foreground rounded-md"
-            onClick={() => onEdit(row.original)}
-            title="Edit lamaran"
-          >
-            <PenBoxIcon className="size-3.5" />
-          </Button>
-
-          <DeleteApplicationDialog
-            id={row.original.id}
-            companyName={row.original.company}
-          />
+  if (!readOnly && onEdit) {
+    baseColumns.push({
+      id: "actions",
+      header: () => (
+        <div className="text-right pr-2 font-semibold text-xs text-muted-foreground uppercase tracking-wider">
+          Aksi
         </div>
-      );
-    },
-  },
-];
+      ),
+      cell: ({ row }) => {
+        return (
+          <div className="flex justify-end items-center gap-0.5">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7 text-muted-foreground hover:text-foreground rounded-md"
+              onClick={() => onEdit(row.original)}
+              title="Edit lamaran"
+            >
+              <PenBoxIcon className="size-3.5" />
+            </Button>
+
+            <DeleteApplicationDialog
+              id={row.original.id}
+              companyName={row.original.company}
+            />
+          </div>
+        );
+      },
+    });
+  }
+
+  return baseColumns;
+};

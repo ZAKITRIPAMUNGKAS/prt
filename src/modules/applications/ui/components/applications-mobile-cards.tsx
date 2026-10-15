@@ -13,6 +13,7 @@ import {
 import { JobApplication } from "@/db/schema";
 import { ApplicationStatus } from "../../types";
 import { StatusDropdown } from "./status-dropdown";
+import { ApplicationStatusBadge } from "./status-badge";
 import { DeleteApplicationDialog } from "./delete-application-dialog";
 import { isFollowUpNeeded } from "./columns";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -22,15 +23,17 @@ import { formatRupiahShort } from "../../lib/utils";
 
 interface ApplicationsMobileCardsProps {
   items: JobApplication[];
-  onEdit: (application: JobApplication) => void;
+  onEdit?: (application: JobApplication) => void;
+  readOnly?: boolean;
 }
 
 export const ApplicationsMobileCards = ({
   items,
   onEdit,
+  readOnly = false,
 }: ApplicationsMobileCardsProps) => {
   return (
-    <div className="flex flex-col gap-3 md:hidden">
+    <div className="flex flex-col gap-3 md:hidden w-full">
       {items.map((app) => {
         const needsFollowUp = isFollowUpNeeded(app);
 
@@ -86,11 +89,15 @@ export const ApplicationsMobileCards = ({
                   </div>
                 </div>
                 <div className="shrink-0">
-                  <StatusDropdown
-                    id={app.id}
-                    currentStatus={app.status as ApplicationStatus}
-                    companyName={app.company}
-                  />
+                  {readOnly ? (
+                    <ApplicationStatusBadge status={app.status} />
+                  ) : (
+                    <StatusDropdown
+                      id={app.id}
+                      currentStatus={app.status as ApplicationStatus}
+                      companyName={app.company}
+                    />
+                  )}
                 </div>
               </div>
             </CardHeader>
@@ -161,21 +168,23 @@ export const ApplicationsMobileCards = ({
                 </div>
               )}
 
-              <div className="flex justify-end items-center gap-1 pt-1">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 text-xs"
-                  onClick={() => onEdit(app)}
-                >
-                  <PenBoxIcon className="size-3.5 mr-1" />
-                  Edit
-                </Button>
-                <DeleteApplicationDialog
-                  id={app.id}
-                  companyName={app.company}
-                />
-              </div>
+              {!readOnly && onEdit && (
+                <div className="flex justify-end items-center gap-1 pt-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 text-xs"
+                    onClick={() => onEdit(app)}
+                  >
+                    <PenBoxIcon className="size-3.5 mr-1" />
+                    Edit
+                  </Button>
+                  <DeleteApplicationDialog
+                    id={app.id}
+                    companyName={app.company}
+                  />
+                </div>
+              )}
             </CardContent>
           </Card>
         );

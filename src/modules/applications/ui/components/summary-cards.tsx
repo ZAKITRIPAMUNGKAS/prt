@@ -1,200 +1,155 @@
 "use client";
 
+import { Skeleton } from "@/components/ui/skeleton";
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import {
-  Card,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  IconBriefcase,
-  IconSend,
-  IconClock,
-  IconChecklist,
-  IconAward,
-  IconCircleX,
   IconAlertCircle,
+  IconAward,
+  IconBriefcase,
+  IconChecklist,
+  IconCircleX,
+  IconClock,
+  IconSend,
 } from "@tabler/icons-react";
 
-export const SummaryCards = () => {
+type SummaryItem = {
+  label: string;
+  value: number;
+  detail: string;
+  icon: typeof IconBriefcase;
+  accentClass: string;
+  iconClass: string;
+};
+
+interface SummaryCardsProps {
+  isPublic?: boolean;
+}
+
+export const SummaryCards = ({ isPublic = false }: SummaryCardsProps) => {
   const trpc = useTRPC();
   const { data: stats } = useSuspenseQuery(
-    trpc.applications.getStats.queryOptions()
+    isPublic
+      ? trpc.applications.getStatsPublic.queryOptions()
+      : trpc.applications.getStats.queryOptions()
   );
 
+  const items: SummaryItem[] = [
+    {
+      label: "Total",
+      value: stats.total,
+      detail: `${stats.last7Days} dalam 7 hari`,
+      icon: IconBriefcase,
+      accentClass: "text-foreground",
+      iconClass: "bg-muted text-muted-foreground",
+    },
+    {
+      label: "Terkirim",
+      value: stats.applied,
+      detail: "Menunggu respons",
+      icon: IconSend,
+      accentClass: "text-blue-600 dark:text-blue-400",
+      iconClass: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+    },
+    {
+      label: "Dalam proses",
+      value: stats.inProgress,
+      detail: `${stats.byStatus.screening} skr · ${stats.byStatus.test} tes · ${stats.byStatus.interview} intv`,
+      icon: IconChecklist,
+      accentClass: "text-amber-600 dark:text-amber-400",
+      iconClass: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+    },
+    {
+      label: "Offer",
+      value: stats.offer,
+      detail: `${stats.byStatus.accepted} diterima`,
+      icon: IconAward,
+      accentClass: "text-emerald-600 dark:text-emerald-400",
+      iconClass: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+    },
+    {
+      label: "Ditolak",
+      value: stats.rejected,
+      detail: `${stats.byStatus.closed} tutup · ${stats.byStatus.withdrawn} batal`,
+      icon: IconCircleX,
+      accentClass: "text-destructive",
+      iconClass: "bg-destructive/10 text-destructive",
+    },
+    {
+      label: "Follow-up",
+      value: stats.followUpNeeded,
+      detail:
+        stats.followUpNeeded > 0
+          ? "Lewat 14 hari"
+          : "Semua tepat waktu",
+      icon: stats.followUpNeeded > 0 ? IconAlertCircle : IconClock,
+      accentClass:
+        stats.followUpNeeded > 0
+          ? "text-orange-600 dark:text-orange-400"
+          : "text-foreground",
+      iconClass:
+        stats.followUpNeeded > 0
+          ? "bg-orange-500/10 text-orange-600 dark:text-orange-400"
+          : "bg-muted text-muted-foreground",
+    },
+  ];
+
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-      {/* 1. Total */}
-      <Card className="shadow-2xs hover:border-primary/40 transition-colors">
-        <CardHeader className="p-3.5 flex flex-col justify-between h-full gap-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">Total</span>
-            <div className="size-6 rounded-md bg-muted flex items-center justify-center text-muted-foreground">
-              <IconBriefcase className="size-3.5" />
-            </div>
-          </div>
-          <div>
-            <CardTitle className="text-2xl font-bold tabular-nums tracking-tight">
-              {stats.total}
-            </CardTitle>
-            <p className="text-[11px] text-muted-foreground truncate mt-0.5">
-              {stats.last7Days} dalam 7 hari
-            </p>
-          </div>
-        </CardHeader>
-      </Card>
+    <section
+      aria-label="Ringkasan lamaran"
+      className="overflow-hidden rounded-xl border bg-border/70 shadow-2xs w-full"
+    >
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-px">
+        {items.map((item) => {
+          const Icon = item.icon;
 
-      {/* 2. Terkirim */}
-      <Card className="shadow-2xs hover:border-blue-500/40 transition-colors">
-        <CardHeader className="p-3.5 flex flex-col justify-between h-full gap-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-blue-600 dark:text-blue-400">Terkirim</span>
-            <div className="size-6 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-              <IconSend className="size-3.5" />
-            </div>
-          </div>
-          <div>
-            <CardTitle className="text-2xl font-bold tabular-nums tracking-tight text-blue-600 dark:text-blue-400">
-              {stats.applied}
-            </CardTitle>
-            <p className="text-[11px] text-muted-foreground truncate mt-0.5">
-              Menunggu respon
-            </p>
-          </div>
-        </CardHeader>
-      </Card>
-
-      {/* 3. Dalam Proses */}
-      <Card className="shadow-2xs hover:border-amber-500/40 transition-colors">
-        <CardHeader className="p-3.5 flex flex-col justify-between h-full gap-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-amber-600 dark:text-amber-400">Dalam Proses</span>
-            <div className="size-6 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-              <IconChecklist className="size-3.5" />
-            </div>
-          </div>
-          <div>
-            <CardTitle className="text-2xl font-bold tabular-nums tracking-tight text-amber-600 dark:text-amber-400">
-              {stats.inProgress}
-            </CardTitle>
-            <p className="text-[11px] text-muted-foreground truncate mt-0.5">
-              {stats.byStatus.screening} scr · {stats.byStatus.test} tes · {stats.byStatus.interview} intv
-            </p>
-          </div>
-        </CardHeader>
-      </Card>
-
-      {/* 4. Offer */}
-      <Card className="shadow-2xs hover:border-emerald-500/40 transition-colors">
-        <CardHeader className="p-3.5 flex flex-col justify-between h-full gap-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">Offer</span>
-            <div className="size-6 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-              <IconAward className="size-3.5" />
-            </div>
-          </div>
-          <div>
-            <CardTitle className="text-2xl font-bold tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400">
-              {stats.offer}
-            </CardTitle>
-            <p className="text-[11px] text-muted-foreground truncate mt-0.5">
-              {stats.byStatus.accepted} diterima
-            </p>
-          </div>
-        </CardHeader>
-      </Card>
-
-      {/* 5. Ditolak */}
-      <Card className="shadow-2xs hover:border-destructive/40 transition-colors">
-        <CardHeader className="p-3.5 flex flex-col justify-between h-full gap-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-destructive">Ditolak</span>
-            <div className="size-6 rounded-md bg-destructive/10 text-destructive flex items-center justify-center">
-              <IconCircleX className="size-3.5" />
-            </div>
-          </div>
-          <div>
-            <CardTitle className="text-2xl font-bold tabular-nums tracking-tight text-destructive">
-              {stats.rejected}
-            </CardTitle>
-            <p className="text-[11px] text-muted-foreground truncate mt-0.5">
-              {stats.byStatus.closed} tutup · {stats.byStatus.withdrawn} batal
-            </p>
-          </div>
-        </CardHeader>
-      </Card>
-
-      {/* 6. Follow-up */}
-      <Card
-        className={`shadow-2xs transition-colors ${
-          stats.followUpNeeded > 0
-            ? "border-orange-500/40 bg-orange-500/[0.04]"
-            : "hover:border-primary/40"
-        }`}
-      >
-        <CardHeader className="p-3.5 flex flex-col justify-between h-full gap-2">
-          <div className="flex items-center justify-between">
-            <span
-              className={`text-xs font-medium ${
-                stats.followUpNeeded > 0
-                  ? "text-orange-600 dark:text-orange-400 font-semibold"
-                  : "text-muted-foreground"
-              }`}
+          return (
+            <article
+              key={item.label}
+              className="flex min-h-22 flex-col justify-between bg-card px-3 py-2.5 transition-colors hover:bg-muted/35 sm:px-3.5"
             >
-              Follow-up
-            </span>
-            <div
-              className={`size-6 rounded-md flex items-center justify-center ${
-                stats.followUpNeeded > 0
-                  ? "bg-orange-500/10 text-orange-600 dark:text-orange-400"
-                  : "bg-muted text-muted-foreground"
-              }`}
-            >
-              {stats.followUpNeeded > 0 ? (
-                <IconAlertCircle className="size-3.5" />
-              ) : (
-                <IconClock className="size-3.5" />
-              )}
-            </div>
-          </div>
-          <div>
-            <CardTitle
-              className={`text-2xl font-bold tabular-nums tracking-tight ${
-                stats.followUpNeeded > 0
-                  ? "text-orange-600 dark:text-orange-400"
-                  : ""
-              }`}
-            >
-              {stats.followUpNeeded}
-            </CardTitle>
-            <p className="text-[11px] text-muted-foreground truncate mt-0.5">
-              {stats.followUpNeeded > 0
-                ? "Terkirim > 14 hari"
-                : "Semua respon wajar"}
-            </p>
-          </div>
-        </CardHeader>
-      </Card>
-    </div>
+              <div className="flex items-center justify-between gap-3">
+                <p className={`text-xs font-medium ${item.accentClass}`}>
+                  {item.label}
+                </p>
+                <span
+                  className={`flex size-6 shrink-0 items-center justify-center rounded-md ${item.iconClass}`}
+                >
+                  <Icon className="size-3" aria-hidden="true" />
+                </span>
+              </div>
+              <div className="mt-2 min-w-0">
+                <p
+                  className={`text-2xl font-bold tracking-tight tabular-nums ${item.accentClass}`}
+                >
+                  {item.value}
+                </p>
+                <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+                  {item.detail}
+                </p>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
   );
 };
 
 export const SummaryCardsSkeleton = () => {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-      {[1, 2, 3, 4, 5, 6].map((i) => (
-        <Card key={i} className="shadow-2xs">
-          <CardHeader className="p-3.5 space-y-2">
-            <div className="flex items-center justify-between">
-              <Skeleton className="h-3 w-16" />
-              <Skeleton className="size-6 rounded-md" />
-            </div>
+    <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border bg-border/70 shadow-2xs md:grid-cols-3 xl:grid-cols-6">
+      {Array.from({ length: 6 }).map((_, index) => (
+        <div key={index} className="min-h-22 bg-card px-3 py-2.5 sm:px-3.5">
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-3 w-16" />
+            <Skeleton className="size-6 rounded-md" />
+          </div>
+          <div className="mt-2 space-y-1.5">
             <Skeleton className="h-7 w-12" />
             <Skeleton className="h-2.5 w-24" />
-          </CardHeader>
-        </Card>
+          </div>
+        </div>
       ))}
     </div>
   );
