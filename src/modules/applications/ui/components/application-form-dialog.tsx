@@ -204,7 +204,7 @@ export const ApplicationFormDialog = ({
           <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Informasi Lowongan
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
             {/* Perusahaan */}
             <FormField
               control={form.control}
@@ -318,7 +318,7 @@ export const ApplicationFormDialog = ({
           <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Jadwal & Tahapan
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
             {/* Tanggal Lamar */}
             <FormField
               control={form.control}
@@ -428,7 +428,7 @@ export const ApplicationFormDialog = ({
           <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Gaji & Kompensasi (IDR)
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+          <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-3">
             {/* Ekspektasi Gaji */}
             <FormField
               control={form.control}
@@ -577,8 +577,8 @@ export const ApplicationFormDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0 gap-0 shadow-lg">
-        <DialogHeader className="p-6 pb-4 border-b">
+      <DialogContent className="h-[calc(100dvh-2rem)] w-[min(92vw,52rem)] max-h-[52rem] sm:max-w-3xl flex flex-col gap-0 overflow-hidden p-0 shadow-lg">
+        <DialogHeader className="shrink-0 border-b px-6 py-5">
           <DialogTitle className="text-lg">
             {isEditing ? "Edit Lamaran Kerja" : "Tambah Lamaran Kerja"}
           </DialogTitle>
@@ -588,10 +588,10 @@ export const ApplicationFormDialog = ({
               : "Catat lamaran baru untuk dipantau perkembangannya"}
           </DialogDescription>
         </DialogHeader>
-        <ScrollArea className="flex-1 px-6 py-4 max-h-[calc(90vh-140px)]">
+        <ScrollArea className="h-0 min-h-0 flex-1 px-6 py-5">
           {formBody}
         </ScrollArea>
-        <DialogFooter className="p-4 px-6 border-t bg-muted/20 flex items-center justify-end gap-2">
+        <DialogFooter className="shrink-0 border-t bg-muted/20 px-6 py-4 flex items-center justify-end gap-2">
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}

@@ -63,7 +63,7 @@ export const DashboardApplicationsView = () => {
   const columns = getColumns({ onEdit: handleEdit });
 
   return (
-    <div className="py-4 px-4 md:px-8 flex flex-col gap-6">
+    <div className="py-4 px-4 md:px-8 flex flex-col gap-6 w-full max-w-full min-w-0">
       {/* 1. Header (Judul, Deskripsi & Tombol Tambah Lamaran) */}
       <ApplicationsPageHeader onAddNew={handleAddNew} />
 
@@ -77,9 +77,9 @@ export const DashboardApplicationsView = () => {
       {data.items.length === 0 ? (
         <EmptyStatus onAddNew={handleAddNew} />
       ) : (
-        <div className="flex flex-col gap-y-4">
+        <div className="flex flex-col gap-y-4 w-full min-w-0">
           {/* Desktop Table View */}
-          <div className="hidden md:block rounded-md border bg-card shadow-2xs overflow-hidden">
+          <div className="hidden md:block rounded-xl border bg-card shadow-2xs overflow-hidden w-full min-w-0">
             <DataTable columns={columns} data={data.items} />
           </div>
 
@@ -141,7 +141,7 @@ export const ApplicationsErrorStatus = () => {
 
 export const ApplicationsLoadingStatus = () => {
   return (
-    <div className="py-4 px-4 md:px-8 flex flex-col gap-6">
+    <div className="py-4 px-4 md:px-8 flex flex-col gap-6 w-full max-w-full min-w-0">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1.5">
           <Skeleton className="h-8 w-44" />
