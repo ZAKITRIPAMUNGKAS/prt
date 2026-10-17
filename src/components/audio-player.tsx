@@ -41,12 +41,20 @@ const CustomSlider = ({
 }) => {
   return (
     <div
+      role="slider"
+      tabIndex={0}
+      aria-label="Seek track"
+      aria-valuenow={Math.round(value)}
+      aria-valuemin={0}
+      aria-valuemax={100}
       className={cn(
-        "relative w-full h-1.5 bg-white/20 rounded-full cursor-pointer group py-1",
+        "relative w-full h-3 flex items-center cursor-pointer group select-none",
         className
       )}
       onClick={(e) => {
+        e.stopPropagation();
         const rect = e.currentTarget.getBoundingClientRect();
+        if (rect.width === 0) return;
         const x = e.clientX - rect.left;
         const percentage = (x / rect.width) * 100;
         onChange(Math.min(Math.max(percentage, 0), 100));
@@ -97,51 +105,48 @@ export const AudioPlayer = ({
   const safeIndex = currentIndex < activeTracks.length ? currentIndex : 0;
   const currentTrack = activeTracks[safeIndex] || activeTracks[0];
 
-  // Try to autoplay on mount or when user interacts
+  // Try to autoplay once on mount or when user interacts
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    let isSubscribed = true;
-
-    const attemptPlay = async () => {
-      try {
-        await audio.play();
-        if (isSubscribed) {
-          setIsPlaying(true);
-        }
-      } catch {
-        // Autoplay policy prevented playback until user interaction
-        if (isSubscribed) {
-          setIsPlaying(false);
-        }
-
-        const handleFirstInteraction = () => {
-          if (audioRef.current) {
-            audioRef.current
-              .play()
-              .then(() => setIsPlaying(true))
-              .catch(() => {});
-          }
-          window.removeEventListener("pointerdown", handleFirstInteraction);
-          window.removeEventListener("keydown", handleFirstInteraction);
-        };
-
-        window.addEventListener("pointerdown", handleFirstInteraction, {
-          once: true,
-        });
-        window.addEventListener("keydown", handleFirstInteraction, {
-          once: true,
-        });
+    let userInteracted = false;
+    const handleFirstInteraction = () => {
+      if (userInteracted) return;
+      userInteracted = true;
+      if (audioRef.current && audioRef.current.paused) {
+        audioRef.current.play().catch(() => {});
       }
+      window.removeEventListener("pointerdown", handleFirstInteraction);
+      window.removeEventListener("keydown", handleFirstInteraction);
     };
 
-    attemptPlay();
+    audio.play().catch(() => {
+      window.addEventListener("pointerdown", handleFirstInteraction, {
+        once: true,
+      });
+      window.addEventListener("keydown", handleFirstInteraction, {
+        once: true,
+      });
+    });
 
     return () => {
-      isSubscribed = false;
+      window.removeEventListener("pointerdown", handleFirstInteraction);
+      window.removeEventListener("keydown", handleFirstInteraction);
     };
-  }, [currentIndex]);
+  }, []);
+
+  // When safeIndex changes, if currently playing, start playing new track
+  const isMounted = useRef(false);
+  useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
+    if (isPlaying && audioRef.current) {
+      audioRef.current.play().catch(() => {});
+    }
+  }, [safeIndex, isPlaying]);
 
   const togglePlay = () => {
     if (audioRef.current) {
@@ -152,7 +157,9 @@ export const AudioPlayer = ({
         audioRef.current
           .play()
           .then(() => setIsPlaying(true))
-          .catch(() => {});
+          .catch(() => {
+            setIsPlaying(false);
+          });
       }
     }
   };
@@ -161,14 +168,14 @@ export const AudioPlayer = ({
     if (activeTracks.length <= 1) return;
     if (isShuffle) {
       let nextIndex = Math.floor(Math.random() * activeTracks.length);
-      if (nextIndex === currentIndex) {
-        nextIndex = (currentIndex + 1) % activeTracks.length;
+      if (nextIndex === safeIndex) {
+        nextIndex = (safeIndex + 1) % activeTracks.length;
       }
       setCurrentIndex(nextIndex);
     } else {
-      setCurrentIndex((prev) => (prev + 1) % activeTracks.length);
+      setCurrentIndex((safeIndex + 1) % activeTracks.length);
     }
-  }, [currentIndex, isShuffle, activeTracks.length]);
+  }, [safeIndex, isShuffle, activeTracks.length]);
 
   const handlePrev = useCallback(() => {
     if (audioRef.current && audioRef.current.currentTime > 3) {
@@ -176,8 +183,8 @@ export const AudioPlayer = ({
       return;
     }
     if (activeTracks.length <= 1) return;
-    setCurrentIndex((prev) => (prev - 1 + activeTracks.length) % activeTracks.length);
-  }, [activeTracks.length]);
+    setCurrentIndex((safeIndex - 1 + activeTracks.length) % activeTracks.length);
+  }, [safeIndex, activeTracks.length]);
 
   const handleTimeUpdate = () => {
     if (audioRef.current) {
@@ -231,8 +238,17 @@ export const AudioPlayer = ({
         ref={audioRef}
         onTimeUpdate={handleTimeUpdate}
         onEnded={handleEnded}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+        onError={() => setIsPlaying(false)}
+        onLoadedMetadata={(e) => {
+          const dur = e.currentTarget.duration;
+          if (dur && isFinite(dur)) {
+            setDuration(dur);
+          }
+        }}
         src={currentTrack.src}
-        preload="auto"
+        preload="metadata"
         className="hidden"
       />
 

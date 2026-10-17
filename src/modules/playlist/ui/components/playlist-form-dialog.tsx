@@ -109,6 +109,7 @@ export function PlaylistFormDialog({
     } finally {
       setIsUploadingAudio(false);
       setAudioUploadProgress(0);
+      e.target.value = "";
     }
   };
 
@@ -147,6 +148,7 @@ export function PlaylistFormDialog({
     } finally {
       setIsUploadingCover(false);
       setCoverUploadProgress(0);
+      e.target.value = "";
     }
   };
 

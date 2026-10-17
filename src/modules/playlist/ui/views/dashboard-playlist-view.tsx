@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useTRPC } from "@/trpc/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -47,6 +47,16 @@ export function DashboardPlaylistView() {
   const [previewTrackId, setPreviewTrackId] = useState<string | null>(null);
   const [isPreviewPlaying, setIsPreviewPlaying] = useState(false);
   const previewAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Cleanup preview audio on unmount
+  useEffect(() => {
+    return () => {
+      if (previewAudioRef.current) {
+        previewAudioRef.current.pause();
+        previewAudioRef.current = null;
+      }
+    };
+  }, []);
 
   const trpc = useTRPC();
   const queryClient = useQueryClient();
