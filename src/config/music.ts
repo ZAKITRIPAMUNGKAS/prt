@@ -42,18 +42,54 @@ export function parseLrc(lrcText?: string | null): LyricLine[] {
 export const defaultPlaylist: Track[] = [
   {
     id: "1",
-    title: "Sway (Chorus Edit)",
-    artist: "Michael Bublé • #wongkalahan",
-    src: "/music/sway.mp3",
+    title: "Sway (Reff)",
+    artist: "Colorcode • Wong Kalahan",
+    src: "/music/colorcode-sway.mp3",
+    cover: "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=800&auto=format&fit=crop&q=80",
+    lyrics: `[00:00.00] And I’m still screaming out your name
+[00:06.60] Like you never really went away
+[00:13.40] Every night wishing you would feel the same
+[00:20.00] Every night I lie awake
+[00:26.00] (Instrumental outro...)`,
+  },
+  {
+    id: "2",
+    title: "Kau Si Lagu Sedih (Reff)",
+    artist: "Dongker • Wong Kalahan",
+    src: "/music/dongker-kau-si-lagu-sedih.mp3",
+    cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80",
+    lyrics: `[00:00.00] Kau selalu terlihat indah
+[00:04.20] Meski telah hilang
+[00:07.10] Lihatlah, langit runtuh menunjukkan luka
+[00:12.70] Dunia menyerang dan membabi buta
+[00:18.50] Tapi aku terus hidup`,
+  },
+  {
+    id: "3",
+    title: "Rumit (Reff)",
+    artist: "Rocket Rockers ft. Rizky Irmansyah",
+    src: "/music/rocket-rockers-rumit.mp3",
     cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80",
-    lyrics: `[00:00.00] (Instrumental rhythms...)
-[00:04.20] When marimba rhythms start to play
-[00:09.10] Dance with me, make me sway
-[00:13.80] Like a lazy ocean hugs the shore
-[00:19.00] Hold me close, sway me more
-[00:24.40] Like a flower bending in the breeze
-[00:29.50] Bend with me, sway with ease
-[00:34.20] When we dance, you have a way with me
-[00:39.00] Stay with me, sway with me`,
+    lyrics: `[00:00.00] Lelah dengan harapan...
+[00:05.50] Bila tak bisa bersama
+[00:09.20] Jangan pernah beri harapan
+[00:14.50] Terlalu rumit untuk dipikirkan
+[00:20.50] Terlalu sakit untuk bertahan
+[00:27.00] (Lelah dengan harapan...)`,
+  },
+  {
+    id: "4",
+    title: "December (Acoustic Reff)",
+    artist: "Neck Deep • Wong Kalahan",
+    src: "/music/neck-deep-december.mp3",
+    cover: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=800&auto=format&fit=crop&q=80",
+    lyrics: `[00:00.00] I hope you get your ballroom floor
+[00:03.50] Your perfect house with rose red doors
+[00:07.00] I'm the last thing you'd remember
+[00:10.50] It's been a long, lonely December
+[00:13.80] I wish I'd known that less is more
+[00:17.00] But I was passed out on the floor
+[00:20.20] And that's the last thing I remember
+[00:23.80] It's been a long, lonely December`,
   },
 ];
