@@ -12,6 +12,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { ImageOff } from "lucide-react";
 import { PhotoLightbox, usePhotoLightbox } from "@/components/photo-lightbox";
+import { PhotoLyricsOverlay } from "@/components/photo-lyrics-overlay";
 
 export const SliderView = () => {
   const trpc = useTRPC();
@@ -87,6 +88,9 @@ export const SliderView = () => {
             );
           })}
         </Carousel>
+
+        {/* Center Spotify-style morphing lyrics overlay */}
+        <PhotoLyricsOverlay />
       </div>
 
       <PhotoLightbox

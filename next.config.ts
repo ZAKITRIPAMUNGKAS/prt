@@ -21,6 +21,8 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   images: {
     qualities: [65, 75],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     // The endpoint independently validates its `key` to `projects/` image
     // objects before reading from R2. Query parameters are required for that
     // allowlisted key, so permit this one same-origin image path.

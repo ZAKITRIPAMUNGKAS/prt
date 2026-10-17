@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 import { defaultPlaylist, parseLrc, type Track } from "@/config/music";
 import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
+import { useAudioStore } from "@/stores/use-audio-store";
 
 const formatTime = (seconds: number = 0) => {
   if (isNaN(seconds) || !isFinite(seconds) || seconds < 0) return "0:00";
@@ -135,8 +136,18 @@ export const AudioPlayer = ({
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [showLyrics, setShowLyrics] = useState(true);
   const [showExpandedLyrics, setShowExpandedLyrics] = useState(false);
+
+  // Global Audio Store Sync
+  const showLyrics = useAudioStore((s) => s.showLyrics);
+  const setShowLyrics = useAudioStore((s) => s.setShowLyrics);
+  const setStoreTracks = useAudioStore((s) => s.setTracks);
+  const setStoreCurrentIndex = useAudioStore((s) => s.setCurrentIndex);
+  const setStoreIsPlaying = useAudioStore((s) => s.setIsPlaying);
+  const setStoreCurrentTime = useAudioStore((s) => s.setCurrentTime);
+  const setStoreDuration = useAudioStore((s) => s.setDuration);
+  const setStoreProgress = useAudioStore((s) => s.setProgress);
+  const setStoreControls = useAudioStore((s) => s.setControls);
 
   const safeIndex = currentIndex < activeTracks.length ? currentIndex : 0;
   const currentTrack = activeTracks[safeIndex] || activeTracks[0];
@@ -259,12 +270,68 @@ export const AudioPlayer = ({
     }
   }, [isRepeat, activeTracks.length, handleNext, playAudio]);
 
+  const handleSeek = useCallback((valuePercent: number) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const dur = audio.duration || duration;
+    if (dur && isFinite(dur) && dur > 0) {
+      const targetTime = (valuePercent / 100) * dur;
+      audio.currentTime = Math.min(Math.max(targetTime, 0), dur);
+      setCurrentTime(audio.currentTime);
+      setProgress(valuePercent);
+      setStoreCurrentTime(audio.currentTime);
+      setStoreProgress(valuePercent);
+    }
+  }, [duration, setStoreCurrentTime, setStoreProgress]);
+
+  const jumpToLyric = useCallback((timeSec: number) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const dur = audio.duration || duration;
+    audio.currentTime = timeSec;
+    setCurrentTime(timeSec);
+    setStoreCurrentTime(timeSec);
+    if (dur && isFinite(dur) && dur > 0) {
+      const p = (timeSec / dur) * 100;
+      setProgress(p);
+      setStoreProgress(p);
+    }
+    if (audio.paused) {
+      void playAudio();
+    }
+  }, [duration, playAudio, setStoreCurrentTime, setStoreProgress]);
+
+  // Sync state to global store
+  useEffect(() => {
+    setStoreTracks(activeTracks);
+  }, [activeTracks, setStoreTracks]);
+
+  useEffect(() => {
+    setStoreCurrentIndex(currentIndex);
+  }, [currentIndex, setStoreCurrentIndex]);
+
+  useEffect(() => {
+    setStoreIsPlaying(isPlaying);
+  }, [isPlaying, setStoreIsPlaying]);
+
+  useEffect(() => {
+    setStoreControls({
+      play: playAudio,
+      pause: pauseAudio,
+      toggle: togglePlay,
+      seek: handleSeek,
+      jumpTo: jumpToLyric,
+    });
+    return () => setStoreControls(null);
+  }, [playAudio, pauseAudio, togglePlay, handleSeek, jumpToLyric, setStoreControls]);
+
   const updateDuration = () => {
     const audio = audioRef.current;
     if (!audio) return;
     const dur = audio.duration;
     if (dur && isFinite(dur) && dur > 0) {
       setDuration(dur);
+      setStoreDuration(dur);
     }
   };
 
@@ -274,35 +341,13 @@ export const AudioPlayer = ({
     const cur = audio.currentTime;
     const dur = audio.duration || duration;
     setCurrentTime(cur);
+    setStoreCurrentTime(cur);
     if (dur && isFinite(dur) && dur > 0) {
+      const p = (cur / dur) * 100;
       setDuration(dur);
-      setProgress((cur / dur) * 100);
-    }
-  };
-
-  const handleSeek = (valuePercent: number) => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    const dur = audio.duration || duration;
-    if (dur && isFinite(dur) && dur > 0) {
-      const targetTime = (valuePercent / 100) * dur;
-      audio.currentTime = Math.min(Math.max(targetTime, 0), dur);
-      setCurrentTime(audio.currentTime);
-      setProgress(valuePercent);
-    }
-  };
-
-  const jumpToLyric = (timeSec: number) => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    const dur = audio.duration || duration;
-    audio.currentTime = timeSec;
-    setCurrentTime(timeSec);
-    if (dur && isFinite(dur) && dur > 0) {
-      setProgress((timeSec / dur) * 100);
-    }
-    if (audio.paused) {
-      void playAudio();
+      setProgress(p);
+      setStoreDuration(dur);
+      setStoreProgress(p);
     }
   };
 

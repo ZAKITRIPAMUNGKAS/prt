@@ -30,13 +30,13 @@ export function InitialPreloader() {
           setTimeout(() => {
             setActive(false);
             sessionStorage.setItem("app_initial_loaded", "true");
-          }, 350);
+          }, 150);
           return 100;
         }
-        const step = Math.max(3, Math.floor((100 - prev) * 0.22));
+        const step = Math.max(12, Math.floor((100 - prev) * 0.45));
         return Math.min(100, prev + step);
       });
-    }, 45);
+    }, 25);
 
     return () => clearInterval(interval);
   }, [mounted, alreadyLoaded]);
