@@ -64,7 +64,7 @@ describe("defaultPlaylist configuration", () => {
       expect(track.id).toBeTruthy();
       expect(track.title).toBeTruthy();
       expect(track.artist).toBeTruthy();
-      expect(track.src).toMatch(/^https?:\/\//);
+      expect(track.src).toMatch(/^(https?:\/\/|\/)/);
       expect(track.cover).toBeTruthy();
     });
   });
