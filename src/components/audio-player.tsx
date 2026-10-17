@@ -25,51 +25,82 @@ import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
 
 const formatTime = (seconds: number = 0) => {
-  if (isNaN(seconds)) return "0:00";
+  if (isNaN(seconds) || !isFinite(seconds) || seconds < 0) return "0:00";
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = Math.floor(seconds % 60);
   return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
 };
 
-const CustomSlider = ({
-  value,
-  onChange,
-  className,
-}: {
+interface CustomSliderProps {
   value: number;
   onChange: (value: number) => void;
   className?: string;
-}) => {
+}
+
+const CustomSlider = ({ value, onChange, className }: CustomSliderProps) => {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const calculatePercentage = (clientX: number) => {
+    if (!trackRef.current) return 0;
+    const rect = trackRef.current.getBoundingClientRect();
+    if (rect.width === 0) return 0;
+    const x = clientX - rect.left;
+    return Math.min(Math.max((x / rect.width) * 100, 0), 100);
+  };
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    e.stopPropagation();
+    setIsDragging(true);
+    const newPercent = calculatePercentage(e.clientX);
+    onChange(newPercent);
+    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDragging) return;
+    e.stopPropagation();
+    const newPercent = calculatePercentage(e.clientX);
+    onChange(newPercent);
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (isDragging) {
+      e.stopPropagation();
+      setIsDragging(false);
+    }
+  };
+
+  const safeValue = Math.min(Math.max(isNaN(value) ? 0 : value, 0), 100);
+
   return (
     <div
+      ref={trackRef}
       role="slider"
       tabIndex={0}
       aria-label="Seek track"
-      aria-valuenow={Math.round(value)}
+      aria-valuenow={Math.round(safeValue)}
       aria-valuemin={0}
       aria-valuemax={100}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
       className={cn(
-        "relative w-full h-3 flex items-center cursor-pointer group select-none",
+        "relative w-full h-4 flex items-center cursor-pointer group select-none touch-none",
         className
       )}
-      onClick={(e) => {
-        e.stopPropagation();
-        const rect = e.currentTarget.getBoundingClientRect();
-        if (rect.width === 0) return;
-        const x = e.clientX - rect.left;
-        const percentage = (x / rect.width) * 100;
-        onChange(Math.min(Math.max(percentage, 0), 100));
-      }}
     >
       <div className="relative w-full h-1 bg-white/20 rounded-full overflow-hidden">
-        <motion.div
-          className="absolute top-0 left-0 h-full bg-white rounded-full group-hover:bg-primary transition-colors"
-          style={{ width: `${value}%` }}
-          initial={{ width: 0 }}
-          animate={{ width: `${value}%` }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        <div
+          className="absolute top-0 left-0 h-full bg-white rounded-full group-hover:bg-emerald-400 transition-[background-color] duration-150"
+          style={{ width: `${safeValue}%` }}
         />
       </div>
+      <div
+        className="absolute size-2.5 bg-white rounded-full shadow-md -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
+        style={{ left: `${safeValue}%` }}
+      />
     </div>
   );
 };
@@ -86,6 +117,7 @@ export const AudioPlayer = ({
   const pathname = usePathname();
   const audioRef = useRef<HTMLAudioElement>(null);
   const lyricsContainerRef = useRef<HTMLDivElement>(null);
+
   const trpc = useTRPC();
   const { data: dbTracks } = useQuery({
     ...trpc.playlist.getAll.queryOptions(),
@@ -117,7 +149,7 @@ export const AudioPlayer = ({
   // Find active lyric index based on audio currentTime
   const activeLyricIndex = useMemo(() => {
     if (parsedLyrics.length === 0) return -1;
-    let found = -1;
+    let found = 0;
     for (let i = 0; i < parsedLyrics.length; i++) {
       if (parsedLyrics[i].time <= currentTime + 0.15) {
         found = i;
@@ -130,77 +162,62 @@ export const AudioPlayer = ({
 
   const currentLyric = activeLyricIndex >= 0 ? parsedLyrics[activeLyricIndex] : null;
 
-  // Auto-scroll expanded lyrics list to keep active lyric in view
+  // Auto-scroll expanded lyrics list to keep active lyric in center
   useEffect(() => {
     if (showExpandedLyrics && lyricsContainerRef.current && activeLyricIndex >= 0) {
-      const activeEl = lyricsContainerRef.current.children[activeLyricIndex] as HTMLElement | undefined;
+      const container = lyricsContainerRef.current;
+      const activeEl = container.children[activeLyricIndex] as HTMLElement | undefined;
       if (activeEl) {
-        activeEl.scrollIntoView({ behavior: "smooth", block: "center" });
+        const elTop = activeEl.offsetTop;
+        const elHeight = activeEl.offsetHeight;
+        const containerHeight = container.clientHeight;
+        container.scrollTo({
+          top: elTop - containerHeight / 2 + elHeight / 2,
+          behavior: "smooth",
+        });
       }
     }
   }, [activeLyricIndex, showExpandedLyrics]);
 
-  // Try to autoplay once on mount or when user interacts
-  useEffect(() => {
+  // Safe Playback Helpers avoiding race conditions
+  const playAudio = useCallback(async () => {
     const audio = audioRef.current;
     if (!audio) return;
-
-    let userInteracted = false;
-    const handleFirstInteraction = () => {
-      if (userInteracted) return;
-      userInteracted = true;
-      if (audioRef.current && audioRef.current.paused) {
-        audioRef.current.play().catch(() => {});
+    try {
+      if (audio.ended || (audio.duration && audio.currentTime >= audio.duration - 0.2)) {
+        audio.currentTime = 0;
       }
-      window.removeEventListener("pointerdown", handleFirstInteraction);
-      window.removeEventListener("keydown", handleFirstInteraction);
-    };
-
-    audio.play().catch(() => {
-      window.addEventListener("pointerdown", handleFirstInteraction, {
-        once: true,
-      });
-      window.addEventListener("keydown", handleFirstInteraction, {
-        once: true,
-      });
-    });
-
-    return () => {
-      window.removeEventListener("pointerdown", handleFirstInteraction);
-      window.removeEventListener("keydown", handleFirstInteraction);
-    };
+      await audio.play();
+    } catch (err: unknown) {
+      console.debug("Audio play interrupted or waiting for user interaction:", err);
+    }
   }, []);
 
-  // When safeIndex changes, if currently playing, start playing new track
-  const isMounted = useRef(false);
-  useEffect(() => {
-    if (!isMounted.current) {
-      isMounted.current = true;
-      return;
-    }
-    if (isPlaying && audioRef.current) {
-      audioRef.current.play().catch(() => {});
-    }
-  }, [safeIndex, isPlaying]);
+  const pauseAudio = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.pause();
+  }, []);
 
-  const togglePlay = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-        setIsPlaying(false);
-      } else {
-        audioRef.current
-          .play()
-          .then(() => setIsPlaying(true))
-          .catch(() => {
-            setIsPlaying(false);
-          });
-      }
+  const togglePlay = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (audio.paused) {
+      void playAudio();
+    } else {
+      pauseAudio();
     }
-  };
+  }, [playAudio, pauseAudio]);
 
   const handleNext = useCallback(() => {
-    if (activeTracks.length <= 1) return;
+    if (activeTracks.length <= 1) {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.currentTime = 0;
+        void playAudio();
+      }
+      return;
+    }
     if (isShuffle) {
       let nextIndex = Math.floor(Math.random() * activeTracks.length);
       if (nextIndex === safeIndex) {
@@ -210,63 +227,91 @@ export const AudioPlayer = ({
     } else {
       setCurrentIndex((safeIndex + 1) % activeTracks.length);
     }
-  }, [safeIndex, isShuffle, activeTracks.length]);
+  }, [safeIndex, isShuffle, activeTracks.length, playAudio]);
 
   const handlePrev = useCallback(() => {
-    if (audioRef.current && audioRef.current.currentTime > 3) {
-      audioRef.current.currentTime = 0;
+    const audio = audioRef.current;
+    if (audio && audio.currentTime > 2) {
+      audio.currentTime = 0;
       return;
     }
-    if (activeTracks.length <= 1) return;
+    if (activeTracks.length <= 1) {
+      if (audio) {
+        audio.currentTime = 0;
+      }
+      return;
+    }
     setCurrentIndex((safeIndex - 1 + activeTracks.length) % activeTracks.length);
   }, [safeIndex, activeTracks.length]);
 
-  const handleTimeUpdate = () => {
-    if (audioRef.current) {
-      const cur = audioRef.current.currentTime;
-      const dur = audioRef.current.duration;
-      if (dur && isFinite(dur)) {
-        setProgress((cur / dur) * 100);
-        setCurrentTime(cur);
-        setDuration(dur);
-      }
-    }
-  };
-
-  const handleSeek = (value: number) => {
-    if (audioRef.current && audioRef.current.duration) {
-      const time = (value / 100) * audioRef.current.duration;
-      if (isFinite(time)) {
-        audioRef.current.currentTime = time;
-        setProgress(value);
-      }
-    }
-  };
-
-  const jumpToLyric = (time: number) => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = time;
-      if (duration && isFinite(duration)) {
-        setProgress((time / duration) * 100);
-      }
-    }
-  };
-
-  const handleEnded = () => {
-    if (isRepeat && audioRef.current) {
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(() => {});
-    } else {
+  const handleEnded = useCallback(() => {
+    const audio = audioRef.current;
+    if (isRepeat && audio) {
+      audio.currentTime = 0;
+      void playAudio();
+    } else if (activeTracks.length > 1) {
       handleNext();
+    } else if (audio) {
+      audio.currentTime = 0;
+      setCurrentTime(0);
+      setProgress(0);
+      setIsPlaying(false);
+    }
+  }, [isRepeat, activeTracks.length, handleNext, playAudio]);
+
+  const updateDuration = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const dur = audio.duration;
+    if (dur && isFinite(dur) && dur > 0) {
+      setDuration(dur);
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const cur = audio.currentTime;
+    const dur = audio.duration || duration;
+    setCurrentTime(cur);
+    if (dur && isFinite(dur) && dur > 0) {
+      setDuration(dur);
+      setProgress((cur / dur) * 100);
+    }
+  };
+
+  const handleSeek = (valuePercent: number) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const dur = audio.duration || duration;
+    if (dur && isFinite(dur) && dur > 0) {
+      const targetTime = (valuePercent / 100) * dur;
+      audio.currentTime = Math.min(Math.max(targetTime, 0), dur);
+      setCurrentTime(audio.currentTime);
+      setProgress(valuePercent);
+    }
+  };
+
+  const jumpToLyric = (timeSec: number) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const dur = audio.duration || duration;
+    audio.currentTime = timeSec;
+    setCurrentTime(timeSec);
+    if (dur && isFinite(dur) && dur > 0) {
+      setProgress((timeSec / dur) * 100);
+    }
+    if (audio.paused) {
+      void playAudio();
     }
   };
 
   const toggleMute = () => {
-    if (audioRef.current) {
-      const nextMuted = !isMuted;
-      audioRef.current.muted = nextMuted;
-      setIsMuted(nextMuted);
-    }
+    const audio = audioRef.current;
+    if (!audio) return;
+    const nextMuted = !isMuted;
+    audio.muted = nextMuted;
+    setIsMuted(nextMuted);
   };
 
   // Do not render inside admin dashboard routes
@@ -281,18 +326,16 @@ export const AudioPlayer = ({
       <audio
         ref={audioRef}
         onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={updateDuration}
+        onDurationChange={updateDuration}
+        onCanPlay={updateDuration}
         onEnded={handleEnded}
         onPlay={() => setIsPlaying(true)}
+        onPlaying={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
         onError={() => setIsPlaying(false)}
-        onLoadedMetadata={(e) => {
-          const dur = e.currentTarget.duration;
-          if (dur && isFinite(dur)) {
-            setDuration(dur);
-          }
-        }}
         src={currentTrack.src}
-        preload="metadata"
+        preload="auto"
         className="hidden"
       />
 
@@ -304,11 +347,11 @@ export const AudioPlayer = ({
             <AnimatePresence mode="wait">
               {showLyrics && currentLyric && (
                 <motion.div
-                  key={`lyric-${activeLyricIndex}-${currentLyric.text}`}
-                  initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                  key={`lyric-${activeLyricIndex}`}
+                  initial={{ opacity: 0, y: 6, scale: 0.96 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -6, scale: 0.95 }}
-                  transition={{ duration: 0.22, ease: "easeOut" }}
+                  exit={{ opacity: 0, y: -4, scale: 0.96 }}
+                  transition={{ duration: 0.18, ease: "easeOut" }}
                   className="mb-2 max-w-[280px] sm:max-w-[320px] px-3.5 py-1.5 rounded-2xl bg-[#111111eb] text-white backdrop-blur-md border border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex items-center gap-2 select-none pointer-events-auto cursor-pointer"
                   onClick={() => setIsExpanded(true)}
                   role="button"
@@ -350,7 +393,7 @@ export const AudioPlayer = ({
                     height={32}
                     unoptimized
                     className={cn(
-                      "w-full h-full object-cover rounded-full",
+                      "w-full h-full object-cover rounded-full transition-transform duration-500",
                       isPlaying && "animate-[spin_6s_linear_infinite]"
                     )}
                   />
@@ -636,7 +679,7 @@ export const AudioPlayer = ({
                     onClick={togglePlay}
                     variant="ghost"
                     size="icon"
-                    className="text-black bg-white hover:bg-white/90 size-9 rounded-full shadow-md"
+                    className="text-black bg-white hover:bg-white/90 size-9 rounded-full shadow-md transition-transform active:scale-95"
                     aria-label={isPlaying ? "Jeda" : "Putar"}
                   >
                     {isPlaying ? (
