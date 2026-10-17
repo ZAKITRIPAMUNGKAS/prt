@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -41,6 +42,7 @@ export function PlaylistFormDialog({
   const [artist, setArtist] = useState("");
   const [src, setSrc] = useState("");
   const [cover, setCover] = useState("");
+  const [lyrics, setLyrics] = useState("");
   const [order, setOrder] = useState(0);
   const [isActive, setIsActive] = useState(true);
 
@@ -62,6 +64,7 @@ export function PlaylistFormDialog({
       setArtist(track.artist || "");
       setSrc(track.src);
       setCover(track.cover || "");
+      setLyrics(track.lyrics || "");
       setOrder(track.order || 0);
       setIsActive(track.isActive);
     } else {
@@ -69,6 +72,7 @@ export function PlaylistFormDialog({
       setArtist("");
       setSrc("");
       setCover("");
+      setLyrics("");
       setOrder(0);
       setIsActive(true);
     }
@@ -172,6 +176,7 @@ export function PlaylistFormDialog({
           artist: artist.trim(),
           src: src.trim(),
           cover: cover.trim() || null,
+          lyrics: lyrics.trim() || null,
           order: Number(order) || 0,
           isActive,
         });
@@ -182,6 +187,7 @@ export function PlaylistFormDialog({
           artist: artist.trim(),
           src: src.trim(),
           cover: cover.trim() || null,
+          lyrics: lyrics.trim() || null,
           order: Number(order) || 0,
           isActive,
         });
@@ -322,6 +328,21 @@ export function PlaylistFormDialog({
                   Mengupload gambar... ({coverUploadProgress}%)
                 </p>
               )}
+            </div>
+
+            {/* Lyrics Field */}
+            <div className="grid gap-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="lyrics">Lirik Lagu (Opsional - Format LRC / Teks)</Label>
+                <span className="text-[11px] text-muted-foreground">[mm:ss.xx] Baris</span>
+              </div>
+              <Textarea
+                id="lyrics"
+                value={lyrics}
+                onChange={(e) => setLyrics(e.target.value)}
+                placeholder="[00:04.00] Lirik baris pertama&#10;[00:09.00] Lirik baris kedua..."
+                className="font-mono text-xs max-h-32 min-h-20 resize-y"
+              />
             </div>
 
             {/* Order & Active Switch */}

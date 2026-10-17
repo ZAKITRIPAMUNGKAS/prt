@@ -9,6 +9,7 @@ export const playlistTrackFormSchema = z.object({
   artist: z.string().default(""),
   src: z.string().min(1, "File / URL audio wajib diisi"),
   cover: z.string().nullable().optional(),
+  lyrics: z.string().nullable().optional(),
   order: z.number().default(0),
   isActive: z.boolean().default(true),
 });
@@ -32,6 +33,7 @@ export const playlistRouter = createTRPCRouter({
         artist: t.artist || "Tepe Radio",
         src: t.src,
         cover: t.cover || "/fotoku.png",
+        lyrics: t.lyrics || null,
       }));
     } catch {
       return defaultPlaylist;
@@ -55,6 +57,7 @@ export const playlistRouter = createTRPCRouter({
           artist: input.artist || "",
           src: input.src,
           cover: input.cover || null,
+          lyrics: input.lyrics || null,
           order: input.order,
           isActive: input.isActive,
         })
@@ -123,6 +126,7 @@ export const playlistRouter = createTRPCRouter({
             artist: track.artist,
             src: track.src,
             cover: track.cover,
+            lyrics: track.lyrics || null,
             order: idx,
             isActive: true,
           })

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect, useCallback } from "react";
+import React, { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -16,10 +16,11 @@ import {
   Volume2,
   VolumeX,
   Disc3,
+  Mic2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
-import { defaultPlaylist, type Track } from "@/config/music";
+import { defaultPlaylist, parseLrc, type Track } from "@/config/music";
 import { useTRPC } from "@/trpc/client";
 import { useQuery } from "@tanstack/react-query";
 
@@ -84,6 +85,7 @@ export const AudioPlayer = ({
 }: AudioPlayerProps) => {
   const pathname = usePathname();
   const audioRef = useRef<HTMLAudioElement>(null);
+  const lyricsContainerRef = useRef<HTMLDivElement>(null);
   const trpc = useTRPC();
   const { data: dbTracks } = useQuery({
     ...trpc.playlist.getAll.queryOptions(),
@@ -101,9 +103,42 @@ export const AudioPlayer = ({
   const [isShuffle, setIsShuffle] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [showLyrics, setShowLyrics] = useState(true);
+  const [showExpandedLyrics, setShowExpandedLyrics] = useState(false);
 
   const safeIndex = currentIndex < activeTracks.length ? currentIndex : 0;
   const currentTrack = activeTracks[safeIndex] || activeTracks[0];
+
+  // Parse lyrics for current track
+  const parsedLyrics = useMemo(() => {
+    return parseLrc(currentTrack?.lyrics);
+  }, [currentTrack?.lyrics]);
+
+  // Find active lyric index based on audio currentTime
+  const activeLyricIndex = useMemo(() => {
+    if (parsedLyrics.length === 0) return -1;
+    let found = -1;
+    for (let i = 0; i < parsedLyrics.length; i++) {
+      if (parsedLyrics[i].time <= currentTime + 0.15) {
+        found = i;
+      } else {
+        break;
+      }
+    }
+    return found;
+  }, [parsedLyrics, currentTime]);
+
+  const currentLyric = activeLyricIndex >= 0 ? parsedLyrics[activeLyricIndex] : null;
+
+  // Auto-scroll expanded lyrics list to keep active lyric in view
+  useEffect(() => {
+    if (showExpandedLyrics && lyricsContainerRef.current && activeLyricIndex >= 0) {
+      const activeEl = lyricsContainerRef.current.children[activeLyricIndex] as HTMLElement | undefined;
+      if (activeEl) {
+        activeEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  }, [activeLyricIndex, showExpandedLyrics]);
 
   // Try to autoplay once on mount or when user interacts
   useEffect(() => {
@@ -208,6 +243,15 @@ export const AudioPlayer = ({
     }
   };
 
+  const jumpToLyric = (time: number) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = time;
+      if (duration && isFinite(duration)) {
+        setProgress((time / duration) * 100);
+      }
+    }
+  };
+
   const handleEnded = () => {
     if (isRepeat && audioRef.current) {
       audioRef.current.currentTime = 0;
@@ -233,7 +277,7 @@ export const AudioPlayer = ({
   if (!currentTrack) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 z-40 sm:bottom-6 sm:left-6 select-none font-sans">
+    <div className="fixed bottom-4 left-4 z-40 sm:bottom-6 sm:left-6 select-none font-sans flex flex-col items-start pointer-events-none">
       <audio
         ref={audioRef}
         onTimeUpdate={handleTimeUpdate}
@@ -254,116 +298,187 @@ export const AudioPlayer = ({
 
       <AnimatePresence mode="wait">
         {!isExpanded ? (
-          /* Mini Floating Pill (Collapsed) */
-          <motion.div
-            key="mini-player"
-            initial={{ opacity: 0, scale: 0.85, y: 15 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.85, y: 15 }}
-            transition={{ type: "spring", stiffness: 350, damping: 25 }}
-            className="flex items-center gap-2.5 px-3 py-2 rounded-full bg-[#111111e6] text-white shadow-[0_8px_30px_rgba(0,0,0,0.35)] backdrop-blur-md border border-white/15 hover:border-white/25 transition-all max-w-[260px] sm:max-w-[280px]"
-            onClick={() => setIsExpanded(true)}
-            role="button"
-            tabIndex={0}
-            aria-label="Buka Pemutar Musik"
-          >
-            {/* Spinning Album / Disc */}
-            <div className="relative size-8 shrink-0 rounded-full overflow-hidden border border-white/20 bg-neutral-900 flex items-center justify-center">
-              {currentTrack.cover ? (
-                <Image
-                  src={currentTrack.cover}
-                  alt={currentTrack.title}
-                  width={32}
-                  height={32}
-                  unoptimized
-                  className={cn(
-                    "w-full h-full object-cover rounded-full",
-                    isPlaying && "animate-[spin_6s_linear_infinite]"
-                  )}
-                />
-              ) : (
-                <Disc3
-                  className={cn(
-                    "size-5 text-white/80",
-                    isPlaying && "animate-[spin_4s_linear_infinite]"
-                  )}
-                />
+          /* Mini Floating Pill Container (With synced floating lyrics above) */
+          <div key="mini-container" className="flex flex-col items-start">
+            {/* Floating Live Karaoke Lyric Bubble */}
+            <AnimatePresence mode="wait">
+              {showLyrics && currentLyric && (
+                <motion.div
+                  key={`lyric-${activeLyricIndex}-${currentLyric.text}`}
+                  initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -6, scale: 0.95 }}
+                  transition={{ duration: 0.22, ease: "easeOut" }}
+                  className="mb-2 max-w-[280px] sm:max-w-[320px] px-3.5 py-1.5 rounded-2xl bg-[#111111eb] text-white backdrop-blur-md border border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex items-center gap-2 select-none pointer-events-auto cursor-pointer"
+                  onClick={() => setIsExpanded(true)}
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Buka Lirik Penuh"
+                >
+                  <span
+                    className={cn(
+                      "size-1.5 rounded-full shrink-0",
+                      isPlaying ? "bg-emerald-400 animate-pulse" : "bg-white/40"
+                    )}
+                  />
+                  <p className="text-[11px] sm:text-xs font-medium text-white/95 truncate italic tracking-wide">
+                    &ldquo;{currentLyric.text}&rdquo;
+                  </p>
+                </motion.div>
               )}
-              {/* Disc Center Hole */}
-              <div className="absolute size-2 bg-neutral-900 rounded-full border border-white/40" />
-            </div>
+            </AnimatePresence>
 
-            {/* Track Info & Equalizer */}
-            <div className="flex flex-col min-w-0 flex-1 pr-1">
-              <span className="text-xs font-semibold text-white truncate leading-tight">
-                {currentTrack.title}
-              </span>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                {isPlaying ? (
-                  <div className="flex items-end gap-[2px] h-2.5">
-                    <span className="w-0.5 bg-emerald-400 rounded-full animate-[pulse_0.6s_ease-in-out_infinite] h-2" />
-                    <span className="w-0.5 bg-emerald-400 rounded-full animate-[pulse_0.8s_ease-in-out_infinite] h-3" />
-                    <span className="w-0.5 bg-emerald-400 rounded-full animate-[pulse_0.5s_ease-in-out_infinite] h-1.5" />
-                  </div>
+            {/* Mini Player Pill */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.85, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.85, y: 15 }}
+              transition={{ type: "spring", stiffness: 350, damping: 25 }}
+              className="flex items-center gap-2 px-3 py-2 rounded-full bg-[#111111e6] text-white shadow-[0_8px_30px_rgba(0,0,0,0.35)] backdrop-blur-md border border-white/15 hover:border-white/25 transition-all max-w-[280px] sm:max-w-[310px] pointer-events-auto cursor-pointer"
+              onClick={() => setIsExpanded(true)}
+              role="button"
+              tabIndex={0}
+              aria-label="Buka Pemutar Musik"
+            >
+              {/* Spinning Album / Disc */}
+              <div className="relative size-8 shrink-0 rounded-full overflow-hidden border border-white/20 bg-neutral-900 flex items-center justify-center">
+                {currentTrack.cover ? (
+                  <Image
+                    src={currentTrack.cover}
+                    alt={currentTrack.title}
+                    width={32}
+                    height={32}
+                    unoptimized
+                    className={cn(
+                      "w-full h-full object-cover rounded-full",
+                      isPlaying && "animate-[spin_6s_linear_infinite]"
+                    )}
+                  />
                 ) : (
-                  <span className="size-1.5 rounded-full bg-white/40" />
+                  <Disc3
+                    className={cn(
+                      "size-5 text-white/80",
+                      isPlaying && "animate-[spin_4s_linear_infinite]"
+                    )}
+                  />
                 )}
-                <span className="text-[10px] text-white/70 truncate">
-                  {isPlaying ? "Sedang diputar" : "Jeda"}
-                </span>
+                {/* Disc Center Hole */}
+                <div className="absolute size-2 bg-neutral-900 rounded-full border border-white/40" />
               </div>
-            </div>
 
-            {/* Quick Play / Pause Button */}
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={(e) => {
-                e.stopPropagation();
-                togglePlay();
-              }}
-              className="size-7 rounded-full bg-white/10 hover:bg-white/20 text-white shrink-0 hover:text-white"
-              aria-label={isPlaying ? "Jeda lagu" : "Putar lagu"}
-            >
-              {isPlaying ? (
-                <Pause className="size-3.5 fill-current" />
-              ) : (
-                <Play className="size-3.5 fill-current ml-0.5" />
+              {/* Track Info & Equalizer */}
+              <div className="flex flex-col min-w-0 flex-1 pr-1">
+                <span className="text-xs font-semibold text-white truncate leading-tight">
+                  {currentTrack.title}
+                </span>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  {isPlaying ? (
+                    <div className="flex items-end gap-[2px] h-2.5">
+                      <span className="w-0.5 bg-emerald-400 rounded-full animate-[pulse_0.6s_ease-in-out_infinite] h-2" />
+                      <span className="w-0.5 bg-emerald-400 rounded-full animate-[pulse_0.8s_ease-in-out_infinite] h-3" />
+                      <span className="w-0.5 bg-emerald-400 rounded-full animate-[pulse_0.5s_ease-in-out_infinite] h-1.5" />
+                    </div>
+                  ) : (
+                    <span className="size-1.5 rounded-full bg-white/40" />
+                  )}
+                  <span className="text-[10px] text-white/70 truncate">
+                    {isPlaying ? "Sedang diputar" : "Jeda"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Toggle Lyrics Subtitle Button */}
+              {parsedLyrics.length > 0 && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowLyrics((prev) => !prev);
+                  }}
+                  className={cn(
+                    "size-7 rounded-full shrink-0 transition-colors",
+                    showLyrics
+                      ? "text-emerald-400 bg-white/10 hover:bg-white/20 hover:text-emerald-300"
+                      : "text-white/50 hover:bg-white/10 hover:text-white"
+                  )}
+                  title={showLyrics ? "Sembunyikan Lirik" : "Tampilkan Lirik"}
+                  aria-label="Toggle Lirik"
+                >
+                  <Mic2 className="size-3.5" />
+                </Button>
               )}
-            </Button>
 
-            {/* Expand Button */}
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsExpanded(true);
-              }}
-              className="size-6 text-white/70 hover:text-white hover:bg-transparent shrink-0"
-              aria-label="Perbesar"
-            >
-              <Maximize2 className="size-3" />
-            </Button>
-          </motion.div>
+              {/* Quick Play / Pause Button */}
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  togglePlay();
+                }}
+                className="size-7 rounded-full bg-white/10 hover:bg-white/20 text-white shrink-0 hover:text-white"
+                aria-label={isPlaying ? "Jeda lagu" : "Putar lagu"}
+              >
+                {isPlaying ? (
+                  <Pause className="size-3.5 fill-current" />
+                ) : (
+                  <Play className="size-3.5 fill-current ml-0.5" />
+                )}
+              </Button>
+
+              {/* Expand Button */}
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsExpanded(true);
+                }}
+                className="size-6 text-white/70 hover:text-white hover:bg-transparent shrink-0"
+                aria-label="Perbesar"
+              >
+                <Maximize2 className="size-3" />
+              </Button>
+            </motion.div>
+          </div>
         ) : (
-          /* Expanded Full Card (Exact layout requested by user) */
+          /* Expanded Full Card */
           <motion.div
             key="expanded-player"
-            className="relative flex flex-col rounded-3xl overflow-hidden bg-[#111111ea] shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-md border border-white/15 p-3.5 w-[280px] max-w-[calc(100vw-2rem)]"
+            className="relative flex flex-col rounded-3xl overflow-hidden bg-[#111111ea] shadow-[0_12px_40px_rgba(0,0,0,0.5)] backdrop-blur-md border border-white/15 p-3.5 w-[290px] max-w-[calc(100vw-2rem)] pointer-events-auto"
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", stiffness: 350, damping: 26 }}
           >
-            {/* Header controls (Minimize & Mute) */}
+            {/* Header controls (Tepe Radio, Lyrics Toggle, Mute & Minimize) */}
             <div className="flex items-center justify-between pb-2 mb-1 border-b border-white/10">
               <span className="text-[11px] font-medium tracking-wider uppercase text-white/60">
                 Tepe Radio
               </span>
               <div className="flex items-center gap-1">
+                {parsedLyrics.length > 0 && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowExpandedLyrics((prev) => !prev)}
+                    className={cn(
+                      "size-7 rounded-full transition-colors",
+                      showExpandedLyrics
+                        ? "text-emerald-400 bg-white/20 hover:text-emerald-300"
+                        : "text-white/70 hover:text-white hover:bg-white/10"
+                    )}
+                    title={showExpandedLyrics ? "Tampilkan Cover" : "Tampilkan Lirik"}
+                    aria-label="Lihat Lirik Penuh"
+                  >
+                    <Mic2 className="size-3.5" />
+                  </Button>
+                )}
                 <Button
                   type="button"
                   variant="ghost"
@@ -391,30 +506,77 @@ export const AudioPlayer = ({
               </div>
             </div>
 
-            {/* Album Cover */}
-            {currentTrack.cover && (
-              <div className="bg-white/10 overflow-hidden rounded-[16px] h-[170px] w-full relative shadow-inner">
-                <Image
-                  src={currentTrack.cover}
-                  alt={currentTrack.title}
-                  width={280}
-                  height={170}
-                  unoptimized
-                  className="object-cover w-full h-full select-none"
-                />
-                {/* Playing indicator badge over cover */}
-                <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-[10px] text-white font-medium flex items-center gap-1.5">
-                  <span
-                    className={cn(
-                      "size-1.5 rounded-full",
-                      isPlaying
-                        ? "bg-emerald-400 animate-ping"
-                        : "bg-white/40"
-                    )}
-                  />
-                  <span>{isPlaying ? "Playing" : "Paused"}</span>
-                </div>
+            {/* Main Area: Album Cover OR Full Scrolling Karaoke Lyrics */}
+            {showExpandedLyrics ? (
+              <div
+                ref={lyricsContainerRef}
+                className="bg-black/40 border border-white/10 overflow-y-auto rounded-[16px] h-[170px] w-full p-3 flex flex-col gap-2 scroll-smooth scrollbar-thin scrollbar-thumb-white/20 select-text"
+              >
+                {parsedLyrics.length > 0 ? (
+                  parsedLyrics.map((line, idx) => {
+                    const isActive = idx === activeLyricIndex;
+                    return (
+                      <button
+                        key={`${line.time}-${idx}`}
+                        type="button"
+                        onClick={() => jumpToLyric(line.time)}
+                        className={cn(
+                          "text-left transition-all duration-200 py-1 px-1.5 rounded-lg flex items-center gap-2 w-full group",
+                          isActive
+                            ? "text-white font-semibold text-xs bg-white/15 scale-[1.02]"
+                            : "text-white/45 text-[11px] hover:text-white/80 hover:bg-white/5"
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "size-1.5 rounded-full shrink-0 transition-all",
+                            isActive ? "bg-emerald-400 scale-125" : "bg-transparent group-hover:bg-white/30"
+                          )}
+                        />
+                        <span className="leading-tight">{line.text}</span>
+                      </button>
+                    );
+                  })
+                ) : (
+                  <div className="flex items-center justify-center h-full text-xs text-white/50 text-center">
+                    Lirik belum tersedia untuk lagu ini
+                  </div>
+                )}
               </div>
+            ) : (
+              currentTrack.cover && (
+                <div className="bg-white/10 overflow-hidden rounded-[16px] h-[170px] w-full relative shadow-inner">
+                  <Image
+                    src={currentTrack.cover}
+                    alt={currentTrack.title}
+                    width={290}
+                    height={170}
+                    unoptimized
+                    className="object-cover w-full h-full select-none"
+                  />
+                  {/* Playing indicator badge over cover */}
+                  <div className="absolute top-2.5 right-2.5 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-[10px] text-white font-medium flex items-center gap-1.5">
+                    <span
+                      className={cn(
+                        "size-1.5 rounded-full",
+                        isPlaying
+                          ? "bg-emerald-400 animate-ping"
+                          : "bg-white/40"
+                      )}
+                    />
+                    <span>{isPlaying ? "Playing" : "Paused"}</span>
+                  </div>
+
+                  {/* Active Lyric Subtitle Overlay over cover bottom */}
+                  {currentLyric && (
+                    <div className="absolute inset-x-2 bottom-2 px-2.5 py-1.5 rounded-xl bg-black/70 backdrop-blur-md border border-white/15 text-center">
+                      <p className="text-[11px] font-medium text-white truncate italic tracking-wide">
+                        &ldquo;{currentLyric.text}&rdquo;
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )
             )}
 
             {/* Track Info & Progress */}

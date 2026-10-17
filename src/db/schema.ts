@@ -381,6 +381,7 @@ export const playlistTracks = pgTable(
     artist: text("artist").notNull().default(""),
     src: text("src").notNull(),
     cover: text("cover"),
+    lyrics: text("lyrics"),
     order: integer("order").notNull().default(0),
     isActive: boolean("is_active").notNull().default(true),
 
