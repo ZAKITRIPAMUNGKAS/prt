@@ -58,6 +58,7 @@ export const viewport: Viewport = {
 };
 
 import { InitialPreloader } from "@/components/initial-preloader";
+import { AudioPlayer } from "@/components/audio-player";
 
 export default function RootLayout({
   children,
@@ -74,6 +75,7 @@ export default function RootLayout({
               <InitialPreloader />
               <Toaster />
               {children}
+              <AudioPlayer />
             </ThemeProvider>
           </TRPCReactProvider>
         </NuqsAdapter>
