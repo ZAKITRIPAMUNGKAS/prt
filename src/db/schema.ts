@@ -367,3 +367,36 @@ export const jobApplicationsInsertSchema = createInsertSchema(jobApplications);
 export const jobApplicationsSelectSchema = createSelectSchema(jobApplications);
 export const jobApplicationsUpdateSchema = createUpdateSchema(jobApplications);
 
+/***************************
+ ***************************
+ *  Playlist Tracks Table  *
+ ***************************
+ ***************************/
+
+export const playlistTracks = pgTable(
+  "playlist_tracks",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    title: text("title").notNull(),
+    artist: text("artist").notNull().default(""),
+    src: text("src").notNull(),
+    cover: text("cover"),
+    order: integer("order").notNull().default(0),
+    isActive: boolean("is_active").notNull().default(true),
+
+    ...timestamps,
+  },
+  (t) => [
+    index("playlist_tracks_order_idx").on(t.order),
+    index("playlist_tracks_is_active_idx").on(t.isActive),
+  ]
+);
+
+// Types
+export type PlaylistTrack = InferSelectModel<typeof playlistTracks>;
+
+// Schemas
+export const playlistTracksInsertSchema = createInsertSchema(playlistTracks);
+export const playlistTracksSelectSchema = createSelectSchema(playlistTracks);
+export const playlistTracksUpdateSchema = createUpdateSchema(playlistTracks);
+

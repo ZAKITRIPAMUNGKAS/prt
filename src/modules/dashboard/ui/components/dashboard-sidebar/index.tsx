@@ -48,6 +48,11 @@ const data = {
       icon: "application",
     },
     {
+      title: "Playlist Musik",
+      url: "/dashboard/playlist",
+      icon: "music",
+    },
+    {
       title: "Profile",
       url: "/dashboard/profile",
       icon: "user",

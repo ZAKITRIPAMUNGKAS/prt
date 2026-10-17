@@ -8,6 +8,7 @@ import {
   ALL_ALLOWED_CONTENT_TYPES,
   IMAGE_SIZE_LIMIT,
   VIDEO_SIZE_LIMIT,
+  AUDIO_SIZE_LIMIT,
 } from "@/constants";
 
 /**
@@ -33,10 +34,13 @@ export const s3Router = createTRPCRouter({
             if (data.contentType.startsWith("video/")) {
               return data.size <= VIDEO_SIZE_LIMIT;
             }
+            if (data.contentType.startsWith("audio/")) {
+              return data.size <= AUDIO_SIZE_LIMIT;
+            }
             return true;
           },
           {
-            message: `Video size exceeds ${VIDEO_SIZE_LIMIT / 1024 / 1024}MB limit`,
+            message: `File size exceeds allowed limit`,
           }
         )
     )

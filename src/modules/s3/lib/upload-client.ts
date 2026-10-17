@@ -1,9 +1,8 @@
 import {
   ALL_ALLOWED_CONTENT_TYPES,
-  ALLOWED_CONTENT_TYPES,
-  ALLOWED_VIDEO_CONTENT_TYPES,
   IMAGE_SIZE_LIMIT,
   VIDEO_SIZE_LIMIT,
+  AUDIO_SIZE_LIMIT,
 } from "@/constants";
 
 export type AllowedContentType = (typeof ALL_ALLOWED_CONTENT_TYPES)[number];
@@ -58,10 +57,13 @@ export class S3Client {
    */
   private validateFile(file: File) {
     const isVideo = file.type.startsWith("video/");
-    const maxFileSize = isVideo ? VIDEO_SIZE_LIMIT : IMAGE_SIZE_LIMIT;
-    const allowedTypes = isVideo
-      ? (ALLOWED_VIDEO_CONTENT_TYPES as readonly string[])
-      : (ALLOWED_CONTENT_TYPES as readonly string[]);
+    const isAudio = file.type.startsWith("audio/");
+    const maxFileSize = isVideo
+      ? VIDEO_SIZE_LIMIT
+      : isAudio
+        ? AUDIO_SIZE_LIMIT
+        : IMAGE_SIZE_LIMIT;
+    const allowedTypes = (ALL_ALLOWED_CONTENT_TYPES as readonly string[]);
 
     if (file.size > maxFileSize) {
       throw new UploadError(

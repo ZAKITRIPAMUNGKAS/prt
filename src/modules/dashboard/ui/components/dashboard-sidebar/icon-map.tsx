@@ -6,6 +6,7 @@ import {
   IconNotebook,
   IconBriefcase,
   IconFileCv,
+  IconMusic,
 } from "@tabler/icons-react";
 
 interface IconMapProps {
@@ -28,6 +29,9 @@ const IconMap = ({ icon }: IconMapProps) => {
       return <IconBriefcase />;
     case "application":
       return <IconFileCv />;
+    case "music":
+    case "playlist":
+      return <IconMusic />;
     default:
       return <IconLayoutDashboard />;
   }

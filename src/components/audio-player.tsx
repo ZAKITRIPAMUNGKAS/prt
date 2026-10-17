@@ -20,6 +20,8 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
 import { defaultPlaylist, type Track } from "@/config/music";
+import { useTRPC } from "@/trpc/client";
+import { useQuery } from "@tanstack/react-query";
 
 const formatTime = (seconds: number = 0) => {
   if (isNaN(seconds)) return "0:00";
@@ -74,6 +76,13 @@ export const AudioPlayer = ({
 }: AudioPlayerProps) => {
   const pathname = usePathname();
   const audioRef = useRef<HTMLAudioElement>(null);
+  const trpc = useTRPC();
+  const { data: dbTracks } = useQuery({
+    ...trpc.playlist.getAll.queryOptions(),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const activeTracks = dbTracks && dbTracks.length > 0 ? dbTracks : tracks;
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -85,7 +94,8 @@ export const AudioPlayer = ({
   const [isRepeat, setIsRepeat] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
 
-  const currentTrack = tracks[currentIndex] || tracks[0];
+  const safeIndex = currentIndex < activeTracks.length ? currentIndex : 0;
+  const currentTrack = activeTracks[safeIndex] || activeTracks[0];
 
   // Try to autoplay on mount or when user interacts
   useEffect(() => {
@@ -148,26 +158,26 @@ export const AudioPlayer = ({
   };
 
   const handleNext = useCallback(() => {
-    if (tracks.length <= 1) return;
+    if (activeTracks.length <= 1) return;
     if (isShuffle) {
-      let nextIndex = Math.floor(Math.random() * tracks.length);
+      let nextIndex = Math.floor(Math.random() * activeTracks.length);
       if (nextIndex === currentIndex) {
-        nextIndex = (currentIndex + 1) % tracks.length;
+        nextIndex = (currentIndex + 1) % activeTracks.length;
       }
       setCurrentIndex(nextIndex);
     } else {
-      setCurrentIndex((prev) => (prev + 1) % tracks.length);
+      setCurrentIndex((prev) => (prev + 1) % activeTracks.length);
     }
-  }, [currentIndex, isShuffle, tracks.length]);
+  }, [currentIndex, isShuffle, activeTracks.length]);
 
   const handlePrev = useCallback(() => {
     if (audioRef.current && audioRef.current.currentTime > 3) {
       audioRef.current.currentTime = 0;
       return;
     }
-    if (tracks.length <= 1) return;
-    setCurrentIndex((prev) => (prev - 1 + tracks.length) % tracks.length);
-  }, [tracks.length]);
+    if (activeTracks.length <= 1) return;
+    setCurrentIndex((prev) => (prev - 1 + activeTracks.length) % activeTracks.length);
+  }, [activeTracks.length]);
 
   const handleTimeUpdate = () => {
     if (audioRef.current) {
