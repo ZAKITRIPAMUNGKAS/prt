@@ -10,22 +10,31 @@ import { cn } from "@/lib/utils";
 export function PhotoLyricsOverlay({ className }: { className?: string }) {
   const isPlaying = useAudioStore((s) => s.isPlaying);
   const showLyrics = useAudioStore((s) => s.showLyrics);
+  const currentTime = useAudioStore((s) => s.currentTime);
   const currentTrack = useCurrentTrack();
   const lyricsRaw = currentTrack?.lyrics;
 
   // Parse lyrics of current track
-  const lyricsTexts = useMemo(() => {
+  const parsedLyrics = useMemo(() => {
     if (!lyricsRaw) return [];
-    const parsed = parseLrc(lyricsRaw);
-    const cleanLines = parsed
-      .map((l) => l.text.trim())
-      .filter((t) => t && !t.startsWith("(") && !t.endsWith("..."));
-    return cleanLines.length > 0
-      ? cleanLines
-      : parsed.map((l) => l.text.trim()).filter(Boolean);
+    return parseLrc(lyricsRaw);
   }, [lyricsRaw]);
 
-  if (!showLyrics || lyricsTexts.length === 0) {
+  // Find precisely synchronized active lyric line based on current playback second
+  const activeLyricText = useMemo(() => {
+    if (parsedLyrics.length === 0) return "";
+    let found = parsedLyrics[0]?.text || "";
+    for (let i = 0; i < parsedLyrics.length; i++) {
+      if (parsedLyrics[i].time <= currentTime + 0.15) {
+        found = parsedLyrics[i].text;
+      } else {
+        break;
+      }
+    }
+    return found;
+  }, [parsedLyrics, currentTime]);
+
+  if (!showLyrics || !lyricsRaw || parsedLyrics.length === 0) {
     return null;
   }
 
@@ -42,25 +51,25 @@ export function PhotoLyricsOverlay({ className }: { className?: string }) {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.4 }}
-          className="w-full max-w-lg flex flex-col items-center justify-center text-center"
+          className="w-full max-w-xl flex flex-col items-center justify-center text-center"
         >
-          {/* Subtle Spotify-style mini badge */}
-          <div className="mb-3 px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/15 text-white/80 text-[10px] sm:text-xs font-medium flex items-center gap-2 shadow-lg">
+          {/* Subtle Spotify-style badge */}
+          <div className="mb-4 px-3.5 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/15 text-white/90 text-[10px] sm:text-xs font-medium flex items-center gap-2 shadow-xl">
             <span
               className={cn(
                 "size-1.5 rounded-full shrink-0",
                 isPlaying ? "bg-emerald-400 animate-pulse" : "bg-white/40"
               )}
             />
-            <span className="truncate max-w-[200px]">
+            <span className="truncate max-w-[240px]">
               {currentTrack?.title} • {currentTrack?.artist}
             </span>
           </div>
 
-          {/* Morphing Lyrics in center of photo */}
-          <div className="w-full flex items-center justify-center drop-shadow-[0_8px_24px_rgba(0,0,0,0.9)] text-white">
+          {/* Morphing Lyrics in center of photo, 100% synchronized with audio */}
+          <div className="w-full flex items-center justify-center drop-shadow-[0_10px_30px_rgba(0,0,0,0.95)] text-white">
             <MorphingText
-              texts={lyricsTexts}
+              text={activeLyricText}
               className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-[2.6rem] font-black tracking-tight"
             />
           </div>
