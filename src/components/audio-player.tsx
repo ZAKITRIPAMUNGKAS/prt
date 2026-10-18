@@ -160,7 +160,11 @@ export const AudioPlayer = ({
   // Find active lyric index based on audio currentTime
   const activeLyricIndex = useMemo(() => {
     if (parsedLyrics.length === 0) return -1;
-    let found = 0;
+    const firstTime = parsedLyrics[0]?.time ?? 0;
+    if (currentTime < firstTime - 0.25) {
+      return -1;
+    }
+    let found = -1;
     for (let i = 0; i < parsedLyrics.length; i++) {
       if (parsedLyrics[i].time <= currentTime + 0.15) {
         found = i;
@@ -171,7 +175,33 @@ export const AudioPlayer = ({
     return found;
   }, [parsedLyrics, currentTime]);
 
-  const currentLyric = activeLyricIndex >= 0 ? parsedLyrics[activeLyricIndex] : null;
+  const currentLyric = useMemo(() => {
+    if (activeLyricIndex < 0 || activeLyricIndex >= parsedLyrics.length) return null;
+    const cur = parsedLyrics[activeLyricIndex];
+    const next = parsedLyrics[activeLyricIndex + 1];
+    const maxDur = next ? Math.min(next.time - cur.time, 6.0) : 6.0;
+    if (currentTime > cur.time + maxDur) {
+      return null;
+    }
+    return cur;
+  }, [activeLyricIndex, parsedLyrics, currentTime]);
+
+  // Synchronize playback currentTime smoothly at 60fps instead of 250ms HTML5 timeupdate delays
+  useEffect(() => {
+    if (!isPlaying) return;
+    let animId: number;
+    const updateTime = () => {
+      const audio = audioRef.current;
+      if (audio && !audio.paused) {
+        const cur = audio.currentTime;
+        setCurrentTime(cur);
+        setStoreCurrentTime(cur);
+      }
+      animId = requestAnimationFrame(updateTime);
+    };
+    animId = requestAnimationFrame(updateTime);
+    return () => cancelAnimationFrame(animId);
+  }, [isPlaying, setStoreCurrentTime]);
 
   // Auto-scroll expanded lyrics list to keep active lyric in center
   useEffect(() => {

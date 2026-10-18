@@ -50,6 +50,7 @@ export const defaultPlaylist: Track[] = [
 [00:09.21] Like you never really went away
 [00:16.00] Every night wishing you would feel the same
 [00:22.59] Every night I lie awake
+[00:28.09] (Instrumental Break)
 [00:47.50] If day could take me back to you
 [00:51.88] I’d run through everything I knew
 [00:59.02] But all I have is just this empty room`,
@@ -60,22 +61,22 @@ export const defaultPlaylist: Track[] = [
     artist: "Colorcode • Wong Kalahan",
     src: "/music/colorcode-trauma-response.mp3",
     cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80",
-    lyrics: `[00:02.03] All my fucking energy spent on something and you won't give
-[00:06.93] So I tried and tried to paint you something out of my ways
-[00:12.01] I gave you all my time just to fill up your goddamn space
-[00:16.35] But still I tried and tried to paint you something out of my ways
-[00:21.68] I gave you all my time just to fill up your goddamn space
-[00:27.90] ("Listen.")
-[00:29.48] I'm tired of making you a lesson
-[00:32.59] ("Enough.")
-[00:32.75] The static is seeping into my eardrum
-[00:37.65] ("Listen.")
-[00:39.59] I'm tired of making you a lesson
-[00:42.85] ("Enough.")
-[00:44.42] The static is seeping into my eardrum
-[00:52.79] Now you switched your old jersey clean
-[00:55.16] For a brand new cologne
-[00:57.12] And I know I'm not a part of your world anymore`,
+    lyrics: `[00:00.73] Now I'm stuck inside a life I didn't choose to live
+[00:05.03] All my fucking energy spent on something and you won't give
+[00:09.93] So I tried and tried to paint you something out of my ways
+[00:15.01] I gave you all my time just to fill up your goddamn space
+[00:19.35] But still I tried and tried to paint you something out of my ways
+[00:24.68] I gave you all my time just to fill up your goddamn space
+[00:30.90] ("Listen.")
+[00:32.48] I'm tired of making you a lesson
+[00:35.59] ("Enough.")
+[00:35.75] The static is seeping into my eardrum
+[00:40.65] ("Listen.")
+[00:42.59] I'm tired of making you a lesson
+[00:45.85] ("Enough.")
+[00:47.42] The static is seeping into my eardrum
+[00:55.79] Now you switched your old jersey clean
+[00:58.16] For a brand new cologne`,
   },
   {
     id: "3",
@@ -123,15 +124,15 @@ export const defaultPlaylist: Track[] = [
     src: "/music/summerlane-color-blind.mp3",
     cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=80",
     lyrics: `[00:00.00] The clock's ticking, we're not dreaming
-[00:06.00] You don't have to go, but you don't have to stay
-[00:12.50] But at least we can save ourselves from falling
-[00:19.00] Don't see this world in black and white
-[00:24.00] 'Cause I know you're not colorblind
-[00:29.00] Oh dear, we got no place to hide
-[00:34.00] Now I refuse to press rewind
-[00:40.00] Here we go again, tell me you'll stay
-[00:46.00] We will figure out a way
-[00:52.00] I'll take you anywhere you want to go`,
+[00:05.50] You don't have to go, but you don't have to stay
+[00:11.20] But at least we can save ourselves from falling
+[00:17.80] Don't see this world in black and white
+[00:23.20] 'Cause I know you're not colorblind
+[00:28.50] Oh dear, we got no place to hide
+[00:33.80] Now I refuse to press rewind
+[00:39.50] Here we go again, tell me you'll stay
+[00:45.20] We will figure out a way
+[00:51.00] I'll take you anywhere you want to go`,
   },
   {
     id: "6",
@@ -140,9 +141,9 @@ export const defaultPlaylist: Track[] = [
     src: "/music/morscode-calm-down.mp3",
     cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80",
     lyrics: `[00:00.00] (Calm Down • Morscode)
-[00:12.00] Lost inside the noise and haze
-[00:24.00] Counting all these passing days
-[00:36.00] Won't you please just calm down
+[00:10.00] Lost inside the noise and haze
+[00:22.00] Counting all these passing days
+[00:35.00] Won't you please just calm down
 [00:48.00] (Instrumental Outro)`,
   },
   {
@@ -152,14 +153,14 @@ export const defaultPlaylist: Track[] = [
     src: "/music/rocket-rockers-rumit.mp3",
     cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=800&auto=format&fit=crop&q=80",
     lyrics: `[00:00.00] Memahami hatimu...
-[00:05.00] Tak akan cukup usiaku
-[00:10.00] Sementara rindu ini semakin menusuk dadaku
-[00:17.50] Ternyata perasaanmu padaku biasa-biasa saja
-[00:26.00] Cinta itu sederhana, yang rumit itu kamu
-[00:35.00] Mencintaimu itu mudah
-[00:40.00] Yang sulit adalah membuatmu juga mencintaiku
-[00:48.00] Aku mengerti bahwa bahagiamu bukan denganku
-[00:54.00] Niscaya semua luka kan sembuh bersama waktu`,
+[00:04.50] Tak akan cukup usiaku
+[00:09.20] Sementara rindu ini semakin menusuk dadaku
+[00:16.50] Ternyata perasaanmu padaku biasa-biasa saja
+[00:24.00] Cinta itu sederhana, yang rumit itu kamu
+[00:33.00] Mencintaimu itu mudah
+[00:38.20] Yang sulit adalah membuatmu juga mencintaiku
+[00:46.50] Aku mengerti bahwa bahagiamu bukan denganku
+[00:52.50] Niscaya semua luka kan sembuh bersama waktu`,
   },
   {
     id: "8",
@@ -178,6 +179,7 @@ export const defaultPlaylist: Track[] = [
 [00:24.27] Dunia
 [00:26.08] Menyerang dan membabi buta
 [00:29.90] Tapi aku terus hidup
+[00:35.40] (Instrumental Break)
 [00:49.77] Jika hidup tentang uang, untuk apa semua cinta?
 [00:52.51] Musuh abadi dan teman abadi
 [00:55.63] Jika cinta sudah dibuang
@@ -261,6 +263,7 @@ export const defaultPlaylist: Track[] = [
 [00:22.53] When I wake up it's the same day
 [00:25.74] It fucks me up and makes me miss who I used to be
 [00:30.58] All I have are thoughts of me from back when I was 18 and my bony knees
+[00:36.08] (Instrumental Break)
 [00:56.94] Don't want it to be like my teenage years`,
   },
   {
@@ -275,6 +278,7 @@ export const defaultPlaylist: Track[] = [
 [00:16.79] But it still hurts to know you're not alone
 [00:20.57] Don't worry
 [00:23.76] I'll keep out of your life and stay awake at night
+[00:29.26] (Instrumental Break)
 [00:33.05] It's 4:00 a.m. and you're keeping me from closing these sleepy eyes
 [00:39.21] Does the thought of me keep you up at night?
 [00:43.85] Like the light on the ceiling of your bedroom
@@ -319,6 +323,7 @@ export const defaultPlaylist: Track[] = [
 [00:12.12] To something blue
 [00:13.06] She bases what she's drinking on the place and time of day
 [00:17.00] Says that she loves California but she hates LA, okay
+[00:22.50] (Instrumental Break)
 [00:29.49] You don't talk about your thoughts now, so your mind is mine to read
 [00:33.55] I've got something in me twisting up, screaming time is all I need
 [00:38.58] What you think about a conversation? What you think about a different line?
@@ -399,6 +404,7 @@ export const defaultPlaylist: Track[] = [
 [00:13.94] Came in here alone
 [00:15.22] But that doesn't scare me like it did seven months ago
 [00:16.97] I spent this year as a ghost and I'm not sure where home is anymore
+[00:22.47] (Instrumental Break)
 [00:30.71] Been on a steady fast food diet
 [00:33.14] Like we're this generation's Morgan Spurlock
 [00:38.14] But we don't admit defeat
@@ -419,6 +425,7 @@ export const defaultPlaylist: Track[] = [
 [00:12.16] But I'm smiling at everything
 [00:15.71] Therapy, you were never a friend to me
 [00:23.47] You can keep all your misery
+[00:28.97] (Instrumental Break)
 [00:38.08] My lungs gave out
 [00:40.86] As I faced the crowd
 [00:43.35] I think that keeping this up could be dangerous

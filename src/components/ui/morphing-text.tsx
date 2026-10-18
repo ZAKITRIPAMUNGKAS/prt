@@ -21,11 +21,11 @@ const useAutonomousMorphingText = (texts: string[]) => {
       const [current1, current2] = [text1Ref.current, text2Ref.current];
       if (!current1 || !current2 || !texts || texts.length === 0) return;
 
-      current2.style.filter = `blur(${Math.min(8 / fraction - 8, 100)}px)`;
+      current2.style.filter = `blur(${Math.min(6 / fraction - 6, 50)}px)`;
       current2.style.opacity = `${Math.pow(fraction, 0.4) * 100}%`;
 
       const invertedFraction = 1 - fraction;
-      current1.style.filter = `blur(${Math.min(8 / invertedFraction - 8, 100)}px)`;
+      current1.style.filter = `blur(${Math.min(6 / invertedFraction - 6, 50)}px)`;
       current1.style.opacity = `${Math.pow(invertedFraction, 0.4) * 100}%`;
 
       current1.textContent = texts[textIndexRef.current % texts.length];
@@ -105,7 +105,7 @@ const useSyncedMorphingText = (targetText: string) => {
     prevTextRef.current = targetText;
 
     if (!fromText && toText) {
-      // Initial appearance
+      // First appearance: set immediately with gentle fade
       current1.textContent = toText;
       current1.style.filter = "none";
       current1.style.opacity = "100%";
@@ -123,11 +123,12 @@ const useSyncedMorphingText = (targetText: string) => {
       return;
     }
 
+    // Set text contents
     current1.textContent = fromText;
     current2.textContent = toText;
 
     let startTime: number | null = null;
-    const duration = 800; // 0.8s fluid transition
+    const duration = 450; // Snappy 450ms fluid transition
     let frameId: number;
 
     const step = (timestamp: number) => {
@@ -136,17 +137,17 @@ const useSyncedMorphingText = (targetText: string) => {
       const progress = Math.min(elapsed / duration, 1);
 
       if (progress < 1) {
-        const fraction = Math.max(progress, 0.01);
-        current2.style.filter = `blur(${Math.min(8 / fraction - 8, 100)}px)`;
+        const fraction = Math.max(progress, 0.02);
+        current2.style.filter = `blur(${Math.min(6 / fraction - 6, 40)}px)`;
         current2.style.opacity = `${Math.pow(fraction, 0.4) * 100}%`;
 
-        const invertedFraction = Math.max(1 - fraction, 0.01);
-        current1.style.filter = `blur(${Math.min(8 / invertedFraction - 8, 100)}px)`;
+        const invertedFraction = Math.max(1 - fraction, 0.02);
+        current1.style.filter = `blur(${Math.min(6 / invertedFraction - 6, 40)}px)`;
         current1.style.opacity = `${Math.pow(invertedFraction, 0.4) * 100}%`;
 
         frameId = requestAnimationFrame(step);
       } else {
-        // Morph complete: clear blur and keep toText solid
+        // Transition finished: solid crisp text
         current1.textContent = toText;
         current1.style.filter = "none";
         current1.style.opacity = "100%";
@@ -172,32 +173,32 @@ export interface MorphingTextProps {
 const AutonomousTexts: React.FC<{ texts: string[] }> = ({ texts }) => {
   const { text1Ref, text2Ref } = useAutonomousMorphingText(texts);
   return (
-    <>
+    <div className="relative w-full flex items-center justify-center min-h-[4.5rem]">
       <span
-        className="absolute inset-x-0 top-0 m-auto inline-block w-full text-center"
+        className="absolute inset-x-0 mx-auto w-full text-center leading-snug break-words px-2"
         ref={text1Ref}
       />
       <span
-        className="absolute inset-x-0 top-0 m-auto inline-block w-full text-center"
+        className="absolute inset-x-0 mx-auto w-full text-center leading-snug break-words px-2"
         ref={text2Ref}
       />
-    </>
+    </div>
   );
 };
 
 const SyncedTexts: React.FC<{ text: string }> = ({ text }) => {
   const { text1Ref, text2Ref } = useSyncedMorphingText(text);
   return (
-    <>
+    <div className="relative w-full flex items-center justify-center min-h-[4.5rem]">
       <span
-        className="absolute inset-x-0 top-0 m-auto inline-block w-full text-center"
+        className="absolute inset-x-0 mx-auto w-full text-center leading-snug break-words px-2"
         ref={text1Ref}
       />
       <span
-        className="absolute inset-x-0 top-0 m-auto inline-block w-full text-center"
+        className="absolute inset-x-0 mx-auto w-full text-center leading-snug break-words px-2"
         ref={text2Ref}
       />
-    </>
+    </div>
   );
 };
 
@@ -209,14 +210,14 @@ export const SvgFilters: React.FC = () => (
     aria-hidden="true"
   >
     <defs>
-      <filter id="threshold">
+      <filter id="threshold" colorInterpolationFilters="sRGB">
         <feColorMatrix
           in="SourceGraphic"
           type="matrix"
           values="1 0 0 0 0
                   0 1 0 0 0
                   0 0 1 0 0
-                  0 0 0 255 -140"
+                  0 0 0 35 -10"
         />
       </filter>
     </defs>
@@ -231,7 +232,7 @@ export const MorphingText: React.FC<MorphingTextProps> = ({
   return (
     <div
       className={cn(
-        "relative mx-auto h-20 sm:h-28 w-full max-w-screen-md text-center font-sans text-2xl sm:text-3xl md:text-4xl lg:text-[2.6rem] font-black leading-tight [filter:url(#threshold)_blur(0.6px)] select-none",
+        "relative mx-auto min-h-[5rem] sm:min-h-[6.5rem] w-full max-w-2xl text-center font-sans font-black flex items-center justify-center [filter:url(#threshold)_blur(0.4px)] select-none px-4",
         className
       )}
     >
