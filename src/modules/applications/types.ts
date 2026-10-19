@@ -24,7 +24,7 @@ export const APPLICATION_STATUS_LABELS: Record<ApplicationStatus, string> = {
   offer: "Offer",
   accepted: "Diterima",
   rejected: "Ditolak",
-  withdrawn: "Dibatalkan",
+  withdrawn: "Ditarik",
   closed: "Ditutup",
 };
 
@@ -81,7 +81,7 @@ export const APPLICATION_STATUS_COLORS: Record<
     border: "border-destructive/20",
   },
   withdrawn: {
-    label: "Dibatalkan",
+    label: "Ditarik",
     bg: "bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20",
     text: "text-zinc-600 dark:text-zinc-400",
     border: "border-zinc-500/20",
