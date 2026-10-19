@@ -15,6 +15,9 @@ interface ApplicationSeedItem {
   salaryMin?: number | null;
   salaryMax?: number | null;
   expectedSalary?: number | null;
+  nextStep?: string | null;
+  nextStepAt?: string | null;
+  jobUrl?: string | null;
   notes?: string | null;
 }
 
@@ -168,6 +171,20 @@ const newApplicationsList: ApplicationSeedItem[] = [
     status: "applied",
     notes: "Status: Baru (Belum dilihat)",
   },
+  {
+    idIndex: 15,
+    position: "Software Engineer",
+    company: "PT Norxel Teknologi Indonesia",
+    location: "Semarang",
+    platform: "Glints / Undangan Langsung",
+    appliedAt: "2026-10-19",
+    status: "test",
+    nextStep: "Psikotes Online (Zoom)",
+    nextStepAt: "2026-10-20",
+    jobUrl: "https://tally.so/r/VL9J0l",
+    notes:
+      "Lolos seleksi ke tahap PSIKOTES online (Selasa, 20 Okt 2026; opsi: 09.00 / 10.30 / 15.00 WIB via Zoom). Meeting ID: 854 0379 0835, Passcode: 370359. Wajib isi formulir tally.so/r/VL9J0l & konfirmasi WhatsApp ke Bu Chanif (HRD) 081119740950. Wajib pakai 2 perangkat (Zoom & pengerjaan).",
+  },
 ];
 
 async function main() {
@@ -190,6 +207,9 @@ async function main() {
         salaryMin: item.salaryMin,
         salaryMax: item.salaryMax,
         expectedSalary: item.expectedSalary,
+        nextStep: item.nextStep,
+        nextStepAt: item.nextStepAt,
+        jobUrl: item.jobUrl,
         notes: item.notes,
       })
       .returning();
