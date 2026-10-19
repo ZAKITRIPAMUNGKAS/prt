@@ -126,10 +126,52 @@ const newApplicationsList: ApplicationSeedItem[] = [
     status: "withdrawn",
     notes: "Lamaran ditarik",
   },
+  {
+    idIndex: 11,
+    position: "Full-Stack Engineer",
+    company: "Azura Labs",
+    location: "Semarang",
+    platform: "Glints",
+    appliedAt: "2026-10-19",
+    status: "applied",
+    salaryMin: 4000000,
+    salaryMax: 6000000,
+    notes: "Status: Baru (Belum dilihat)",
+  },
+  {
+    idIndex: 12,
+    position: "Full Stack Developer - Laravel Specialist",
+    company: "PT Afdan Rojabi Indonesia",
+    location: "Kota Yogyakarta",
+    platform: "Glints",
+    appliedAt: "2026-10-19",
+    status: "applied",
+    notes: "Status: Baru (Belum dilihat)",
+  },
+  {
+    idIndex: 13,
+    position: "Programmer",
+    company: "SAFFix.id",
+    location: "Probolinggo",
+    platform: "Glints",
+    appliedAt: "2026-10-19",
+    status: "applied",
+    notes: "Status: Baru (Belum dilihat)",
+  },
+  {
+    idIndex: 14,
+    position: "Full Stack Developer",
+    company: "PT Eintio Academic & Technology",
+    location: "Salatiga",
+    platform: "Glints",
+    appliedAt: "2026-10-19",
+    status: "applied",
+    notes: "Status: Baru (Belum dilihat)",
+  },
 ];
 
 async function main() {
-  console.log("Replacing job applications with the new 10 applications...");
+  console.log("Replacing job applications with the updated applications list...");
 
   // Delete all existing applications to cleanly align with the new list
   await db.delete(jobApplications);
@@ -157,7 +199,7 @@ async function main() {
     );
   }
 
-  console.log("All 10 new job applications seeded successfully!");
+  console.log(`All ${newApplicationsList.length} job applications seeded successfully!`);
 }
 
 main()
