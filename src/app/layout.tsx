@@ -57,8 +57,7 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-import { InitialPreloader } from "@/components/initial-preloader";
-import { AudioPlayer } from "@/components/audio-player";
+import { GlobalAudioPlayer } from "@/components/global-audio-player";
 
 export default function RootLayout({
   children,
@@ -72,10 +71,9 @@ export default function RootLayout({
           <TRPCReactProvider>
             <ThemeProvider attribute="class">
               <ThemeColorMeta />
-              <InitialPreloader />
               <Toaster />
               {children}
-              <AudioPlayer />
+              <GlobalAudioPlayer />
             </ThemeProvider>
           </TRPCReactProvider>
         </NuqsAdapter>

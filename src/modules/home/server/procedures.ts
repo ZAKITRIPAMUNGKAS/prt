@@ -14,8 +14,29 @@ export const homeRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const { limit } = input;
 
+      const photoFields = {
+        id: photos.id,
+        url: photos.url,
+        title: photos.title,
+        blurData: photos.blurData,
+        width: photos.width,
+        height: photos.height,
+        city: photos.city,
+        country: photos.country,
+        placeFormatted: photos.placeFormatted,
+        make: photos.make,
+        model: photos.model,
+        lensModel: photos.lensModel,
+        focalLength: photos.focalLength,
+        focalLength35mm: photos.focalLength35mm,
+        fNumber: photos.fNumber,
+        iso: photos.iso,
+        exposureTime: photos.exposureTime,
+        dateTimeOriginal: photos.dateTimeOriginal,
+      };
+
       let data = await ctx.db
-        .select()
+        .select(photoFields)
         .from(photos)
         .where(
           and(eq(photos.isFavorite, true), eq(photos.visibility, "public")),
@@ -26,7 +47,7 @@ export const homeRouter = createTRPCRouter({
       // Fallback: If user hasn't favorited any photos yet, display latest public photos
       if (data.length === 0) {
         data = await ctx.db
-          .select()
+          .select(photoFields)
           .from(photos)
           .where(eq(photos.visibility, "public"))
           .orderBy(desc(photos.updatedAt))

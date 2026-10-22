@@ -10,7 +10,10 @@ import type { Post } from "@/db/schema";
 import { format } from "date-fns";
 
 interface Props {
-  post: Post;
+  post: Pick<
+    Post,
+    "title" | "slug" | "tags" | "coverImage" | "readingTimeMinutes" | "createdAt"
+  >;
 }
 
 export const BlogHomeCard = ({ post }: Props) => {

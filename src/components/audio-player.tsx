@@ -410,7 +410,7 @@ export const AudioPlayer = ({
         onPause={() => setIsPlaying(false)}
         onError={() => setIsPlaying(false)}
         src={currentTrack.src}
-        preload="auto"
+        preload="metadata"
         className="hidden"
       />
 

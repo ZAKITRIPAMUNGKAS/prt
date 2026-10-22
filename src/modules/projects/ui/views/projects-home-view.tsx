@@ -10,7 +10,7 @@ import { ProjectCard } from "../components/project-card";
 export const ProjectsHomeView = () => {
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(
-    trpc.projects.getMany.queryOptions({ limit: 3 })
+    trpc.projects.getHome.queryOptions()
   );
 
   if (!data || data.length === 0) {
@@ -20,7 +20,7 @@ export const ProjectsHomeView = () => {
   return (
     <div className="w-full grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-3">
       {data.map((project) => (
-        <ProjectCard key={project.id} project={project} />
+        <ProjectCard key={project.slug} project={project} />
       ))}
     </div>
   );

@@ -2,6 +2,7 @@
 
 // UI Components
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import Carousel from "@/components/photo-carousel";
 import BlurImage from "@/components/blur-image";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,8 +12,16 @@ import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { ImageOff } from "lucide-react";
-import { PhotoLightbox, usePhotoLightbox } from "@/components/photo-lightbox";
+import { usePhotoLightbox } from "@/components/photo-lightbox/use-photo-lightbox";
 import { PhotoLyricsOverlay } from "@/components/photo-lyrics-overlay";
+
+const PhotoLightbox = dynamic(
+  () =>
+    import("@/components/photo-lightbox/photo-lightbox").then(
+      (module) => module.PhotoLightbox,
+    ),
+  { ssr: false },
+);
 
 export const SliderView = () => {
   const trpc = useTRPC();
@@ -93,12 +102,14 @@ export const SliderView = () => {
         <PhotoLyricsOverlay />
       </div>
 
-      <PhotoLightbox
-        photos={photos}
-        activePhotoId={activePhotoId}
-        onClose={closePhoto}
-        onNavigate={setActivePhotoId}
-      />
+      {activePhotoId && (
+        <PhotoLightbox
+          photos={photos}
+          activePhotoId={activePhotoId}
+          onClose={closePhoto}
+          onNavigate={setActivePhotoId}
+        />
+      )}
     </>
   );
 };

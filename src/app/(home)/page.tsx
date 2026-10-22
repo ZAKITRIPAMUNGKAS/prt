@@ -38,10 +38,10 @@ const page = async () => {
     trpc.home.getCitySets.queryOptions({ limit: 12 })
   );
   void queryClient.prefetchQuery(
-    trpc.projects.getMany.queryOptions({ limit: 3 })
+    trpc.projects.getHome.queryOptions()
   );
   void queryClient.prefetchQuery(
-    trpc.blog.getMany.queryOptions()
+    trpc.blog.getHome.queryOptions()
   );
 
   return (

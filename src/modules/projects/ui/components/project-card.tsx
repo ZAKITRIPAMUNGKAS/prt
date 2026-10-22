@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import type { Project } from "@/db/schema";
 
 interface Props {
-  project: Project;
+  project: Pick<Project, "slug" | "title" | "coverKey" | "previewVideoKey">;
 }
 
 function subscribeTouch(callback: () => void) {

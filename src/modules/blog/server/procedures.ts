@@ -5,6 +5,22 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
 export const blogRouter = createTRPCRouter({
+  getHome: baseProcedure.query(async ({ ctx }) => {
+    return ctx.db
+      .select({
+        title: posts.title,
+        slug: posts.slug,
+        tags: posts.tags,
+        coverImage: posts.coverImage,
+        readingTimeMinutes: posts.readingTimeMinutes,
+        createdAt: posts.createdAt,
+      })
+      .from(posts)
+      .where(eq(posts.visibility, "public"))
+      .orderBy(desc(posts.createdAt), desc(posts.id))
+      .limit(3);
+  }),
+
   getMany: baseProcedure.query(async ({ ctx }) => {
     const data = await ctx.db
       .select()

@@ -26,6 +26,19 @@ function isUniqueViolation(error: unknown): boolean {
 }
 
 export const projectsRouter = createTRPCRouter({
+  getHome: baseProcedure.query(async ({ ctx }) => {
+    return ctx.db
+      .select({
+        slug: projects.slug,
+        title: projects.title,
+        coverKey: projects.coverKey,
+        previewVideoKey: projects.previewVideoKey,
+      })
+      .from(projects)
+      .orderBy(asc(projects.order), desc(projects.createdAt))
+      .limit(3);
+  }),
+
   // Public: List projects
   getMany: baseProcedure
     .input(
