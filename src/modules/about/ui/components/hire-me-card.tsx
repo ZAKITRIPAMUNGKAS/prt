@@ -8,8 +8,8 @@ export const HireMeCard = () => {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <h2 className="text-2xl font-normal">Hubungi Saya</h2>
           <a
-            href="/CV_Zaki_Tri_Pamungkas_General.pdf"
-            download="CV_Zaki_Tri_Pamungkas_General.pdf"
+            href="/CV_Zaki_Tri_Pamungkas_General_v2.pdf"
+            download="CV_Zaki_Tri_Pamungkas_General_v2.pdf"
             className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white dark:text-black rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
           >
             <PiDownloadSimple size={18} />
