@@ -58,6 +58,7 @@ export const viewport: Viewport = {
 };
 
 import { GlobalAudioPlayer } from "@/components/global-audio-player";
+import { InitialLoader } from "@/components/initial-loader";
 
 export default function RootLayout({
   children,
@@ -74,6 +75,7 @@ export default function RootLayout({
               <Toaster />
               {children}
               <GlobalAudioPlayer />
+              <InitialLoader />
             </ThemeProvider>
           </TRPCReactProvider>
         </NuqsAdapter>

@@ -12,19 +12,21 @@ describe("ImageLoader", () => {
     expect(typeof ImageLoader).toBe("function");
   });
 
-  it("renders a matrix grid with default properties in static markup", () => {
+  it("renders a canvas-based matrix overlay in static markup", () => {
     const markup = renderToStaticMarkup(
       React.createElement(ImageLoader, {
-        gridSize: 6,
-        gridRows: 6,
-        cellGap: 4,
+        gridSize: 16,
+        gridRows: 16,
+        cellGap: 3,
         cellShape: "square",
       })
     );
 
     expect(markup).toBeDefined();
-    expect(markup).toContain("grid-template-columns:repeat(6, minmax(0, 1fr))");
-    expect(markup).toContain("grid-template-rows:repeat(6, minmax(0, 1fr))");
+    expect(markup).toContain("<canvas");
+    expect(markup).toContain('data-grid-cols="16"');
+    expect(markup).toContain('data-grid-rows="16"');
+    expect(markup).toContain('data-shape="square"');
   });
 
   it("renders with rounded and circle cell shapes", () => {
@@ -35,7 +37,7 @@ describe("ImageLoader", () => {
         cellShape: "circle",
       })
     );
-    expect(circleMarkup).toContain("rounded-full");
+    expect(circleMarkup).toContain('data-shape="circle"');
 
     const roundedMarkup = renderToStaticMarkup(
       React.createElement(ImageLoader, {
@@ -44,7 +46,7 @@ describe("ImageLoader", () => {
         cellShape: "rounded",
       })
     );
-    expect(roundedMarkup).toContain("rounded-xs");
+    expect(roundedMarkup).toContain('data-shape="rounded"');
   });
 
   it("supports standalone skeleton mode when src is null or undefined", () => {
@@ -57,6 +59,7 @@ describe("ImageLoader", () => {
 
     expect(markup).toContain("rounded-xl");
     expect(markup).toContain("aspect-ratio:0.75");
+    expect(markup).toContain("<canvas");
     // Ensure no <img> tag rendered when src is missing
     expect(markup).not.toContain("<img");
   });

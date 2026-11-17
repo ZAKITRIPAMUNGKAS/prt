@@ -31,18 +31,20 @@ import { PageEntrance, StaggerContainer, StaggerItem } from "@/components/page-e
 
 const page = async () => {
   const queryClient = getQueryClient();
-  void queryClient.prefetchQuery(
-    trpc.home.getManyLikePhotos.queryOptions({ limit: 10 })
-  );
-  void queryClient.prefetchQuery(
-    trpc.home.getCitySets.queryOptions({ limit: 12 })
-  );
-  void queryClient.prefetchQuery(
-    trpc.projects.getHome.queryOptions()
-  );
-  void queryClient.prefetchQuery(
-    trpc.blog.getHome.queryOptions()
-  );
+  await Promise.allSettled([
+    queryClient.prefetchQuery(
+      trpc.home.getManyLikePhotos.queryOptions({ limit: 10 })
+    ),
+    queryClient.prefetchQuery(
+      trpc.home.getCitySets.queryOptions({ limit: 12 })
+    ),
+    queryClient.prefetchQuery(
+      trpc.projects.getHome.queryOptions()
+    ),
+    queryClient.prefetchQuery(
+      trpc.blog.getHome.queryOptions()
+    ),
+  ]);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
