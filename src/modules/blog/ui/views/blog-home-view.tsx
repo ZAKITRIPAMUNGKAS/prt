@@ -3,7 +3,7 @@
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ImageLoader } from "@/components/ui/image-loading";
 import VectorTopLeftAnimation from "@/modules/home/ui/components/vector-top-left-animation";
 import { BlogHomeCard } from "../components/blog-card";
 
@@ -33,7 +33,13 @@ export const BlogHomeLoadingStatus = () => {
             ratio={0.75 / 1}
             className="overflow-hidden rounded-lg relative bg-muted"
           >
-            <Skeleton className="w-full h-full" />
+            <ImageLoader
+              gridSize={18}
+              gridRows={24}
+              cellGap={3}
+              cellShape="square"
+              className="w-full h-full rounded-lg"
+            />
           </AspectRatio>
           <div className="absolute top-0 left-0 z-20">
             <VectorTopLeftAnimation

@@ -5,6 +5,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import CardContainer from "@/components/card-container";
 import Footer from "@/components/footer";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ImageLoader } from "@/components/ui/image-loading";
 import { FeaturedProjectCover } from "../components/featured-project-cover";
 import { ProjectCard } from "../components/project-card";
 
@@ -55,9 +56,17 @@ export const ProjectsView = () => {
 export const ProjectsViewLoadingStatus = () => {
   return (
     <div className="flex flex-col gap-3 lg:gap-0 lg:flex-row w-full">
-      {/* LEFT CONTENT - Fixed Skeleton */}
+      {/* LEFT CONTENT - Fixed Matrix Grid Loader */}
       <div className="w-full h-[50vh] lg:w-1/2 lg:fixed lg:top-0 lg:left-0 md:h-[80vh] lg:h-screen p-0 lg:p-3 group">
-        <Skeleton className="w-full h-full rounded-xl" />
+        <div className="w-full h-full rounded-xl overflow-hidden relative border border-border/40">
+          <ImageLoader
+            gridSize={32}
+            gridRows={32}
+            cellGap={4}
+            cellShape="square"
+            className="w-full h-full rounded-xl"
+          />
+        </div>
       </div>
 
       {/* Spacer for fixed left content */}
@@ -77,8 +86,14 @@ export const ProjectsViewLoadingStatus = () => {
 
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-3">
           {Array.from({ length: 4 }).map((_, index) => (
-            <div key={index} className="aspect-3/4 rounded-xl overflow-hidden">
-              <Skeleton className="w-full h-full" />
+            <div key={index} className="aspect-3/4 rounded-xl overflow-hidden relative">
+              <ImageLoader
+                gridSize={18}
+                gridRows={24}
+                cellGap={3}
+                cellShape="square"
+                className="w-full h-full rounded-xl"
+              />
             </div>
           ))}
         </div>

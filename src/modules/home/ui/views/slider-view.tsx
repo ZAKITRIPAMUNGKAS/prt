@@ -5,7 +5,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import Carousel from "@/components/photo-carousel";
 import BlurImage from "@/components/blur-image";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ImageLoader } from "@/components/ui/image-loading";
 import { EmptyState } from "@/components/empty-state";
 import { keyToUrl } from "@/modules/s3/lib/key-to-url";
 import { useTRPC } from "@/trpc/client";
@@ -116,8 +116,16 @@ export const SliderView = () => {
 
 export const SliderViewLoadingStatus = () => {
   return (
-    <div className="w-full lg:w-1/2 h-[70vh] lg:fixed lg:top-0 lg:left-0 lg:h-screen p-0 lg:p-3 rounded-xl">
-      <Skeleton className="w-full h-full" />
+    <div className="w-full lg:w-1/2 h-[70vh] lg:fixed lg:top-0 lg:left-0 lg:h-screen p-0 lg:p-3">
+      <div className="w-full h-full rounded-xl overflow-hidden relative border border-border/40">
+        <ImageLoader
+          gridSize={32}
+          gridRows={32}
+          cellGap={4}
+          cellShape="square"
+          className="w-full h-full rounded-xl"
+        />
+      </div>
     </div>
   );
 };

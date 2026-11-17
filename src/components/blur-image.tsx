@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, memo } from "react";
 import Image, { ImageProps } from "next/image";
 import { Blurhash } from "react-blurhash";
+import { ImageLoader } from "@/components/ui/image-loading";
 
 interface BlurImageProps
   extends Omit<ImageProps, "onLoad" | "onLoadingComplete" | "priority"> {
@@ -76,7 +77,7 @@ const BlurImageInner = function BlurImageInner({
       )}
       {!showBlurhash && showPlaceholder && (
         <div
-          className={`absolute inset-0 bg-muted/60 animate-pulse ${
+          className={`absolute inset-0 ${
             className ?? ""
           } transition-opacity duration-500 ease-in-out ${
             imageLoaded ? "opacity-0" : "opacity-100"
@@ -85,7 +86,14 @@ const BlurImageInner = function BlurImageInner({
             pointerEvents: "none",
             backgroundColor: placeholderColor,
           }}
-        />
+        >
+          <ImageLoader
+            gridSize={20}
+            cellGap={3}
+            cellShape="square"
+            className="w-full h-full"
+          />
+        </div>
       )}
       <Image
         src={src}
