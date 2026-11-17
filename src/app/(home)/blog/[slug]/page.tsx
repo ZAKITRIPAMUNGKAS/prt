@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { BlogSlugView, BlogSlugLoadingStatus } from "@/modules/blog/ui/views/blog-slug-view";
 import { getQueryClient } from "@/trpc/server";
 import { trpc } from "@/trpc/server";
@@ -168,7 +169,7 @@ export default async function page({ params }: Props) {
       };
     }
   } catch {
-    // Handled by ErrorBoundary
+    notFound();
   }
 
   return (

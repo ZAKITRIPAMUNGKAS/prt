@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { ProjectSlugView } from "@/modules/projects/ui/views/project-slug-view";
 import { getQueryClient, trpc } from "@/trpc/server";
 import { HydrationBoundary, dehydrate } from "@tanstack/react-query";
@@ -35,9 +36,13 @@ export default async function ProjectDetailPage({ params }: Props) {
   const decodedSlug = decodeURIComponent(slug);
   const queryClient = getQueryClient();
 
-  await queryClient.fetchQuery(
-    trpc.projects.getBySlug.queryOptions({ slug: decodedSlug })
-  );
+  try {
+    await queryClient.fetchQuery(
+      trpc.projects.getBySlug.queryOptions({ slug: decodedSlug })
+    );
+  } catch {
+    notFound();
+  }
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
